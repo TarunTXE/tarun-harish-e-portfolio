@@ -14,7 +14,7 @@ import { cyberAudio } from '../utils/audio';
 import { personalData } from '../data/personal';
 import { educationData } from '../data/education';
 import { experiencesData } from '../data/experience';
-import { featuredProject } from '../data/projects';
+import { featuredProjects } from '../data/projects';
 import { certificationsData } from '../data/certifications';
 import { activitiesData } from '../data/activities';
 
@@ -191,24 +191,30 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => 
             </div>
           </div>
 
-          {/* Featured Project */}
+          {/* Featured Projects */}
           <div>
             <h2 className="font-mono text-xs uppercase tracking-wider text-white font-bold mb-2 flex items-center gap-1.5">
-              <Code size={15} /> Featured Project
+              <Code size={15} /> Featured Projects
             </h2>
-            <div className="p-4 rounded-xl bg-black border border-white/10">
-              <div className="flex justify-between items-baseline mb-1">
-                <strong className="text-white font-semibold text-sm">{featuredProject.title}</strong>
-                <span className="font-mono text-xs text-neutral-400">React.js, Node.js, Express.js, MongoDB</span>
-              </div>
-              <ul className="space-y-1 text-xs text-neutral-300 mt-2">
-                {featuredProject.features.map((feat, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <span className="text-white">&bull;</span>
-                    <span>{feat}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="space-y-3">
+              {featuredProjects.map((proj) => (
+                <div key={proj.id} className="p-4 rounded-xl bg-black border border-white/10">
+                  <div className="flex justify-between items-baseline mb-1">
+                    <strong className="text-white font-semibold text-sm">{proj.title}</strong>
+                    <span className="font-mono text-xs text-neutral-400">
+                      {proj.techStack.slice(0, 4).join(', ')}
+                    </span>
+                  </div>
+                  <ul className="space-y-1 text-xs text-neutral-300 mt-2">
+                    {proj.features.slice(0, 4).map((feat, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="text-white">&bull;</span>
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -219,11 +225,11 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => 
             </h2>
             <div className="p-4 rounded-xl bg-black border border-white/10 space-y-1.5 text-xs text-neutral-300">
               <p><strong className="text-white">Languages:</strong> Python, Java, C, JavaScript, SQL</p>
-              <p><strong className="text-white">Machine Learning & AI:</strong> Supervised Learning, Unsupervised Learning, Deep Learning, Reinforcement Learning (Q-Learning), IBM watsonx/Watson Studio</p>
+              <p><strong className="text-white">Machine Learning &amp; AI:</strong> Supervised Learning, Unsupervised Learning, Deep Learning, Reinforcement Learning, IBM watsonx/Watson Studio, RAG Architectures</p>
               <p><strong className="text-white">Frontend:</strong> HTML5, CSS3, React.js</p>
-              <p><strong className="text-white">Backend:</strong> Node.js, Express.js, Django</p>
-              <p><strong className="text-white">Databases:</strong> MongoDB, SQLite, MySQL</p>
-              <p><strong className="text-white">Tools:</strong> Git, GitHub, VS Code</p>
+              <p><strong className="text-white">Backend:</strong> Node.js, Express.js, Django, FastAPI, fastembed, Groq API</p>
+              <p><strong className="text-white">Databases:</strong> MongoDB, SQLite, MySQL, ChromaDB</p>
+              <p><strong className="text-white">Tools:</strong> Git, GitHub, VS Code, Render, Vercel</p>
             </div>
           </div>
 

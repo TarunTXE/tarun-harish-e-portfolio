@@ -31,19 +31,17 @@ export const featuredProject: ProjectData = {
   stars: 1,
   forks: 0,
   githubUrl: 'https://github.com/TarunTXE/Portfolio-Creator-Portfolio-Builder-with-Job-Assistance',
-  demoUrl: 'https://portfolio-creator-cyan.vercel.app',
+  demoUrl: 'https://portfolio-creator-portfolio-builder.vercel.app',
   updatedAt: '2026-09-06',
   isFeatured: true,
   category: 'Full Stack',
   techStack: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'JWT Auth', 'RESTful APIs', 'Tailwind CSS'],
   features: [
-    'JWT-based authentication and secure user profile management',
-    'Portfolio creation with customizable interactive templates',
-    'Real-time portfolio preview with responsive live rendering',
-    'High-fidelity vector PDF resume and portfolio export',
-    'Portfolio evaluation system with peer feedback, star ratings, and improvement suggestions',
-    'Skill-based job portal matching career opportunities to user proficiencies',
-    'Modular RESTful backend services using Node.js, Express.js, and MongoDB',
+    'Built a full-stack platform for creating, customizing, previewing, and sharing professional portfolios.',
+    'Implemented JWT-based authentication and secure user profile management.',
+    'Built a portfolio evaluation system with feedback, ratings, and improvement suggestions.',
+    'Integrated a job portal feature matching opportunities to user skills and interests.',
+    'Built portfolio preview, PDF export, and RESTful backend services using Node.js, Express.js, and MongoDB.',
   ],
   screenshots: [
     '/projects/portfolio-creator/main page.png',
@@ -55,8 +53,41 @@ export const featuredProject: ProjectData = {
   ],
 };
 
+export const ragProject: ProjectData = {
+  id: 'rag-evaluation-framework',
+  name: 'rag-evaluation-framework',
+  title: 'RAG Evaluation Framework',
+  badge: 'Featured AI / ML Project',
+  description:
+    'Retrieval-Augmented Generation (RAG) system for academic syllabus and question-paper QA, paired with an automated evaluation framework benchmarking retrieval recall and answer faithfulness across pipeline configurations.',
+  longDescription:
+    'Ingests course syllabus and question-paper PDFs, chunks and embeds them with fastembed, and answers natural-language questions grounded in retrieved context via Groq API (LLM inference) with source attribution. Features dynamic in-memory PDF uploads directly indexed into ChromaDB vector storage without server restarts, and an automated evaluation suite benchmarking Recall@k and faithfulness across varying chunk sizes, retrieval depths (k), and embedding models (MiniLM vs Albert).',
+  language: 'Python',
+  stars: 0,
+  forks: 0,
+  githubUrl: 'https://github.com/TarunTXE/rag-evaluation-framework',
+  demoUrl: 'https://rag-evaluation-framework.vercel.app',
+  updatedAt: '2026-09-20',
+  isFeatured: true,
+  category: 'AI / ML',
+  techStack: ['Python', 'FastAPI', 'ChromaDB', 'FastEmbed', 'Groq API', 'React.js', 'Vite', 'Render', 'Vercel'],
+  features: [
+    'Built a RAG pipeline with an automated evaluation harness benchmarking retrieval and faithfulness across chunking, embedding, and reranking strategies.',
+    'Built the backend with FastAPI, fastembed embeddings, ChromaDB vector store, and the Groq API for generation.',
+    'Built a React dashboard to visualize benchmark results, with PDF upload for querying custom documents.',
+    'Benchmarked embedding models, identifying a retrieval recall drop from 100% to 83.33% with a weaker model.',
+    'Deployed backend on Render and frontend on Vercel with a live public demo.',
+  ],
+  screenshots: [
+    '/projects/rag-framework/preview.png',
+  ],
+};
+
+export const featuredProjects: ProjectData[] = [featuredProject, ragProject];
+
 export const repositoriesData: ProjectData[] = [
   featuredProject,
+  ragProject,
   {
     id: 'sih-wheelchair',
     name: 'Wheelchair-Pushup-Detection',
@@ -140,12 +171,12 @@ export const repositoriesData: ProjectData[] = [
   {
     id: 'vhe-website',
     name: 'vhe-website',
-    title: 'VHE — Modern Web Portal',
-    badge: 'TypeScript Production',
+    title: 'Dr. Varun Harish E — Doctor & Author Web Portal',
+    badge: 'Doctor & Author Platform',
     description:
-      'Modern, highly responsive web portal built with TypeScript, featuring optimized layouts and modular component architecture.',
+      'Official web portal and personal brand platform engineered for Doctor and Author Varun Harish E, showcasing published literary works, medical insights, and professional profile.',
     longDescription:
-      'Engineered with TypeScript to enforce strict type safety and high runtime stability. Features responsive glassmorphism layouts, clean asset loading, and production deployment on Vercel.',
+      'A bespoke digital platform engineered for Doctor and Author Varun Harish E. Built with TypeScript and React to deliver refined typography, fluid navigation, and an engaging presentation for his published books, articles, and medical insights, with production deployment on Vercel.',
     language: 'TypeScript',
     stars: 0,
     forks: 0,
@@ -156,32 +187,10 @@ export const repositoriesData: ProjectData[] = [
     category: 'Web Apps',
     techStack: ['TypeScript', 'React', 'Tailwind CSS', 'Vercel'],
     features: [
-      'Type-safe architecture with TypeScript',
-      'Responsive multi-device layout grid',
-      'Fluid transitions and optimized component rendering',
-    ],
-  },
-  {
-    id: 'weather-app',
-    name: 'weather-app',
-    title: 'AtmoSphere — Real-Time Weather Application',
-    badge: 'API & Microclimate',
-    description:
-      'Interactive weather application retrieving real-time atmospheric conditions, humidity, temperature, and multi-day forecasts using OpenWeather API.',
-    longDescription:
-      'Provides instantaneous geospatial weather readings, city search, temperature conversions, atmospheric wind speed metrics, and responsive weather condition cards.',
-    language: 'JavaScript',
-    stars: 0,
-    forks: 0,
-    githubUrl: 'https://github.com/TarunTXE/weather-app',
-    updatedAt: '2026-07-15',
-    isFeatured: false,
-    category: 'Web Apps',
-    techStack: ['JavaScript', 'OpenWeather API', 'CSS3', 'HTML5'],
-    features: [
-      'Real-time temperature and meteorological API queries',
-      'Multi-city search with dynamic card rendering',
-      'Visual condition icons and responsive weather metrics',
+      'Official digital presence for Doctor & Author Varun Harish E',
+      'Showcase for published literary work, books, and clinical background',
+      'Type-safe modular frontend built with TypeScript and React',
+      'Responsive reading layouts and production deployment on Vercel',
     ],
   },
 ];

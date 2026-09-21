@@ -18,7 +18,7 @@ export interface PersonalInfo {
 
 export const personalData: PersonalInfo = {
   name: 'Tarun Harish E',
-  primaryTitle: 'Full-Stack Developer',
+  primaryTitle: 'Full-Stack Developer & AI/ML Enthusiast',
   animatedTitles: [
     'MERN Stack Developer',
     'Machine Learning Enthusiast',

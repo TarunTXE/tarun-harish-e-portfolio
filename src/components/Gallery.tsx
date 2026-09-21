@@ -24,7 +24,7 @@ export const Gallery: React.FC = () => {
       image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80',
       description: 'Dynamic portfolio generator with live template WYSIWYG editor and instant PDF compile engine.',
       tags: ['React', 'Node.js', 'MongoDB', 'Vercel'],
-      link: 'https://portfolio-creator-cyan.vercel.app',
+      link: 'https://portfolio-creator-portfolio-builder.vercel.app',
     },
     {
       id: 'gallery-wheelchair',
@@ -52,20 +52,12 @@ export const Gallery: React.FC = () => {
     },
     {
       id: 'gallery-vhe',
-      title: 'VHE Modern Web Experience',
-      category: 'TypeScript Production',
+      title: 'Dr. Varun Harish E Web Portal',
+      category: 'Doctor & Author Platform',
       image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
-      description: 'Clean responsive interface engineered with TypeScript and high-speed CSS animations.',
-      tags: ['TypeScript', 'Vite', 'Responsive UI'],
+      description: 'Official web portal and personal brand platform for Doctor and Author Varun Harish E, showcasing literary works and medical practice.',
+      tags: ['TypeScript', 'React', 'Author Portfolio', 'Vercel'],
       link: 'https://vhe-website.vercel.app',
-    },
-    {
-      id: 'gallery-weather',
-      title: 'AtmoSphere Weather Matrix',
-      category: 'Geospatial Weather',
-      image: 'https://images.unsplash.com/photo-1592210454359-9043f067919b?auto=format&fit=crop&w=800&q=80',
-      description: 'Dynamic atmospheric dashboard delivering microclimate radar telemetry and 7-day forecasts.',
-      tags: ['JavaScript', 'OpenWeather API', 'CSS Grid'],
     },
   ];
 

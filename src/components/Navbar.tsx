@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Terminal, Volume2, VolumeX, Menu, X, FileText, ExternalLink } from 'lucide-react';
+import { Terminal, Menu, X, FileText, ExternalLink } from 'lucide-react';
 import { cyberAudio } from '../utils/audio';
 import { personalData } from '../data/personal';
 
@@ -12,7 +12,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
 
   const navLinks = [
@@ -50,11 +49,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleAudioToggle = () => {
-    const state = cyberAudio.toggle();
-    setSoundEnabled(state);
-  };
 
   const handleNavClick = (href: string) => {
     cyberAudio.playClick();
@@ -158,20 +152,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
                 title="Open Interactive CV Modal"
               >
                 <span>CV Modal</span>
-              </button>
-
-              {/* Sound Audio FX Toggle */}
-              <button
-                onClick={handleAudioToggle}
-                className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all ${
-                  soundEnabled
-                    ? 'border-white text-white bg-white/10 shadow-[0_0_12px_rgba(255,255,255,0.3)]'
-                    : 'border-white/10 text-neutral-500 hover:text-white hover:border-white/20'
-                }`}
-                title={soundEnabled ? 'Disable Audio FX' : 'Enable Audio FX'}
-                aria-label="Toggle audio effects"
-              >
-                {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
               </button>
 
               {/* CLI Terminal Launcher */}

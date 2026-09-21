@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { GithubIcon } from './Icons';
 import { cyberAudio } from '../utils/audio';
-import { repositoriesData, featuredProject } from '../data/projects';
+import { repositoriesData, featuredProjects } from '../data/projects';
 import type { ProjectData } from '../data/projects';
 import { personalData } from '../data/personal';
 
@@ -19,7 +19,11 @@ export const Projects: React.FC = () => {
   const [projects, setProjects] = useState<ProjectData[]>(repositoriesData);
   const [selectedFilter, setSelectedFilter] = useState<string>('All');
   const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
-  const [activeFeaturedImage, setActiveFeaturedImage] = useState<number>(0);
+  const [activeFeaturedImages, setActiveFeaturedImages] = useState<Record<string, number>>({});
+
+  const getActiveImage = (id: string) => activeFeaturedImages[id] || 0;
+  const setActiveImage = (id: string, idx: number) =>
+    setActiveFeaturedImages((prev) => ({ ...prev, [id]: idx }));
 
   useEffect(() => {
     const fetchGitHubData = async () => {
@@ -76,7 +80,7 @@ export const Projects: React.FC = () => {
             href={personalData.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white font-mono font-semibold underline underline-offset-4 hover:text-neutral-300"
+            className="text-white underline underline-offset-4 hover:text-neutral-300 font-medium"
           >
             @{personalData.githubUsername}
           </a>.
@@ -84,167 +88,176 @@ export const Projects: React.FC = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* FEATURED PROJECT — EXPANDED FLAGSHIP SHOWCASE (Black + Neon White) */}
+      {/* FEATURED PROJECTS — EXPANDED FLAGSHIP SHOWCASES (Black + Neon White) */}
       {/* ========================================================================= */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="mb-14 sm:mb-16 bg-[#080808] rounded-3xl border border-white/15 overflow-hidden relative shadow-[0_0_30px_rgba(255,255,255,0.05)] group"
-      >
-        {/* Subtle white ambient glow */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-white/[0.02] rounded-full blur-[100px] pointer-events-none" />
+      <div className="space-y-12 sm:space-y-16 mb-14 sm:mb-16">
+        {featuredProjects.map((proj, projIdx) => {
+          const activeImage = getActiveImage(proj.id);
+          const screenshots = proj.screenshots || [];
+          return (
+            <motion.div
+              key={proj.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: projIdx * 0.1 }}
+              className="bg-[#080808] rounded-3xl border border-white/15 overflow-hidden relative shadow-[0_0_30px_rgba(255,255,255,0.05)] group"
+            >
+              {/* Subtle white ambient glow */}
+              <div className="absolute top-0 right-0 w-80 h-80 bg-white/[0.02] rounded-full blur-[100px] pointer-events-none" />
 
-        {/* Top Header Strip */}
-        <div className="px-5 sm:px-8 py-3.5 bg-neutral-950 border-b border-white/10 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_6px_#ffffff]" />
-            <span className="font-mono text-xs font-bold text-white tracking-wider uppercase">
-              {featuredProject.badge}
-            </span>
-          </div>
-          <span className="text-xs font-mono text-neutral-400">
-            React.js &bull; Node.js &bull; Express.js &bull; MongoDB
-          </span>
-        </div>
-
-        {/* Main Grid: Left Screenshot + Right Features */}
-        <div className="p-5 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Left: Responsive Screenshot Viewer */}
-          <div className="lg:col-span-6 flex flex-col gap-3">
-            <div className="relative rounded-2xl overflow-hidden border border-white/15 bg-black shadow-[0_0_20px_rgba(255,255,255,0.06)] aspect-[16/10] w-full">
-              {featuredProject.screenshots && (
-                <img
-                  src={featuredProject.screenshots[activeFeaturedImage]}
-                  alt={featuredProject.title}
-                  loading="lazy"
-                  className="w-full h-full object-cover object-top transition-transform duration-300"
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-
-              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs font-mono">
-                <span className="px-2.5 py-1 rounded-lg bg-black/90 border border-white/20 text-neutral-300">
-                  Preview {activeFeaturedImage + 1} of {featuredProject.screenshots?.length || 1}
+              {/* Top Header Strip */}
+              <div className="px-5 sm:px-8 py-3.5 bg-neutral-950 border-b border-white/10 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-white shadow-[0_0_6px_#ffffff]" />
+                  <span className="font-mono text-xs font-bold text-white tracking-wider uppercase">
+                    {proj.badge}
+                  </span>
+                </div>
+                <span className="text-xs font-mono text-neutral-400">
+                  {proj.techStack.slice(0, 5).join(' • ')}
                 </span>
-                {featuredProject.demoUrl && (
-                  <a
-                    href={featuredProject.demoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded-lg bg-white text-black font-bold hover:bg-neutral-200 transition-colors flex items-center gap-1.5"
-                  >
-                    <span>Live App</span>
-                    <ExternalLink size={12} />
-                  </a>
-                )}
               </div>
-            </div>
 
-            {/* Thumbnail Selector (Minimum 44px touch target) */}
-            {featuredProject.screenshots && (
-              <div className="grid grid-cols-6 gap-2">
-                {featuredProject.screenshots.map((shot, idx) => (
-                  <button
-                    key={shot}
-                    onClick={() => {
-                      cyberAudio.playClick();
-                      setActiveFeaturedImage(idx);
-                    }}
-                    className={`min-h-[44px] rounded-lg overflow-hidden border transition-all aspect-[16/10] ${
-                      activeFeaturedImage === idx
-                        ? 'border-white ring-2 ring-white/40 shadow-[0_0_10px_rgba(255,255,255,0.4)]'
-                        : 'border-white/10 opacity-50 hover:opacity-100'
-                    }`}
-                    aria-label={`Select screenshot ${idx + 1}`}
-                  >
-                    <img src={shot} alt="thumbnail" loading="lazy" className="w-full h-full object-cover object-top" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+              {/* Main Grid: Left Screenshot + Right Features */}
+              <div className="p-5 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                {/* Left: Responsive Screenshot Viewer */}
+                <div className="lg:col-span-6 flex flex-col gap-3">
+                  <div className="relative rounded-2xl overflow-hidden border border-white/15 bg-black shadow-[0_0_20px_rgba(255,255,255,0.06)] aspect-[16/10] w-full">
+                    {screenshots.length > 0 && (
+                      <img
+                        src={screenshots[activeImage] || screenshots[0]}
+                        alt={proj.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover object-top transition-transform duration-300"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
 
-          {/* Right: Details & Checklist */}
-          <div className="lg:col-span-6 flex flex-col">
-            <h3 className="font-display font-extrabold text-xl sm:text-2xl lg:text-3xl text-white mb-2">
-              {featuredProject.title}
-            </h3>
-            <p className="text-neutral-300 text-xs sm:text-sm leading-relaxed mb-5">
-              {featuredProject.description}
-            </p>
-
-            {/* Resume Features Checklist */}
-            <div className="space-y-2 mb-6">
-              <span className="font-mono text-xs text-white uppercase tracking-wider block font-bold">
-                Platform Capabilities:
-              </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-neutral-300 font-sans">
-                {featuredProject.features.map((feat) => (
-                  <div key={feat} className="flex items-start gap-2">
-                    <CheckCircle2 size={14} className="text-white shrink-0 mt-0.5" />
-                    <span>{feat}</span>
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs font-mono">
+                      <span className="px-2.5 py-1 rounded-lg bg-black/90 border border-white/20 text-neutral-300">
+                        Preview {activeImage + 1} of {screenshots.length || 1}
+                      </span>
+                      {proj.demoUrl && (
+                        <a
+                          href={proj.demoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1.5 rounded-lg bg-white text-black font-bold hover:bg-neutral-200 transition-colors flex items-center gap-1.5"
+                        >
+                          <span>Live App</span>
+                          <ExternalLink size={12} />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                ))}
+
+                  {/* Thumbnail Selector (only if multiple screenshots exist) */}
+                  {screenshots.length > 1 && (
+                    <div className="grid grid-cols-6 gap-2">
+                      {screenshots.map((shot, idx) => (
+                        <button
+                          key={shot}
+                          onClick={() => {
+                            cyberAudio.playClick();
+                            setActiveImage(proj.id, idx);
+                          }}
+                          className={`min-h-[44px] rounded-lg overflow-hidden border transition-all aspect-[16/10] ${
+                            activeImage === idx
+                              ? 'border-white ring-2 ring-white/40 shadow-[0_0_10px_rgba(255,255,255,0.4)]'
+                              : 'border-white/10 opacity-50 hover:opacity-100'
+                          }`}
+                          aria-label={`Select screenshot ${idx + 1}`}
+                        >
+                          <img src={shot} alt="thumbnail" loading="lazy" className="w-full h-full object-cover object-top" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Right: Details & Checklist */}
+                <div className="lg:col-span-6 flex flex-col">
+                  <h3 className="font-display font-extrabold text-xl sm:text-2xl lg:text-3xl text-white mb-2">
+                    {proj.title}
+                  </h3>
+                  <p className="text-neutral-300 text-xs sm:text-sm leading-relaxed mb-5">
+                    {proj.description}
+                  </p>
+
+                  {/* Capabilities Checklist */}
+                  <div className="space-y-2 mb-6">
+                    <span className="font-mono text-xs text-white uppercase tracking-wider block font-bold">
+                      Platform Capabilities:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-neutral-300 font-sans">
+                      {proj.features.map((feat) => (
+                        <div key={feat} className="flex items-start gap-2">
+                          <CheckCircle2 size={14} className="text-white shrink-0 mt-0.5" />
+                          <span>{feat}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Tech Stack Pills */}
+                  <div className="flex flex-wrap gap-1.5 mb-6">
+                    {proj.techStack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="px-2.5 py-1 rounded-md bg-neutral-950 border border-white/10 text-[11px] font-mono text-neutral-300"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Action Buttons: 44px min height */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <a
+                      href={proj.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => cyberAudio.playClick()}
+                      onMouseEnter={() => cyberAudio.playHover()}
+                      className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 rounded-xl bg-white text-black font-mono font-bold text-xs flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all"
+                    >
+                      <GithubIcon size={15} />
+                      <span>VIEW ON GITHUB</span>
+                    </a>
+
+                    {proj.demoUrl && (
+                      <a
+                        href={proj.demoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => cyberAudio.playClick()}
+                        onMouseEnter={() => cyberAudio.playHover()}
+                        className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 rounded-xl bg-neutral-950 border border-white/20 text-white font-mono text-xs flex items-center justify-center gap-2 hover:border-white transition-all"
+                      >
+                        <ExternalLink size={14} />
+                        <span>LAUNCH DEMO</span>
+                      </a>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        cyberAudio.playClick();
+                        setSelectedProject(proj);
+                      }}
+                      onMouseEnter={() => cyberAudio.playHover()}
+                      className="w-full sm:w-auto min-h-[44px] px-4 py-2.5 rounded-xl border border-white/15 bg-neutral-950 text-neutral-300 hover:text-white hover:border-white/40 font-mono text-xs flex items-center justify-center gap-1.5 transition-all"
+                    >
+                      <Eye size={14} />
+                      <span>SYSTEM SPECS</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            {/* Tech Stack Pills */}
-            <div className="flex flex-wrap gap-1.5 mb-6">
-              {featuredProject.techStack.map((tech) => (
-                <span
-                  key={tech}
-                  className="px-2.5 py-1 rounded-md bg-neutral-950 border border-white/10 text-[11px] font-mono text-neutral-300"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-
-            {/* Action Buttons: 44px min height */}
-            <div className="flex flex-wrap items-center gap-3">
-              <a
-                href={featuredProject.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => cyberAudio.playClick()}
-                onMouseEnter={() => cyberAudio.playHover()}
-                className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 rounded-xl bg-white text-black font-mono font-bold text-xs flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all"
-              >
-                <GithubIcon size={15} />
-                <span>VIEW ON GITHUB</span>
-              </a>
-
-              {featuredProject.demoUrl && (
-                <a
-                  href={featuredProject.demoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => cyberAudio.playClick()}
-                  onMouseEnter={() => cyberAudio.playHover()}
-                  className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 rounded-xl bg-neutral-950 border border-white/20 text-white font-mono text-xs flex items-center justify-center gap-2 hover:border-white transition-all"
-                >
-                  <ExternalLink size={14} />
-                  <span>LAUNCH DEMO</span>
-                </a>
-              )}
-
-              <button
-                onClick={() => {
-                  cyberAudio.playClick();
-                  setSelectedProject(featuredProject);
-                }}
-                onMouseEnter={() => cyberAudio.playHover()}
-                className="w-full sm:w-auto min-h-[44px] px-4 py-2.5 rounded-xl border border-white/15 bg-neutral-950 text-neutral-300 hover:text-white hover:border-white/40 font-mono text-xs flex items-center justify-center gap-1.5 transition-all"
-              >
-                <Eye size={14} />
-                <span>SYSTEM SPECS</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+            </motion.div>
+          );
+        })}
+      </div>
 
       {/* ========================================================================= */}
       {/* REPOSITORIES GRID (1 Column Mobile, Multi-Column Desktop) */}
