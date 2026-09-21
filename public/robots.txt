@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tarun-harish-e-portfolio.vercel.app/sitemap.xml
