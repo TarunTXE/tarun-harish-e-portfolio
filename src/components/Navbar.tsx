@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Terminal, Menu, X, FileText, ExternalLink } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
+import { MusicPlayer } from './MusicPlayer';
 import { cyberAudio } from '../utils/audio';
 import { personalData } from '../data/personal';
 
@@ -15,14 +17,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
   const [activeSection, setActiveSection] = useState('hero');
 
   const navLinks = [
-    { name: 'About', href: '#about' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Special Project', href: '#sih-showcase' },
-    { name: 'Experience', href: '#experience' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'GitHub', href: '#dashboard' },
-    { name: 'LinkedIn', href: '#linkedin' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'ABOUT', href: '#about', sectionId: 'about' },
+    { name: 'STACK', href: '#stack', sectionId: 'stack' },
+    { name: 'PROJECTS', href: '#projects', sectionId: 'projects' },
+    { name: 'EXPERIENCE', href: '#experience', sectionId: 'experience' },
+    { name: 'CONTACT', href: '#contact', sectionId: 'contact' },
   ];
 
   useEffect(() => {
@@ -31,15 +30,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
       setScrollProgress(progress);
-      setScrolled(scrollTop > 30);
+      setScrolled(scrollTop > 20);
 
-      const sections = ['hero', 'about', 'projects', 'sih-showcase', 'experience', 'skills', 'dashboard', 'linkedin', 'contact'];
+      const sections = ['hero', 'about', 'stack', 'skills', 'projects', 'experience', 'dashboard', 'linkedin', 'contact'];
       for (const section of sections) {
         const el = document.getElementById(section);
         if (el) {
           const rect = el.getBoundingClientRect();
           if (rect.top <= 200 && rect.bottom >= 200) {
-            setActiveSection(section);
+            setActiveSection(section === 'skills' ? 'stack' : section);
             break;
           }
         }
@@ -62,45 +61,45 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-40 transition-all duration-300">
-        {/* Neon White Top Progress Line */}
+        {/* Subtle Progress Bar */}
         <div
-          className="h-[1.5px] bg-white transition-all duration-100 ease-out shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+          className="h-[1px] bg-white transition-all duration-100 ease-out shadow-[0_0_8px_rgba(255,255,255,0.8)]"
           style={{ width: `${scrollProgress}%` }}
         />
 
         <nav
           className={`mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 transition-all duration-300 ${
             scrolled
-              ? 'mt-2 mx-3 sm:mx-auto bg-black/90 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_0_25px_rgba(255,255,255,0.06)]'
+              ? 'bg-black/90 backdrop-blur-md border-b border-white/10'
               : 'bg-transparent'
           }`}
         >
           <div className="flex items-center justify-between">
-            {/* Brand Logo */}
+            {/* Brand Logo: TXE + Status Indicator */}
             <a
               href="#hero"
               onClick={() => cyberAudio.playClick()}
-              className="flex items-center gap-2.5 group cursor-pointer"
+              className="flex items-center gap-3 group cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center p-[1px] group-hover:border-white group-hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] transition-all duration-300">
-                <div className="w-full h-full bg-black rounded-[10px] flex items-center justify-center font-mono font-bold text-white text-xs tracking-wider">
-                  TH
+              <div className="flex items-center gap-2">
+                <span className="font-mono font-extrabold text-base tracking-widest text-white group-hover:text-neutral-300 transition-colors">
+                  TXE
+                </span>
+                <span className="font-mono text-neutral-600 text-xs">/</span>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-neutral-950 border border-white/10 text-[10px] font-mono text-neutral-300">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 shadow-[0_0_6px_#10b981]" />
+                  </span>
+                  <span className="tracking-wider uppercase text-neutral-300 font-medium">ONLINE</span>
                 </div>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-display font-bold text-sm tracking-wide text-white group-hover:text-neutral-200 transition-colors">
-                  {personalData.name}
-                </span>
-                <span className="font-mono text-[9px] text-neutral-400 tracking-widest uppercase">
-                  &lt;FULL-STACK :: AI /&gt;
-                </span>
               </div>
             </a>
 
-            {/* Desktop Navigation Links */}
-            <div className="hidden lg:flex items-center gap-1 xl:gap-2">
+            {/* Desktop Navigation Links: ABOUT, STACK, PROJECTS, EXPERIENCE, CONTACT */}
+            <div className="hidden md:flex items-center gap-1 lg:gap-2">
               {navLinks.map((link) => {
-                const isActive = activeSection === link.href.substring(1);
+                const isActive = activeSection === link.sectionId;
                 return (
                   <a
                     key={link.name}
@@ -110,101 +109,114 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
                       handleNavClick(link.href);
                     }}
                     onMouseEnter={() => cyberAudio.playHover()}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 relative ${
+                    className={`px-3 py-1.5 rounded-md text-xs font-mono tracking-wider transition-all duration-150 relative ${
                       isActive
-                        ? 'text-white bg-white/10 font-bold shadow-[0_0_12px_rgba(255,255,255,0.15)]'
+                        ? 'text-white bg-white/10 font-bold'
                         : 'text-neutral-400 hover:text-white hover:bg-white/5'
                     }`}
                   >
                     {link.name}
                     {isActive && (
-                      <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-white rounded-full shadow-[0_0_6px_#ffffff]" />
+                      <span className="absolute bottom-0 left-2 right-2 h-[1px] bg-white shadow-[0_0_4px_#ffffff]" />
                     )}
                   </a>
                 );
               })}
             </div>
 
-            {/* Actions: Resume & Audio & Terminal & Menu */}
+            {/* Quick Actions: Resume, Terminal CLI, Theme Toggle, Hamburger */}
             <div className="flex items-center gap-2">
-              {/* Direct View Resume Link */}
               <a
                 href={personalData.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => cyberAudio.playClick()}
                 onMouseEnter={() => cyberAudio.playHover()}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/20 text-white hover:bg-white hover:text-black hover:shadow-[0_0_18px_rgba(255,255,255,0.4)] text-xs font-mono font-medium transition-all"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/5 border border-white/15 text-neutral-300 hover:text-white hover:border-white/40 text-xs font-mono transition-all"
               >
-                <FileText size={13} />
-                <span>Resume PDF</span>
-                <ExternalLink size={11} />
+                <FileText size={12} />
+                <span>RESUME</span>
+                <ExternalLink size={10} className="text-neutral-400" />
               </a>
-
-              {/* Interactive CV Modal Trigger */}
               <button
                 onClick={() => {
                   cyberAudio.playClick();
                   onOpenResume();
                 }}
                 onMouseEnter={() => cyberAudio.playHover()}
-                className="hidden md:inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-white/10 text-neutral-300 hover:text-white hover:border-white/30 text-xs font-mono transition-all"
-                title="Open Interactive CV Modal"
+                className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/5 border border-white/15 text-neutral-300 hover:text-white hover:border-white/40 text-xs font-mono transition-all cursor-pointer"
+                title="Preview Interactive CV"
               >
-                <span>CV Modal</span>
+                <FileText size={12} />
+                <span>CV PREVIEW</span>
               </button>
 
-              {/* CLI Terminal Launcher */}
               <button
                 onClick={() => {
                   cyberAudio.playClick();
                   onOpenTerminal();
                 }}
                 onMouseEnter={() => cyberAudio.playHover()}
-                className="hidden xl:flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/15 text-neutral-300 hover:text-white hover:border-white hover:shadow-[0_0_15px_rgba(255,255,255,0.25)] transition-all font-mono text-xs"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-white/15 text-neutral-300 hover:text-white hover:border-white/40 text-xs font-mono transition-all"
                 title="Launch CLI Terminal"
               >
-                <Terminal size={15} />
+                <Terminal size={13} />
                 <span>&gt;_ CLI</span>
               </button>
 
-              {/* Mobile Hamburger Toggle (Min 44x44px touch target) */}
+              {/* Music Player Control */}
+              <div className="hidden sm:block">
+                <MusicPlayer variant="nav" />
+              </div>
+
+              {/* Desktop Minimal Terminal Toggle: [ ☾ DARK ] / [ ☀ LIGHT ] */}
+              <div className="hidden sm:block">
+                <ThemeToggle variant="nav" />
+              </div>
+
+              {/* Mobile Compact Music & Theme Toggles */}
+              <div className="sm:hidden flex items-center gap-1.5">
+                <MusicPlayer variant="compact" />
+                <ThemeToggle variant="compact" />
+              </div>
+
+              {/* Mobile Hamburger Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden w-11 h-11 rounded-xl border border-white/15 bg-neutral-950 flex items-center justify-center text-white active:scale-95 transition-transform"
+                className="md:hidden w-9 h-9 rounded-md border border-white/15 bg-neutral-950 flex items-center justify-center text-white active:scale-95 transition-transform"
                 aria-label="Toggle navigation menu"
               >
-                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
               </button>
             </div>
           </div>
         </nav>
       </header>
 
-      {/* Fullscreen Mobile Drawer Menu (Black + Neon White) */}
+      {/* Fullscreen Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl px-6 pt-24 pb-8 flex flex-col justify-between overflow-y-auto animate-in fade-in duration-200">
-          <div className="flex flex-col gap-2">
+        <div className="md:hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl px-6 pt-20 pb-8 flex flex-col justify-between overflow-y-auto animate-in fade-in duration-200">
+          <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-2">
-              <div className="flex flex-col">
-                <span className="font-mono text-xs text-neutral-500 uppercase tracking-widest">
-                  Navigation Menu
-                </span>
-                <span className="font-display font-bold text-lg text-white">
-                  {personalData.name}
+              <div className="flex items-center gap-2">
+                <span className="font-mono font-bold text-lg text-white">TXE</span>
+                <span className="text-neutral-600 font-mono">/</span>
+                <span className="flex items-center gap-1.5 text-xs font-mono text-emerald-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  ONLINE
                 </span>
               </div>
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-11 h-11 rounded-xl border border-white/15 bg-neutral-900 flex items-center justify-center text-white"
+                className="w-9 h-9 rounded-md border border-white/15 bg-neutral-900 flex items-center justify-center text-white"
                 aria-label="Close menu"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
             {navLinks.map((link) => {
-              const isActive = activeSection === link.href.substring(1);
+              const isActive = activeSection === link.sectionId;
               return (
                 <a
                   key={link.name}
@@ -213,9 +225,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
                     e.preventDefault();
                     handleNavClick(link.href);
                   }}
-                  className={`min-h-[48px] px-4 py-3 rounded-xl border flex items-center justify-between text-sm font-mono transition-all ${
+                  className={`min-h-[44px] px-4 py-3 rounded-md border flex items-center justify-between text-xs font-mono tracking-wider transition-all ${
                     isActive
-                      ? 'bg-white text-black font-bold border-white shadow-[0_0_20px_rgba(255,255,255,0.4)]'
+                      ? 'bg-white text-black font-bold border-white'
                       : 'border-white/10 text-neutral-300 bg-neutral-950/60 hover:border-white/30 hover:text-white'
                   }`}
                 >
@@ -226,20 +238,51 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
             })}
           </div>
 
-          <div className="pt-6 border-t border-white/10 flex flex-col gap-3 mt-4">
+          <div className="pt-6 border-t border-white/10 flex flex-col gap-2.5">
+            {/* Mobile Music Player Control */}
+            <div className="mb-1">
+              <MusicPlayer variant="drawer" />
+            </div>
+
+            {/* Mobile Drawer Theme Toggle */}
+            <div className="mb-1">
+              <ThemeToggle variant="drawer" />
+            </div>
+
             <a
               href={personalData.resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="min-h-[48px] px-4 py-3 rounded-xl bg-white text-black font-bold text-sm font-mono text-center flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+              className="min-h-[44px] px-4 py-2.5 rounded-md bg-white text-black font-mono font-bold text-xs flex items-center justify-center gap-2"
             >
-              <FileText size={16} />
-              <span>Open Tarun's Resume (PDF)</span>
+              <FileText size={14} />
+              <span>DOWNLOAD RESUME (PDF)</span>
             </a>
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenResume();
+              }}
+              className="min-h-[44px] px-4 py-2.5 rounded-md bg-neutral-900 border border-white/15 text-neutral-300 font-mono text-xs flex items-center justify-center gap-2"
+            >
+              <FileText size={14} />
+              <span>PREVIEW INTERACTIVE CV</span>
+            </button>
 
-            <div className="flex items-center justify-between text-xs font-mono text-neutral-500 pt-2">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenTerminal();
+              }}
+              className="min-h-[44px] px-4 py-2.5 rounded-md bg-neutral-950 border border-white/15 text-neutral-300 font-mono text-xs flex items-center justify-center gap-2"
+            >
+              <Terminal size={14} />
+              <span>OPEN TERMINAL CLI</span>
+            </button>
+
+            <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 pt-2">
               <span>{personalData.email}</span>
-              <span>{personalData.phone}</span>
+              <span>KERALA, IN</span>
             </div>
           </div>
         </div>

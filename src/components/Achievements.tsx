@@ -17,9 +17,9 @@ export const Achievements: React.FC = () => {
 
   const achievements = [
     {
-      title: 'Smart India Hackathon (SIH)',
-      desc: 'National Finalist for AI Assistive Wheelchair Push-up Detection System.',
-      badge: 'National Finalist',
+      title: 'Cognivia AI Learning Assistant',
+      desc: 'Engineered personalized learning assistant with Google Gemini API & Express backend.',
+      badge: 'AI Platform',
       icon: Trophy,
       color: 'from-amber-400 to-orange-500',
       border: 'border-amber-400/40',

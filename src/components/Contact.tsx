@@ -42,18 +42,24 @@ export const Contact: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black">
-      {/* Consistent Section Heading: 08 / TRANSMISSION */}
-      <div className="flex flex-col items-center mb-14 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
+    <motion.section
+      id="contact"
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black border-t border-white/10"
+    >
+      {/* Section Heading: 07 / CONTACT */}
+      <div className="flex flex-col items-start mb-12 sm:mb-16">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-sm border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
           <Send size={12} className="text-white" />
-          <span>08 / TRANSMISSION</span>
+          <span>07 // CONTACT</span>
         </div>
         <h2 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight">
-          INITIATE <span className="text-gradient-white">CONTACT</span>
+          INITIATE <span className="text-neutral-400">CONTACT</span>
         </h2>
-        <div className="w-16 h-[1.5px] bg-white/40 my-3 shadow-[0_0_8px_#ffffff]" />
-        <p className="mt-1 text-neutral-400 text-sm sm:text-base max-w-xl font-sans">
+        <p className="mt-3 text-neutral-400 text-sm sm:text-base max-w-xl font-sans leading-relaxed">
           Whether you have an engineering role, contract project, or technical question, my frequency is open.
         </p>
       </div>
@@ -68,7 +74,7 @@ export const Contact: React.FC = () => {
           className="lg:col-span-5 flex flex-col gap-5"
         >
           {/* Holographic Contact Card */}
-          <div className="bg-[#080808] rounded-3xl p-6 sm:p-8 border border-white/10 relative overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.04)]">
+          <div className="bg-neutral-950 rounded-lg p-6 sm:p-8 border border-white/15 relative overflow-hidden shadow-2xl">
             <h3 className="font-display font-bold text-xl text-white mb-1">
               {personalData.name}
             </h3>
@@ -184,7 +190,7 @@ export const Contact: React.FC = () => {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="lg:col-span-7 bg-[#080808] rounded-3xl p-6 sm:p-8 border border-white/10"
+          className="lg:col-span-7 bg-neutral-950 rounded-lg p-6 sm:p-8 border border-white/15"
         >
           <h3 className="font-display font-bold text-xl text-white mb-2">
             Send a Direct Transmission
@@ -206,7 +212,7 @@ export const Contact: React.FC = () => {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="e.g., Ada Lovelace"
-                className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-neutral-950 border border-white/15 focus:border-white focus:ring-1 focus:ring-white text-base sm:text-sm text-white placeholder-neutral-600 outline-none transition-all font-sans"
+                className="w-full min-h-[46px] px-4 py-3 rounded-md bg-neutral-900 border border-white/15 focus:border-white focus:ring-1 focus:ring-white text-base sm:text-sm text-white placeholder-neutral-600 outline-none transition-all font-sans"
               />
             </div>
 
@@ -220,7 +226,7 @@ export const Contact: React.FC = () => {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="e.g., name@domain.com"
-                className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-neutral-950 border border-white/15 focus:border-white focus:ring-1 focus:ring-white text-base sm:text-sm text-white placeholder-neutral-600 outline-none transition-all font-sans"
+                className="w-full min-h-[46px] px-4 py-3 rounded-md bg-neutral-900 border border-white/15 focus:border-white focus:ring-1 focus:ring-white text-base sm:text-sm text-white placeholder-neutral-600 outline-none transition-all font-sans"
               />
             </div>
 
@@ -233,7 +239,7 @@ export const Contact: React.FC = () => {
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 placeholder="e.g., Full-Stack Engineering Role / AI Collaboration"
-                className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-neutral-950 border border-white/15 focus:border-white focus:ring-1 focus:ring-white text-base sm:text-sm text-white placeholder-neutral-600 outline-none transition-all font-sans"
+                className="w-full min-h-[46px] px-4 py-3 rounded-md bg-neutral-900 border border-white/15 focus:border-white focus:ring-1 focus:ring-white text-base sm:text-sm text-white placeholder-neutral-600 outline-none transition-all font-sans"
               />
             </div>
 
@@ -247,7 +253,7 @@ export const Contact: React.FC = () => {
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 placeholder="Write your transmission here..."
-                className="w-full min-h-[120px] px-4 py-3 rounded-xl bg-neutral-950 border border-white/15 focus:border-white focus:ring-1 focus:ring-white text-base sm:text-sm text-white placeholder-neutral-600 outline-none transition-all resize-none font-sans"
+                className="w-full min-h-[120px] px-4 py-3 rounded-md bg-neutral-900 border border-white/15 focus:border-white focus:ring-1 focus:ring-white text-base sm:text-sm text-white placeholder-neutral-600 outline-none transition-all resize-none font-sans"
               />
             </div>
 
@@ -263,6 +269,6 @@ export const Contact: React.FC = () => {
           </form>
         </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 };

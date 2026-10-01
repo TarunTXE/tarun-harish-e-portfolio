@@ -42,14 +42,15 @@ export const linkedinPostsData: LinkedInPost[] = [
     tags: ['GenerativeAI', 'IBM', 'Credentials', 'ContinuousLearning'],
   },
   {
-    id: 'wheelchair-sih-post',
-    title: 'Assistive Tech Innovation: Wheelchair Pressure Relief Pushup Detection',
-    date: 'July 2026',
-    category: 'Hackathon & Research',
+    id: 'cognivia-launch-post',
+    title: 'Project Launch: Cognivia — AI-Powered Personalized Learning Assistant',
+    date: 'September 2026',
+    category: 'AI Project Launch',
     description:
-      'Showcasing our computer vision solution using Google MediaPipe pose estimation and Random Forest classification to monitor posture and pushup frequency for wheelchair users to prevent pressure ulcers.',
+      'Built Cognivia to help students plan, learn, practice, evaluate, and improve with AI. Integrates the Google Gemini API with an Express REST backend and React frontend to generate tailored study schedules, topic notes, and diagnostic quizzes.',
+    image: '/projects/cognivia/landing-page.png',
     url: 'https://linkedin.com/in/taruntxe',
-    tags: ['ComputerVision', 'OpenCV', 'MediaPipe', 'HealthcareAI'],
+    tags: ['AI', 'GeminiAPI', 'React', 'FullStack', 'EdTech'],
   },
   {
     id: 'udemy-bootcamp-post',

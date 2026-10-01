@@ -84,20 +84,33 @@ export const DeveloperDashboard: React.FC = () => {
   };
 
   return (
-    <section id="dashboard" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black">
-      {/* Consistent Section Heading: 06 / TELEMETRY */}
-      <div className="flex flex-col items-center mb-14 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
+    <motion.section
+      id="dashboard"
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black border-t border-white/10"
+    >
+      {/* Section Heading: 05 / TELEMETRY */}
+      <div className="flex flex-col items-start mb-12 sm:mb-16">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-sm border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
           <Activity size={12} className="text-white" />
-          <span>06 / TELEMETRY & INSIGHTS</span>
+          <span>05 // TELEMETRY</span>
         </div>
         <h2 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight">
-          GITHUB & <span className="text-gradient-white">ACTIVITY METRICS</span>
+          DEVELOPMENT <span className="text-neutral-400">TELEMETRY</span>
         </h2>
-        <div className="w-16 h-[1.5px] bg-white/40 my-3 shadow-[0_0_8px_#ffffff]" />
-        <p className="mt-1 text-neutral-400 text-sm sm:text-base max-w-xl font-sans">
+        <p className="mt-3 text-neutral-400 text-sm sm:text-base max-w-xl font-sans leading-relaxed">
           Verified telemetry and codebase distribution aggregated directly from{' '}
-          <span className="font-mono text-white">@{personalData.githubUsername}</span>.
+          <a
+            href={personalData.githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-white underline underline-offset-4 hover:text-neutral-300"
+          >
+            @{personalData.githubUsername}
+          </a>.
         </p>
       </div>
 
@@ -112,17 +125,17 @@ export const DeveloperDashboard: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.06 }}
-              className="bg-[#080808] rounded-2xl p-4 sm:p-5 border border-white/10 hover:border-white/30 transition-all flex items-center gap-3 sm:gap-4"
+              className="bg-neutral-950 rounded-lg p-4 sm:p-5 border border-white/15 hover:border-white/35 transition-all flex items-center gap-3 sm:gap-4"
             >
-              <div className="p-2.5 sm:p-3 rounded-xl bg-neutral-950 border border-white/10 shrink-0 text-white">
-                <stat.icon size={20} />
+              <div className="p-2.5 sm:p-3 rounded-md bg-neutral-900 border border-white/10 shrink-0 text-white">
+                <stat.icon size={18} />
               </div>
               <div>
-                <span className="text-xl sm:text-3xl font-mono font-extrabold text-white block leading-none mb-1">
+                <span className="text-xl sm:text-2xl font-mono font-extrabold text-white block leading-none mb-1">
                   {stat.value}
                   <span className="text-neutral-400 text-sm">{stat.suffix}</span>
                 </span>
-                <span className="text-neutral-400 font-mono text-[10px] sm:text-xs uppercase tracking-wider block">
+                <span className="text-neutral-500 font-mono text-[10px] sm:text-xs uppercase tracking-wider block">
                   {stat.label}
                 </span>
               </div>
@@ -130,13 +143,13 @@ export const DeveloperDashboard: React.FC = () => {
           ))}
         </div>
 
-        {/* GitHub Activity Matrix / Heatmap - Horizontally Contained */}
+        {/* GitHub Activity Matrix / Heatmap */}
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="lg:col-span-8 bg-[#080808] rounded-3xl p-5 sm:p-7 border border-white/10 flex flex-col justify-between"
+          className="lg:col-span-8 bg-neutral-950 rounded-lg p-5 sm:p-6 border border-white/15 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-3">
@@ -197,7 +210,7 @@ export const DeveloperDashboard: React.FC = () => {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="lg:col-span-4 bg-[#080808] rounded-3xl p-5 sm:p-7 border border-white/10 flex flex-col justify-between"
+          className="lg:col-span-4 bg-neutral-950 rounded-lg p-5 sm:p-6 border border-white/15 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -238,6 +251,6 @@ export const DeveloperDashboard: React.FC = () => {
           </div>
         </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 };

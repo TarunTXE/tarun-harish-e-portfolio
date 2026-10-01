@@ -8,19 +8,25 @@ import { personalData } from '../data/personal';
 
 export const LinkedInHighlights: React.FC = () => {
   return (
-    <section id="linkedin" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black">
-      {/* Consistent Section Heading: 07 / LINKEDIN */}
-      <div className="flex flex-col items-center mb-14 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
+    <motion.section
+      id="linkedin"
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black border-t border-white/10"
+    >
+      {/* Section Heading: 06 / DISPATCHES */}
+      <div className="flex flex-col items-start mb-12 sm:mb-16">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-sm border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
           <LinkedinIcon size={12} className="text-white" />
-          <span>07 / PROFESSIONAL NETWORK</span>
+          <span>06 // DISPATCHES</span>
         </div>
         <h2 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight">
-          LINKEDIN <span className="text-gradient-white">HIGHLIGHTS</span>
+          FIELD NOTES & <span className="text-neutral-400">DISPATCHES</span>
         </h2>
-        <div className="w-16 h-[1.5px] bg-white/40 my-3 shadow-[0_0_8px_#ffffff]" />
-        <p className="mt-1 text-neutral-400 text-sm sm:text-base max-w-xl font-sans">
-          Key professional milestones, internship achievements, and project updates from{' '}
+        <p className="mt-3 text-neutral-400 text-sm sm:text-base max-w-xl font-sans leading-relaxed">
+          Professional milestones, internship achievements, and project updates from{' '}
           <a
             href={personalData.linkedinUrl}
             target="_blank"
@@ -41,12 +47,12 @@ export const LinkedInHighlights: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: idx * 0.06 }}
-            className="bg-[#080808] rounded-3xl p-5 sm:p-6 border border-white/10 hover:border-white/30 flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(255,255,255,0.06)]"
+            className="bg-neutral-950 rounded-lg p-5 sm:p-6 border border-white/15 hover:border-white/35 flex flex-col justify-between group transition-all duration-200"
           >
             <div>
               {/* Header: Category & Date */}
               <div className="flex items-center justify-between gap-2 mb-3.5">
-                <span className="px-2.5 py-0.5 rounded-full bg-neutral-950 border border-white/15 text-[10px] font-mono text-white font-bold">
+                <span className="px-2.5 py-0.5 rounded-sm bg-neutral-900 border border-white/15 text-[10px] font-mono text-neutral-300">
                   {post.category}
                 </span>
                 <span className="text-xs font-mono text-neutral-400 flex items-center gap-1">
@@ -57,7 +63,7 @@ export const LinkedInHighlights: React.FC = () => {
 
               {/* Optional Post Image Preview */}
               {post.image && (
-                <div className="rounded-xl overflow-hidden border border-white/10 mb-4 aspect-[16/10] bg-black">
+                <div className="rounded-md overflow-hidden border border-white/10 mb-4 aspect-[16/10] bg-black">
                   <img
                     src={post.image}
                     alt={post.title}
@@ -128,6 +134,6 @@ export const LinkedInHighlights: React.FC = () => {
           <ExternalLink size={14} />
         </a>
       </div>
-    </section>
+    </motion.section>
   );
 };

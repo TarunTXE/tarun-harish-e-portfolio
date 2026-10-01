@@ -63,18 +63,24 @@ export const Projects: React.FC = () => {
       : projects.filter((p) => p.category === selectedFilter);
 
   return (
-    <section id="projects" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black">
-      {/* Consistent Section Heading: 02 / PROJECTS */}
-      <div className="flex flex-col items-center mb-14 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
+    <motion.section
+      id="projects"
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.08 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black"
+    >
+      {/* Section Heading: 03 / PROJECTS */}
+      <div className="flex flex-col items-start mb-12 sm:mb-16">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-sm border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
           <FolderGit2 size={12} className="text-white" />
-          <span>02 / PROJECTS & REPOSITORIES</span>
+          <span>03 // PROJECTS</span>
         </div>
         <h2 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight">
-          PROJECTS & <span className="text-gradient-white">CODEBASES</span>
+          ENGINEERED <span className="text-neutral-400">SYSTEMS</span>
         </h2>
-        <div className="w-16 h-[1.5px] bg-white/40 my-3 shadow-[0_0_8px_#ffffff]" />
-        <p className="mt-1 text-neutral-400 text-sm sm:text-base max-w-2xl font-sans">
+        <p className="mt-3 text-neutral-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed">
           Full-stack web applications, Machine Learning models, and production codebases synchronized from{' '}
           <a
             href={personalData.githubUrl}
@@ -88,9 +94,9 @@ export const Projects: React.FC = () => {
       </div>
 
       {/* ========================================================================= */}
-      {/* FEATURED PROJECTS — EXPANDED FLAGSHIP SHOWCASES (Black + Neon White) */}
+      {/* FEATURED PROJECTS — EXPANDED FLAGSHIP SHOWCASES (Minimal Developer OS) */}
       {/* ========================================================================= */}
-      <div className="space-y-12 sm:space-y-16 mb-14 sm:mb-16">
+      <div className="space-y-10 sm:space-y-12 mb-14 sm:mb-16">
         {featuredProjects.map((proj, projIdx) => {
           const activeImage = getActiveImage(proj.id);
           const screenshots = proj.screenshots || [];
@@ -100,8 +106,8 @@ export const Projects: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: projIdx * 0.1 }}
-              className="bg-[#080808] rounded-3xl border border-white/15 overflow-hidden relative shadow-[0_0_30px_rgba(255,255,255,0.05)] group"
+              transition={{ duration: 0.5, delay: projIdx * 0.1 }}
+              className="bg-neutral-950 rounded-lg border border-white/15 overflow-hidden relative group"
             >
               {/* Subtle white ambient glow */}
               <div className="absolute top-0 right-0 w-80 h-80 bg-white/[0.02] rounded-full blur-[100px] pointer-events-none" />
@@ -123,7 +129,7 @@ export const Projects: React.FC = () => {
               <div className="p-5 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 {/* Left: Responsive Screenshot Viewer */}
                 <div className="lg:col-span-6 flex flex-col gap-3">
-                  <div className="relative rounded-2xl overflow-hidden border border-white/15 bg-black shadow-[0_0_20px_rgba(255,255,255,0.06)] aspect-[16/10] w-full">
+                  <div className="relative rounded-md overflow-hidden border border-white/15 bg-black shadow-[0_0_20px_rgba(255,255,255,0.06)] aspect-[16/10] w-full">
                     {screenshots.length > 0 && (
                       <img
                         src={screenshots[activeImage] || screenshots[0]}
@@ -305,12 +311,12 @@ export const Projects: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.06 }}
-              className="bg-[#080808] rounded-2xl p-5 sm:p-6 border border-white/10 hover:border-white/30 flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(255,255,255,0.06)]"
+              className="bg-neutral-950 rounded-lg p-5 sm:p-6 border border-white/15 hover:border-white/35 flex flex-col justify-between group transition-all duration-200"
             >
               <div>
                 {/* Optional Screenshot Header if available */}
                 {project.screenshots && project.screenshots.length > 0 && (
-                  <div className="rounded-xl overflow-hidden border border-white/10 mb-4 aspect-[16/10] bg-black">
+                  <div className="rounded-md overflow-hidden border border-white/10 mb-4 aspect-[16/10] bg-black">
                     <img
                       src={project.screenshots[0]}
                       alt={project.title}
@@ -534,6 +540,6 @@ export const Projects: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
-    </section>
+    </motion.section>
   );
 };

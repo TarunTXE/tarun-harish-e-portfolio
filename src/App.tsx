@@ -4,7 +4,6 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
 import { Projects } from './components/Projects';
-import { SIHShowcase } from './components/SIHShowcase';
 import { Experience } from './components/Experience';
 import { TechStack } from './components/TechStack';
 import { DeveloperDashboard } from './components/DeveloperDashboard';
@@ -13,11 +12,12 @@ import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
 import { MobileNav } from './components/MobileNav';
 import { CustomCursor } from './components/CustomCursor';
-import { TechBackground } from './components/TechBackground';
 import { TerminalModal } from './components/TerminalModal';
 import { ResumeModal } from './components/ResumeModal';
+import { ThemeProvider } from './context/ThemeContext';
+import { MusicProvider } from './context/MusicContext';
 
-export const App: React.FC = () => {
+export const AppContent: React.FC = () => {
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [resumeOpen, setResumeOpen] = useState(false);
 
@@ -48,9 +48,6 @@ export const App: React.FC = () => {
 
   return (
     <div className="relative min-h-screen bg-black text-white selection:bg-white/25 selection:text-white overflow-x-hidden">
-      {/* Cinematic Developer Tech Background (Floating code tokens, connecting nodes, circuit traces, ambient code stream) */}
-      <TechBackground />
-
       {/* Interactive Cyber Custom Cursor */}
       <CustomCursor />
 
@@ -68,10 +65,9 @@ export const App: React.FC = () => {
           onOpenResume={() => setResumeOpen(true)}
         />
         <About onOpenTerminal={() => setTerminalOpen(true)} />
-        <Projects />
-        <SIHShowcase />
-        <Experience />
         <TechStack />
+        <Projects />
+        <Experience />
         <DeveloperDashboard />
         <LinkedInHighlights />
         <Contact />
@@ -95,6 +91,16 @@ export const App: React.FC = () => {
         onClose={() => setResumeOpen(false)}
       />
     </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <ThemeProvider>
+      <MusicProvider>
+        <AppContent />
+      </MusicProvider>
+    </ThemeProvider>
   );
 };
 

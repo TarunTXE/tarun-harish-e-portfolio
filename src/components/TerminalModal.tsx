@@ -67,7 +67,7 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
             <p><span className="text-white font-semibold">skills</span>     - List technical competencies & toolchains</p>
             <p><span className="text-white font-semibold">experience</span> - View industry internships & roles</p>
             <p><span className="text-white font-semibold">projects</span>   - View active GitHub repositories</p>
-            <p><span className="text-white font-semibold">sih</span>        - Inspect wheelchair assistive vision architecture</p>
+            <p><span className="text-white font-semibold">cognivia</span>   - Inspect Cognivia AI learning assistant architecture</p>
             <p><span className="text-white font-semibold">resume</span>     - Open PDF curriculum vitae in new tab</p>
             <p><span className="text-white font-semibold">contact</span>    - Display email, phone & social uplinks</p>
             <p><span className="text-white font-semibold">matrix</span>     - Toggle monochrome phosphor glow mode</p>
@@ -93,12 +93,11 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
         output = (
           <div className="space-y-1 text-zinc-300">
             <p className="text-white font-bold">Technical Competencies:</p>
-            <p><span className="text-zinc-400">Languages:</span> Python, Java, C, JavaScript, SQL</p>
-            <p><span className="text-zinc-400">Machine Learning & AI:</span> Supervised Learning, Unsupervised Learning, Deep Learning, Reinforcement Learning (Q-Learning), IBM watsonx, Watson Studio, Teachable Machine</p>
-            <p><span className="text-zinc-400">Frontend:</span> HTML5, CSS3, React.js, Tailwind CSS</p>
-            <p><span className="text-zinc-400">Backend:</span> Node.js, Express.js, Django</p>
-            <p><span className="text-zinc-400">Databases:</span> MongoDB, SQLite, MySQL</p>
-            <p><span className="text-zinc-400">Tools:</span> Git, GitHub, VS Code</p>
+            <p><span className="text-zinc-400">Frontend:</span> React, Vite, JavaScript, HTML, CSS, Tailwind CSS</p>
+            <p><span className="text-zinc-400">Backend:</span> Node.js, Express.js, MongoDB, JWT, REST APIs</p>
+            <p><span className="text-zinc-400">Languages:</span> C, C++, Java, Python, SQL</p>
+            <p><span className="text-zinc-400">AI / ML:</span> Python, Machine Learning, RAG, LLM, Google Gemini API</p>
+            <p><span className="text-zinc-400">Tools:</span> Git, GitHub, VS Code, Vercel</p>
           </div>
         );
         break;
@@ -134,13 +133,13 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
         );
         break;
 
-      case 'sih':
+      case 'cognivia':
         output = (
           <div className="space-y-1 text-zinc-300">
-            <p className="text-white font-bold">Wheelchair Pressure Relief Pushup Detection (SIH National Finalist)</p>
-            <p>Framework: OpenCV + MediaPipe Pose 33-landmark estimation</p>
-            <p>Classifier: Random Forest Ensemble Model (Scikit-Learn)</p>
-            <p>Clinical Purpose: Prevent pressure ulcers via automated posture monitoring</p>
+            <p className="text-white font-bold">Cognivia — AI-Powered Personalized Learning Assistant</p>
+            <p>Architecture: React + Vite + Express REST API + Google Gemini API</p>
+            <p>Features: AI study planner, topic-specific notes, interactive quizzes, weak topic diagnostics</p>
+            <p>Live Demo: <a href="https://cognivia-ivory.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-white underline">https://cognivia-ivory.vercel.app/</a></p>
           </div>
         );
         break;

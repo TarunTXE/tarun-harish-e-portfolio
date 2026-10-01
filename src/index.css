@@ -14,6 +14,22 @@
     --text-muted: #666666;
     --border-subtle: rgba(255, 255, 255, 0.12);
     --border-hover: rgba(255, 255, 255, 0.35);
+    --accent-emerald: #10B981;
+  }
+
+  html.light,
+  :root.light {
+    --bg-primary: #F5F5F2;
+    --bg-secondary: #EAEAE4;
+    --bg-card: #FFFFFF;
+    --bg-surface: #F9F9F7;
+    --bg-elevated: #FFFFFF;
+    --text-primary: #121212;
+    --text-secondary: #4A4A4A;
+    --text-muted: #737373;
+    --border-subtle: #E2E2DC;
+    --border-hover: #B8B8B0;
+    --accent-emerald: #047857;
   }
 
   html {
@@ -22,6 +38,12 @@
     color: #FFFFFF;
     font-family: 'Inter', sans-serif;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  html.light,
+  html.light body {
+    background-color: #F5F5F2;
+    color: #121212;
   }
 
   body {
@@ -47,9 +69,17 @@
     background: #000000;
   }
 
+  html.light ::-webkit-scrollbar-track {
+    background: #F5F5F2;
+  }
+
   ::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 9999px;
+  }
+
+  html.light ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -57,10 +87,28 @@
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
   }
 
+  html.light ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  }
+
   /* Smooth focus states */
   *:focus-visible {
     outline: 2px solid rgba(255, 255, 255, 0.6);
     outline-offset: 2px;
+  }
+
+  html.light *:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.6);
+    outline-offset: 2px;
+  }
+
+  /* Smooth theme transition */
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease, fill 250ms ease, stroke 250ms ease, box-shadow 250ms ease !important;
   }
 }
 
@@ -203,3 +251,178 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   LIGHT THEME ADAPTIVE SYSTEM
+   Editorial, technical paper aesthetic (#F5F5F2)
+   ============================================================ */
+html.light .bg-black {
+  background-color: #F5F5F2 !important;
+}
+
+html.light .bg-neutral-950 {
+  background-color: #FFFFFF !important;
+}
+
+html.light .bg-neutral-900 {
+  background-color: #F8F8F5 !important;
+}
+
+html.light .bg-neutral-800 {
+  background-color: #EFEFEA !important;
+}
+
+html.light .bg-neutral-900\/80,
+html.light .bg-neutral-900\/90,
+html.light .bg-neutral-950\/80,
+html.light .bg-neutral-950\/90,
+html.light .bg-neutral-950\/95,
+html.light .bg-black\/90,
+html.light .bg-black\/95 {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+}
+
+html.light .text-white {
+  color: #121212 !important;
+}
+
+html.light .text-neutral-100 {
+  color: #1A1A1A !important;
+}
+
+html.light .text-neutral-200 {
+  color: #242424 !important;
+}
+
+html.light .text-neutral-300 {
+  color: #383838 !important;
+}
+
+html.light .text-neutral-400 {
+  color: #555555 !important;
+}
+
+html.light .text-neutral-500 {
+  color: #707070 !important;
+}
+
+html.light .text-neutral-600 {
+  color: #8C8C8C !important;
+}
+
+html.light .text-zinc-400 {
+  color: #555555 !important;
+}
+
+html.light .border-white\/10,
+html.light .border-white\/15,
+html.light .border-white\/20 {
+  border-color: #E2E2DC !important;
+}
+
+html.light .border-white\/25,
+html.light .border-white\/30 {
+  border-color: #D2D2CA !important;
+}
+
+html.light .border-white\/40,
+html.light .border-white\/50 {
+  border-color: #BDBDB2 !important;
+}
+
+html.light .border-white {
+  border-color: #121212 !important;
+}
+
+html.light .border-white\/5 {
+  border-color: #ECECE7 !important;
+}
+
+html.light .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.035) !important;
+}
+
+html.light .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.065) !important;
+}
+
+html.light .bg-white\/15 {
+  background-color: rgba(0, 0, 0, 0.09) !important;
+}
+
+html.light .bg-white\/20 {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Primary buttons in light mode: deep slate/black with white text */
+html.light button.bg-white,
+html.light a.bg-white {
+  background-color: #121212 !important;
+  color: #FFFFFF !important;
+}
+
+html.light button.bg-white:hover,
+html.light a.bg-white:hover {
+  background-color: #2A2A2A !important;
+  color: #FFFFFF !important;
+}
+
+html.light .shadow-\[0_0_20px_rgba\(255\,255\,255\,0\.4\)\] {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Glass panel */
+html.light .glass-panel {
+  background: #FFFFFF !important;
+  border-color: #E2E2DC !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03) !important;
+}
+
+html.light .glass-panel:hover {
+  border-color: #BDBDB2 !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .glass-panel-interactive {
+  background: #FAFAF8 !important;
+  border-color: #E2E2DC !important;
+}
+
+html.light .glass-panel-interactive:hover {
+  background: #FFFFFF !important;
+  border-color: #A8A89C !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Cyber Grid & Dots in light mode */
+html.light .cyber-grid {
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px) !important;
+}
+
+html.light .cyber-dots {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.07) 1px, transparent 1px) !important;
+}
+
+/* Text Gradient in light mode */
+html.light .text-gradient-white {
+  background: linear-gradient(180deg, #121212 0%, #303030 55%, #606060 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Modal backdrops in light mode */
+html.light .fixed.inset-0.bg-black\/80,
+html.light .fixed.inset-0.bg-black\/85,
+html.light .fixed.inset-0.bg-black\/90,
+html.light .fixed.inset-0.bg-black\/95 {
+  background-color: rgba(20, 20, 22, 0.55) !important;
+}
+
+/* Selection in light mode */
+html.light ::selection {
+  background-color: #121212 !important;
+  color: #FFFFFF !important;
+}
+

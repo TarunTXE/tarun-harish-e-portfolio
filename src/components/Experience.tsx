@@ -18,23 +18,29 @@ export const Experience: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<'all' | 'experience' | 'certifications' | 'activities'>('all');
 
   return (
-    <section id="experience" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black">
-      {/* Consistent Section Heading: 04 / EXPERIENCE */}
-      <div className="flex flex-col items-center mb-14 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
+    <motion.section
+      id="experience"
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black"
+    >
+      {/* Section Heading: 04 / EXPERIENCE */}
+      <div className="flex flex-col items-start mb-12 sm:mb-16">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-sm border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
           <Briefcase size={12} className="text-white" />
-          <span>04 / EXPERIENCE & CREDENTIALS</span>
+          <span>04 // EXPERIENCE</span>
         </div>
         <h2 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight">
-          CAREER & <span className="text-gradient-white">CREDENTIALS</span>
+          CAREER & <span className="text-neutral-400">CREDENTIALS</span>
         </h2>
-        <div className="w-16 h-[1.5px] bg-white/40 my-3 shadow-[0_0_8px_#ffffff]" />
-        <p className="mt-1 text-neutral-400 text-sm sm:text-base max-w-xl font-sans">
+        <p className="mt-3 text-neutral-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed">
           Industry internships, certified technical accreditations, and institutional volunteer contributions.
         </p>
 
-        {/* Filter Pills (Min 44px touch target) */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-6 p-1.5 bg-[#080808] rounded-2xl border border-white/10">
+        {/* Filter Pills */}
+        <div className="flex flex-wrap items-center gap-1.5 mt-6 p-1 bg-neutral-950 rounded-md border border-white/10">
           {[
             { id: 'all', label: 'All Entries' },
             { id: 'experience', label: 'Work Experience' },
@@ -47,9 +53,9 @@ export const Experience: React.FC = () => {
                 cyberAudio.playClick();
                 setActiveFilter(tab.id as 'all' | 'experience' | 'certifications' | 'activities');
               }}
-              className={`min-h-[38px] px-4 py-1.5 rounded-xl text-xs font-mono font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-sm text-xs font-mono transition-all ${
                 activeFilter === tab.id
-                  ? 'bg-white text-black font-bold shadow-[0_0_12px_rgba(255,255,255,0.3)]'
+                  ? 'bg-white text-black font-bold'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
@@ -86,7 +92,7 @@ export const Experience: React.FC = () => {
                 </div>
 
                 {/* Experience Card */}
-                <div className="bg-[#080808] rounded-3xl p-5 sm:p-7 border border-white/10 hover:border-white/30 transition-all duration-300 shadow-[0_0_25px_rgba(255,255,255,0.04)]">
+                <div className="bg-neutral-950 rounded-lg p-5 sm:p-7 border border-white/15 hover:border-white/35 transition-all duration-200 shadow-xl">
                   <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1.5">
@@ -167,7 +173,7 @@ export const Experience: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.08 }}
-                  className="bg-[#080808] rounded-3xl p-5 sm:p-6 border border-white/10 hover:border-white/30 transition-all flex flex-col justify-between"
+                  className="bg-neutral-950 rounded-lg p-5 sm:p-6 border border-white/15 hover:border-white/35 transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">
@@ -219,7 +225,7 @@ export const Experience: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.08 }}
-                className="bg-[#080808] rounded-3xl p-5 sm:p-6 border border-white/10 hover:border-white/30 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="bg-neutral-950 rounded-lg p-5 sm:p-6 border border-white/15 hover:border-white/35 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div className="flex items-start gap-4">
                   <div className="p-3 rounded-2xl bg-white/10 border border-white/20 text-white shrink-0">
@@ -247,6 +253,6 @@ export const Experience: React.FC = () => {
           </div>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 };

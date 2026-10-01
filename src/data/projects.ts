@@ -18,38 +18,36 @@ export interface ProjectData {
   screenshots?: string[];
 }
 
-export const featuredProject: ProjectData = {
-  id: 'portfolio-creator',
-  name: 'Portfolio-Creator-Portfolio-Builder-with-Job-Assistance',
-  title: 'Portfolio Creator – Evaluation & Job Portal',
-  badge: 'Featured Flagship Project',
+export const cogniviaProject: ProjectData = {
+  id: 'cognivia',
+  name: 'Cognivia',
+  title: 'Cognivia — AI-Powered Personalized Learning Assistant',
+  badge: 'Flagship AI Platform',
   description:
-    'Full-stack platform for creating, customizing, previewing, and sharing professional portfolios with real-time evaluation, feedback rating system, and skill-based job matching.',
+    'Intelligent personalized learning assistant that helps students plan, learn, practice, evaluate, and improve. Integrates the Google Gemini API to generate tailored study plans, topic notes, interactive quizzes, and diagnostic progress analytics.',
   longDescription:
-    'A comprehensive career ecosystem built with React.js, Node.js, Express.js, and MongoDB. Features secure JWT authentication, rich WYSIWYG portfolio customizers, vector PDF export engine, automated review algorithms with star ratings and improvement suggestions, and an integrated job portal matching candidate skills with active opportunities.',
+    'Cognivia brings together planning, learning, practice, evaluation, and improvement into one streamlined platform. Students input their subject, available duration, difficulty level, and goals; Cognivia leverages the Google Gemini API with an Express REST API backend and React frontend to generate structured study schedules, topic-specific notes, and interactive quizzes with weak-topic diagnostics.',
   language: 'JavaScript',
-  stars: 1,
+  stars: 0,
   forks: 0,
-  githubUrl: 'https://github.com/TarunTXE/Portfolio-Creator-Portfolio-Builder-with-Job-Assistance',
-  demoUrl: 'https://portfolio-creator-portfolio-builder.vercel.app',
-  updatedAt: '2026-09-06',
+  githubUrl: 'https://github.com/TarunTXE/Cognivia',
+  demoUrl: 'https://cognivia-ivory.vercel.app/',
+  updatedAt: '2026-09-28',
   isFeatured: true,
-  category: 'Full Stack',
-  techStack: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'JWT Auth', 'RESTful APIs', 'Tailwind CSS'],
+  category: 'AI / ML',
+  techStack: ['React', 'Vite', 'Google Gemini API', 'Express.js', 'Node.js', 'Tailwind CSS', 'RESTful APIs'],
   features: [
-    'Built a full-stack platform for creating, customizing, previewing, and sharing professional portfolios.',
-    'Implemented JWT-based authentication and secure user profile management.',
-    'Built a portfolio evaluation system with feedback, ratings, and improvement suggestions.',
-    'Integrated a job portal feature matching opportunities to user skills and interests.',
-    'Built portfolio preview, PDF export, and RESTful backend services using Node.js, Express.js, and MongoDB.',
+    'Dynamic study plan generation tailored by duration, difficulty, and learning objectives.',
+    'Automated topic-specific AI notes generation powered by the Google Gemini API.',
+    'Interactive diagnostic quizzes with automated scoring and weak-topic detection.',
+    'Centralized progress dashboard tracking completed study days and review history.',
+    'Modular React and Vite frontend with an Express REST API backend.',
   ],
   screenshots: [
-    '/projects/portfolio-creator/main page.png',
-    '/projects/portfolio-creator/portfolio creation.png',
-    '/projects/portfolio-creator/portfolio preview.png',
-    '/projects/portfolio-creator/job portal.png',
-    '/projects/portfolio-creator/portfolio template.png',
-    '/projects/portfolio-creator/login.png',
+    '/projects/cognivia/landing-page.png',
+    '/projects/cognivia/dashboard-planner.png',
+    '/projects/cognivia/notes.png',
+    '/projects/cognivia/quiz.png',
   ],
 };
 
@@ -83,37 +81,85 @@ export const ragProject: ProjectData = {
   ],
 };
 
-export const featuredProjects: ProjectData[] = [featuredProject, ragProject];
+export const portfolioCreatorProject: ProjectData = {
+  id: 'portfolio-creator',
+  name: 'Portfolio-Creator-Portfolio-Builder-with-Job-Assistance',
+  title: 'Portfolio Creator – Evaluation & Job Portal',
+  badge: 'Full-Stack Flagship Platform',
+  description:
+    'Full-stack platform for creating, customizing, previewing, and sharing professional portfolios with real-time evaluation, feedback rating system, and skill-based job matching.',
+  longDescription:
+    'A comprehensive career ecosystem built with React.js, Node.js, Express.js, and MongoDB. Features secure JWT authentication, rich WYSIWYG portfolio customizers, vector PDF export engine, automated review algorithms with star ratings and improvement suggestions, and an integrated job portal matching candidate skills with active opportunities.',
+  language: 'JavaScript',
+  stars: 1,
+  forks: 0,
+  githubUrl: 'https://github.com/TarunTXE/Portfolio-Creator-Portfolio-Builder-with-Job-Assistance',
+  demoUrl: 'https://portfolio-creator-portfolio-builder.vercel.app',
+  updatedAt: '2026-09-06',
+  isFeatured: true,
+  category: 'Full Stack',
+  techStack: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'JWT Auth', 'RESTful APIs', 'Tailwind CSS'],
+  features: [
+    'Built a full-stack platform for creating, customizing, previewing, and sharing professional portfolios.',
+    'Implemented JWT-based authentication and secure user profile management.',
+    'Built a portfolio evaluation system with feedback, ratings, and improvement suggestions.',
+    'Integrated a job portal feature matching opportunities to user skills and interests.',
+    'Built portfolio preview, PDF export, and RESTful backend services using Node.js, Express.js, and MongoDB.',
+  ],
+  screenshots: [
+    '/projects/portfolio-creator/main page.png',
+    '/projects/portfolio-creator/portfolio creation.png',
+    '/projects/portfolio-creator/portfolio preview.png',
+    '/projects/portfolio-creator/job portal.png',
+  ],
+};
+
+export const qrForgeProject: ProjectData = {
+  id: 'qrforge',
+  name: 'QRForge',
+  title: 'QRForge — QR Code & Digital Business Card Engine',
+  badge: 'Full-Stack Utility Platform',
+  description:
+    'Dynamic QR code generator and digital business card platform built with Django and React, supporting custom styling, vector exports, and branding integration.',
+  longDescription:
+    'Enables users and small businesses to generate customized, high-resolution QR codes with embedded branding, color customization, and multiple payload types including vCard, Wi-Fi credentials, and URLs. Combines a Python Django backend with an interactive React frontend.',
+  language: 'JavaScript',
+  stars: 0,
+  forks: 0,
+  githubUrl: 'https://github.com/TarunTXE/QRForge',
+  updatedAt: '2026-07-14',
+  isFeatured: true,
+  category: 'Full Stack',
+  techStack: ['Django', 'Python', 'React.js', 'JavaScript', 'Tailwind CSS', 'RESTful APIs'],
+  features: [
+    'Custom color gradients, embedded logos, and real-time styling controls.',
+    'Multi-format vector and high-DPI export for physical and digital print.',
+    'vCard, URL, and Wi-Fi credential payload generators.',
+    'Full-stack backend integration and API endpoints built with Django.',
+  ],
+  screenshots: [
+    '/projects/qrforge/home.png',
+    '/projects/qrforge/qr-generator.png',
+    '/projects/qrforge/business-card-studio.png',
+    '/projects/qrforge/upi-generator.png',
+  ],
+};
+
+export const featuredProjects: ProjectData[] = [
+  cogniviaProject,
+  ragProject,
+  portfolioCreatorProject,
+  qrForgeProject,
+];
+
+// Alias for backwards compatibility if needed
+export const featuredProject = portfolioCreatorProject;
 
 export const repositoriesData: ProjectData[] = [
-  featuredProject,
+  cogniviaProject,
   ragProject,
-  {
-    id: 'sih-wheelchair',
-    name: 'Wheelchair-Pushup-Detection',
-    title: 'Wheelchair Pressure Relief Pushup Detection System',
-    badge: 'Assistive AI Innovation',
-    description:
-      'Computer Vision and Machine Learning system monitoring posture and pushup frequency for wheelchair users to prevent ischemic pressure ulcers.',
-    longDescription:
-      'Utilizes monocular RGB camera input with MediaPipe 33-landmark 3D pose extraction. Vector angles and seat displacement clearance are classified using a Random Forest model, alerting users and caregivers to perform regular pressure relief pushups.',
-    language: 'Python',
-    stars: 1,
-    forks: 0,
-    githubUrl: 'https://github.com/TarunTXE',
-    demoUrl: '#sih-showcase',
-    updatedAt: '2026-08-20',
-    isFeatured: true,
-    category: 'AI / ML',
-    techStack: ['Python', 'OpenCV', 'MediaPipe', 'Machine Learning', 'Random Forest', 'Scikit-learn'],
-    features: [
-      'Monocular webcam / edge video frame processing with OpenCV',
-      '33-keypoint 3D anatomical landmark extraction via MediaPipe Pose',
-      'Displacement clearance vector calculation and feature engineering',
-      'Random Forest classification for posture and pushup detection',
-      'Automated relief timer cues to prevent pressure sores',
-    ],
-  },
+  portfolioCreatorProject,
+  qrForgeProject,
   {
     id: 'careflow',
     name: 'Careflow',
@@ -145,30 +191,6 @@ export const repositoriesData: ProjectData[] = [
     ],
   },
   {
-    id: 'qrforge',
-    name: 'QRForge',
-    title: 'QRForge — QR Code & Digital Business Card Engine',
-    badge: 'Design & Utility Platform',
-    description:
-      'Dynamic QR code generator and digital business card platform built with Django and React, supporting custom styling and vector exports.',
-    longDescription:
-      'Enables users and small businesses to generate customized, high-resolution QR codes with embedded branding, color customization, and multiple payload types including vCard, Wi-Fi credentials, and URLs.',
-    language: 'JavaScript',
-    stars: 0,
-    forks: 0,
-    githubUrl: 'https://github.com/TarunTXE/QRForge',
-    updatedAt: '2026-07-14',
-    isFeatured: false,
-    category: 'Full Stack',
-    techStack: ['Django', 'Python', 'React.js', 'JavaScript', 'Tailwind CSS'],
-    features: [
-      'Custom color gradients, embedded logos, and styling controls',
-      'Multi-format vector and high-DPI export',
-      'vCard, URL, and Wi-Fi credential payloads',
-      'Full-stack backend integration with Django',
-    ],
-  },
-  {
     id: 'vhe-website',
     name: 'vhe-website',
     title: 'Dr. Varun Harish E — Doctor & Author Web Portal',
@@ -191,6 +213,28 @@ export const repositoriesData: ProjectData[] = [
       'Showcase for published literary work, books, and clinical background',
       'Type-safe modular frontend built with TypeScript and React',
       'Responsive reading layouts and production deployment on Vercel',
+    ],
+  },
+  {
+    id: 'posture-tracker-dev',
+    name: 'Posture-Tracker',
+    title: 'Posture & Ergonomic Tracker',
+    badge: 'In Development / Coming Soon',
+    description:
+      'Experimental prototype exploring computer vision techniques for posture tracking and ergonomic awareness. Early research in progress.',
+    longDescription:
+      'An early-stage experimental research initiative exploring lightweight computer vision techniques for detecting posture habits. Currently in preliminary development.',
+    language: 'Python',
+    stars: 0,
+    forks: 0,
+    githubUrl: 'https://github.com/TarunTXE',
+    updatedAt: '2026-08-01',
+    isFeatured: false,
+    category: 'AI / ML',
+    techStack: ['Python', 'OpenCV', 'Computer Vision'],
+    features: [
+      'Preliminary exploratory prototype',
+      'Early research in progress',
     ],
   },
 ];

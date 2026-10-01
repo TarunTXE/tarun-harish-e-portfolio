@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import {
-  GraduationCap,
-  Code,
-  Brain,
-  Sparkles,
   Terminal,
+  FileText,
   MapPin,
   Calendar,
-  Layers,
-  CheckCircle2,
+  ExternalLink,
+  Code2,
+  Brain,
   Cpu,
-  FileText,
+  Layers,
 } from 'lucide-react';
 import { cyberAudio } from '../utils/audio';
 import { personalData } from '../data/personal';
@@ -22,99 +20,97 @@ interface AboutProps {
 }
 
 export const About: React.FC<AboutProps> = ({ onOpenTerminal }) => {
-  const [activeTab, setActiveTab] = useState<'profile' | 'education' | 'focus'>('profile');
   const edu = educationData[0];
 
-  const focusAreas = [
-    { label: 'Full-Stack Web Development', icon: Code },
-    { label: 'Machine Learning & Applied AI', icon: Brain },
-    { label: 'Software Architecture', icon: Cpu },
-    { label: 'Model Building', icon: Sparkles },
-    { label: 'Problem-Solving & Algorithms', icon: CheckCircle2 },
-    { label: 'Practical Real-World Systems', icon: Layers },
+  const metadataItems = [
+    { label: 'ROLE', value: 'Full Stack Developer' },
+    { label: 'EDUCATION', value: 'B.Tech Information Technology' },
+    { label: 'GRADUATION', value: '2027' },
+    { label: 'FOCUS', value: 'Web Development · AI · ML' },
+    { label: 'INSTITUTION', value: edu.institution },
+    { label: 'LOCATION', value: personalData.location },
+  ];
+
+  const focusCapabilities = [
+    { name: 'Full-Stack Web Engineering', icon: Code2 },
+    { name: 'Machine Learning & Applied AI', icon: Brain },
+    { name: 'System Architecture & APIs', icon: Cpu },
+    { name: 'Practical Real-World Systems', icon: Layers },
   ];
 
   return (
-    <section id="about" className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black">
-      {/* Consistent Section Heading: 01 / ABOUT */}
-      <div className="flex flex-col items-center mb-14 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
+    <motion.section
+      id="about"
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black border-t border-white/10"
+    >
+      {/* Section Header: 01 / WHOAMI */}
+      <div className="flex flex-col items-start mb-12 sm:mb-16">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-sm border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
           <Terminal size={12} className="text-white" />
-          <span>01 / BIOGRAPHY</span>
+          <span>01 // WHOAMI</span>
         </div>
         <h2 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight">
-          ABOUT <span className="text-gradient-white">TARUN HARISH</span>
+          DEVELOPER <span className="text-neutral-400">DOSSIER</span>
         </h2>
-        <div className="w-16 h-[1.5px] bg-white/40 my-3 shadow-[0_0_8px_#ffffff]" />
-        <p className="mt-1 text-neutral-400 text-sm sm:text-base max-w-2xl font-sans">
-          Final-year B.Tech IT student, full-stack engineer, and Applied AI practitioner building resilient software and intelligent models.
+        <p className="mt-3 text-neutral-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed">
+          Final-year undergraduate engineer building robust full-stack applications and Applied AI systems designed for practical utility.
         </p>
       </div>
 
-      {/* Split Layout */}
+      {/* Grid: Left Profile Card + Right Editorial Metadata */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Monochromatic Profile Card */}
+        {/* Left Column: Minimal Profile & System Spec Card */}
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="lg:col-span-5 bg-[#080808] rounded-3xl p-6 sm:p-8 border border-white/10 hover:border-white/25 relative overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.04)]"
+          transition={{ duration: 0.5 }}
+          className="lg:col-span-4 bg-neutral-950 rounded-lg p-6 border border-white/15 relative overflow-hidden"
         >
-          {/* Subtle white scanline */}
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+          {/* Subtle top scanline */}
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
 
-          <div className="relative z-10 flex flex-col items-center text-center">
-            {/* Avatar Frame: Circular with neon white border & floating motion */}
-            <motion.div
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full p-[2px] bg-white/25 mb-6 shadow-[0_0_25px_rgba(255,255,255,0.18)]"
-            >
-              <div className="w-full h-full rounded-full overflow-hidden bg-black border border-white/30 relative">
+          <div className="flex flex-col items-center text-center">
+            {/* Profile Avatar Frame: Minimal square/rounded-md border with technical HUD accents */}
+            <div className="relative mb-5 group">
+              <div className="w-36 h-36 sm:w-40 sm:h-40 rounded-lg overflow-hidden border border-white/20 bg-neutral-900 relative">
                 <img
                   src={personalData.avatarUrl}
                   alt={personalData.name}
-                  className="w-full h-full object-cover filter contrast-105"
+                  className="w-full h-full object-cover filter contrast-105 group-hover:scale-105 transition-transform duration-300"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
               </div>
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-black/90 border border-white/30 text-[10px] font-mono text-white font-bold tracking-wider whitespace-nowrap shadow-[0_0_10px_rgba(255,255,255,0.3)] flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                VERIFIED::DEV
-              </div>
-            </motion.div>
-
-            <h3 className="font-display font-bold text-xl sm:text-2xl text-white mb-1">{personalData.name}</h3>
-            <p className="font-mono text-xs text-neutral-400 mb-4">{personalData.primaryTitle}</p>
-
-            <div className="w-full grid grid-cols-2 gap-3 py-4 border-y border-white/10 text-left text-xs font-mono mb-6">
-              <div>
-                <span className="text-neutral-500 block text-[10px]">LOCATION</span>
-                <span className="text-neutral-200 flex items-center gap-1.5 mt-0.5">
-                  <MapPin size={12} className="text-white shrink-0" />
-                  <span className="truncate">{personalData.location.split(',')[0]}, Kerala</span>
-                </span>
-              </div>
-              <div>
-                <span className="text-neutral-500 block text-[10px]">ACADEMIC CYCLE</span>
-                <span className="text-neutral-200 flex items-center gap-1.5 mt-0.5">
-                  <Calendar size={12} className="text-white shrink-0" /> 2023 – 2027
-                </span>
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-sm bg-black border border-white/20 text-[9px] font-mono text-neutral-300 uppercase tracking-widest whitespace-nowrap flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                VERIFIED DEV
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="w-full space-y-2.5">
+            <h3 className="font-display font-bold text-xl text-white mt-1 mb-0.5">
+              {personalData.name}
+            </h3>
+            <p className="font-mono text-xs text-neutral-400 mb-6">
+              Full Stack & Applied AI
+            </p>
+
+            {/* Quick Actions */}
+            <div className="w-full space-y-2 font-mono text-xs">
               <a
                 href={personalData.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => cyberAudio.playClick()}
                 onMouseEnter={() => cyberAudio.playHover()}
-                className="w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-white text-black font-mono font-bold text-xs flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all"
+                className="w-full min-h-[42px] px-4 py-2.5 rounded-md bg-white text-black font-bold flex items-center justify-center gap-2 hover:bg-neutral-200 transition-colors"
               >
-                <FileText size={14} />
-                <span>OPEN RESUME PDF</span>
+                <FileText size={13} />
+                <span>VIEW RESUME (PDF)</span>
+                <ExternalLink size={10} />
               </a>
 
               <button
@@ -123,143 +119,95 @@ export const About: React.FC<AboutProps> = ({ onOpenTerminal }) => {
                   onOpenTerminal();
                 }}
                 onMouseEnter={() => cyberAudio.playHover()}
-                className="w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-neutral-950 border border-white/15 hover:border-white/35 text-neutral-300 hover:text-white font-mono text-xs flex items-center justify-center gap-2 transition-all"
+                className="w-full min-h-[42px] px-4 py-2.5 rounded-md bg-neutral-900 border border-white/15 text-neutral-300 hover:text-white hover:border-white/30 flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
-                <Terminal size={14} />
-                <span>LAUNCH CLI INSPECTOR</span>
+                <Terminal size={13} />
+                <span>LAUNCH TERMINAL CLI</span>
               </button>
             </div>
           </div>
         </motion.div>
 
-        {/* Right Column: Bio, Education, Focus Areas */}
+        {/* Right Column: Editorial Metadata Table + Bio + Capabilities */}
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="lg:col-span-7 flex flex-col gap-6"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="lg:col-span-8 flex flex-col gap-6"
         >
-          {/* Tabs Selector: Min 44px touch height */}
-          <div className="flex flex-wrap items-center gap-2 p-1.5 bg-[#080808] rounded-2xl border border-white/10 self-start w-full sm:w-auto">
-            {[
-              { id: 'profile', label: 'Biography' },
-              { id: 'education', label: 'Education' },
-              { id: 'focus', label: 'Core Focus' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  cyberAudio.playClick();
-                  setActiveTab(tab.id as 'profile' | 'education' | 'focus');
-                }}
-                className={`min-h-[40px] px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-white text-black font-bold shadow-[0_0_15px_rgba(255,255,255,0.3)]'
-                    : 'text-neutral-400 hover:text-white'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          {/* Metadata Terminal Table */}
+          <div className="bg-neutral-950 rounded-lg p-5 sm:p-7 border border-white/15">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10 text-xs font-mono text-neutral-400">
+              <span className="uppercase tracking-wider">SYSTEM SPECIFICATIONS</span>
+              <span className="text-emerald-400 flex items-center gap-1.5 text-[11px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                ACTIVE
+              </span>
+            </div>
+
+            <div className="space-y-3 font-mono text-xs sm:text-sm">
+              {metadataItems.map((item) => (
+                <div
+                  key={item.label}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between py-1.5 border-b border-white/5 last:border-0 gap-1 sm:gap-4"
+                >
+                  <span className="text-neutral-500 font-semibold tracking-wider min-w-[130px]">
+                    {item.label}
+                  </span>
+                  <span className="text-neutral-700 hidden sm:inline flex-1 border-b border-dotted border-white/10" />
+                  <span className="text-neutral-200 text-left sm:text-right font-medium">
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Tab 1: Biography */}
-          {activeTab === 'profile' && (
-            <div className="bg-[#080808] rounded-3xl p-6 sm:p-8 border border-white/10 space-y-5 animate-in fade-in duration-200">
-              <p className="text-neutral-200 text-sm sm:text-base leading-relaxed font-sans">
-                {personalData.summary}
-              </p>
-              <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
-                Undergraduate at the Institute of Engineering and Technology, University of Calicut (2023–2027), focusing on end-to-end software engineering and Applied AI systems that solve genuine real-world challenges.
-              </p>
-
-              {/* Focus Badges */}
-              <div className="pt-2">
-                <span className="font-mono text-xs text-neutral-400 uppercase tracking-wider block mb-3 font-semibold">
-                  Core Engineering Capabilities
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {focusAreas.map((area) => (
-                    <div
-                      key={area.label}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/15 bg-neutral-950 text-xs font-mono text-neutral-200 hover:border-white/40 transition-colors"
-                    >
-                      <area.icon size={13} className="text-white" />
-                      <span>{area.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+          {/* Short Bio Statement */}
+          <div className="bg-neutral-950 rounded-lg p-5 sm:p-7 border border-white/15">
+            <h3 className="font-mono text-xs uppercase tracking-wider text-neutral-400 mb-3 font-semibold">
+              ENGINEERING SYNOPSIS
+            </h3>
+            <p className="text-neutral-300 text-sm sm:text-base leading-relaxed font-sans mb-4">
+              {personalData.summary}
+            </p>
+            <div className="flex items-center gap-4 text-xs font-mono text-neutral-400 pt-2 border-t border-white/10">
+              <span className="flex items-center gap-1.5">
+                <MapPin size={12} className="text-white" />
+                {personalData.location}
+              </span>
+              <span className="text-neutral-600">•</span>
+              <span className="flex items-center gap-1.5">
+                <Calendar size={12} className="text-white" />
+                Class of 2027
+              </span>
             </div>
-          )}
+          </div>
 
-          {/* Tab 2: Education */}
-          {activeTab === 'education' && (
-            <div className="bg-[#080808] rounded-3xl p-6 sm:p-8 border border-white/10 space-y-6 animate-in fade-in duration-200">
-              <div className="p-5 sm:p-6 rounded-2xl bg-neutral-950 border border-white/15 relative">
-                <div className="flex items-start gap-4">
-                  <div className="p-3.5 rounded-xl bg-white/10 border border-white/20 text-white mt-1 shrink-0">
-                    <GraduationCap size={24} />
+          {/* Core Engineering Competencies */}
+          <div className="bg-neutral-950 rounded-lg p-5 sm:p-6 border border-white/15">
+            <h3 className="font-mono text-xs uppercase tracking-wider text-neutral-400 mb-4 font-semibold">
+              CORE CAPABILITIES
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {focusCapabilities.map((cap) => (
+                <div
+                  key={cap.name}
+                  className="p-3 rounded-md bg-neutral-900/60 border border-white/10 hover:border-white/25 transition-colors flex items-center gap-3"
+                >
+                  <div className="p-1.5 rounded-sm bg-white/10 text-white shrink-0">
+                    <cap.icon size={14} />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <h4 className="font-display font-bold text-base sm:text-lg text-white">
-                        {edu.degree} in {edu.field}
-                      </h4>
-                      <span className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white font-mono text-xs">
-                        {edu.period}
-                      </span>
-                    </div>
-                    <p className="text-neutral-300 text-sm font-medium mt-1.5">
-                      {edu.institution}
-                    </p>
-                    <p className="text-neutral-500 text-xs font-mono mt-0.5 flex items-center gap-1">
-                      <MapPin size={12} className="text-white" /> {edu.location}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-5 pt-4 border-t border-white/10">
-                  <span className="text-xs font-mono text-neutral-400 uppercase tracking-wider block mb-2 font-semibold">
-                    Academic Scope & Highlights
+                  <span className="text-xs font-mono text-neutral-300 font-medium">
+                    {cap.name}
                   </span>
-                  <ul className="space-y-1.5 text-xs text-neutral-300 font-sans">
-                    {edu.highlights.map((h) => (
-                      <li key={h} className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_4px_#ffffff] shrink-0" />
-                        <span>{h}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
-              </div>
+              ))}
             </div>
-          )}
-
-          {/* Tab 3: Core Focus */}
-          {activeTab === 'focus' && (
-            <div className="bg-[#080808] rounded-3xl p-6 sm:p-8 border border-white/10 space-y-4 animate-in fade-in duration-200">
-              <h3 className="font-display font-bold text-base text-white mb-2">
-                Engineering Competencies
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {focusAreas.map((f) => (
-                  <div
-                    key={f.label}
-                    className="p-3.5 rounded-xl bg-neutral-950 border border-white/10 hover:border-white/30 transition-colors flex items-center gap-3"
-                  >
-                    <div className="p-2 rounded-lg bg-white/10 text-white">
-                      <f.icon size={15} />
-                    </div>
-                    <span className="text-xs font-mono text-neutral-200 font-medium">{f.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          </div>
         </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 };
