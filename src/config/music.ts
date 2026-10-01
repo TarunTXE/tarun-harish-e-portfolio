@@ -1,16 +1,11 @@
+import portfolioMusicSrc from '../assets/portfolio.mp3';
+
 /**
  * ==================================================================
  * TXE MUSIC PLAYER CONFIGURATION
  * ==================================================================
- * To add or change your custom background music:
- * 1. Place your audio file in: /public/music/
- * 2. Update `src` below to match your filename.
- * 
- * Example:
- *   src: '/music/portfolio.mp3'
- *
- * The player uses the native HTML5 Audio API with `preload="metadata"`.
- * Default state is always PAUSED to respect browser autoplay policies.
+ * Directly imports and uses the audio file posted in src/assets/portfolio.mp3.
+ * Fallback to /music/portfolio.mp3 in public folder.
  * ==================================================================
  */
 
@@ -21,7 +16,7 @@ export interface MusicTrackConfig {
 }
 
 export const MUSIC_CONFIG: MusicTrackConfig = {
-  src: '/music/portfolio.mp3',
+  src: portfolioMusicSrc || '/music/portfolio.mp3',
   title: 'TXE // AMBIENT AUDIO',
-  defaultVolume: 0.4,
+  defaultVolume: 0.35,
 };

@@ -79,17 +79,17 @@ export const CustomCursor: React.FC = () => {
           transform: `translate(-50%, -50%) scale(${isClicked ? 0.7 : 1})`,
         }}
       >
-        <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_8px_#ffffff]" />
+        <div className="w-2 h-2 rounded-full bg-[var(--foreground)] shadow-sm" />
       </div>
 
-      {/* Fluid trailing ring with neon white glow */}
+      {/* Fluid trailing ring */}
       <div
         className={`fixed pointer-events-none z-50 rounded-full border transition-all duration-200 ease-out ${
           isHovered
-            ? 'w-12 h-12 border-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.4)] backdrop-blur-[1px]'
+            ? 'w-12 h-12 border-[var(--foreground)] bg-[var(--foreground)]/10 backdrop-blur-[1px]'
             : isClicked
-            ? 'w-7 h-7 border-white/80 bg-white/20'
-            : 'w-9 h-9 border-white/30 bg-transparent'
+            ? 'w-7 h-7 border-[var(--foreground)] bg-[var(--foreground)]/20'
+            : 'w-9 h-9 border-[var(--foreground)]/40 bg-transparent'
         }`}
         style={{
           left: `${trailingPos.x}px`,

@@ -6,7 +6,6 @@ import {
   Users,
   Award,
   Briefcase,
-  Code2,
   ExternalLink,
 } from 'lucide-react';
 import { GithubIcon } from './Icons';
@@ -52,10 +51,10 @@ export const DeveloperDashboard: React.FC = () => {
   ];
 
   const languages = [
-    { name: 'JavaScript', percent: 45, color: '#FFFFFF' },
-    { name: 'Python', percent: 35, color: '#D4D4D4' },
-    { name: 'TypeScript', percent: 12, color: '#999999' },
-    { name: 'HTML & CSS', percent: 8, color: '#666666' },
+    { name: 'JavaScript', percent: 45 },
+    { name: 'Python', percent: 35 },
+    { name: 'TypeScript', percent: 12 },
+    { name: 'HTML & CSS', percent: 8 },
   ];
 
   // Activity heatmap grid representing development rhythm
@@ -68,18 +67,18 @@ export const DeveloperDashboard: React.FC = () => {
     return 0;
   });
 
-  const getHeatmapColor = (level: number) => {
+  const getHeatmapColorClass = (level: number) => {
     switch (level) {
       case 4:
-        return 'bg-white shadow-[0_0_6px_#ffffff]';
+        return 'bg-neutral-900 text-white dark:bg-white dark:text-black shadow-sm';
       case 3:
-        return 'bg-neutral-300';
+        return 'bg-neutral-700 dark:bg-neutral-300';
       case 2:
-        return 'bg-neutral-500';
+        return 'bg-neutral-400 dark:bg-neutral-500';
       case 1:
-        return 'bg-neutral-700';
+        return 'bg-neutral-300 dark:bg-neutral-700';
       default:
-        return 'bg-neutral-900';
+        return 'bg-neutral-200/80 dark:bg-neutral-900';
     }
   };
 
@@ -90,24 +89,31 @@ export const DeveloperDashboard: React.FC = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black border-t border-white/10"
+      className="relative py-14 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-[var(--background)] border-t border-[var(--border)] overflow-hidden"
     >
-      {/* Section Heading: 05 / TELEMETRY */}
-      <div className="flex flex-col items-start mb-12 sm:mb-16">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-sm border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
-          <Activity size={12} className="text-white" />
-          <span>05 // TELEMETRY</span>
+      {/* Section Heading: 05 // TELEMETRY.SYS with coordinate markings */}
+      <div className="flex flex-col items-start mb-8 sm:mb-12">
+        <div className="w-full flex items-center gap-3 mb-3">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-sm border border-[var(--border-strong)] bg-[var(--surface)] text-[var(--foreground)] font-mono text-xs uppercase tracking-widest shrink-0">
+            <Activity size={12} className="text-emerald-500" />
+            <span className="font-bold">05 // TELEMETRY.SYS</span>
+          </div>
+          <div className="flex-1 h-[1px] bg-gradient-to-r from-[var(--border-strong)] via-[var(--border)] to-transparent" />
+          <span className="hidden sm:inline font-mono text-[10px] text-[var(--muted)] tracking-wider">
+            COORD: 11.25°N, 75.78°E • FREQ: LIVE
+          </span>
         </div>
-        <h2 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight">
-          DEVELOPMENT <span className="text-neutral-400">TELEMETRY</span>
+
+        <h2 className="font-display font-bold text-3xl sm:text-5xl text-[var(--foreground)] tracking-tight">
+          DEVELOPMENT <span className="text-[var(--muted)]">TELEMETRY</span>
         </h2>
-        <p className="mt-3 text-neutral-400 text-sm sm:text-base max-w-xl font-sans leading-relaxed">
+        <p className="mt-3 text-[var(--muted)] text-sm sm:text-base max-w-xl font-sans leading-relaxed">
           Verified telemetry and codebase distribution aggregated directly from{' '}
           <a
             href={personalData.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-mono text-white underline underline-offset-4 hover:text-neutral-300"
+            className="font-mono text-[var(--foreground)] underline underline-offset-4 hover:text-emerald-500"
           >
             @{personalData.githubUsername}
           </a>.
@@ -125,17 +131,17 @@ export const DeveloperDashboard: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.06 }}
-              className="bg-neutral-950 rounded-lg p-4 sm:p-5 border border-white/15 hover:border-white/35 transition-all flex items-center gap-3 sm:gap-4"
+              className="bg-[var(--surface)] rounded-lg p-4 sm:p-5 border border-[var(--border-strong)] hover:border-[var(--foreground)] transition-all flex items-center gap-3 sm:gap-4 shadow-sm"
             >
-              <div className="p-2.5 sm:p-3 rounded-md bg-neutral-900 border border-white/10 shrink-0 text-white">
+              <div className="p-2.5 sm:p-3 rounded-md bg-[var(--surface-secondary)] border border-[var(--border)] shrink-0 text-[var(--foreground)]">
                 <stat.icon size={18} />
               </div>
               <div>
-                <span className="text-xl sm:text-2xl font-mono font-extrabold text-white block leading-none mb-1">
+                <span className="text-xl sm:text-2xl font-mono font-extrabold text-[var(--foreground)] block leading-none mb-1">
                   {stat.value}
-                  <span className="text-neutral-400 text-sm">{stat.suffix}</span>
+                  <span className="text-[var(--muted)] text-sm">{stat.suffix}</span>
                 </span>
-                <span className="text-neutral-500 font-mono text-[10px] sm:text-xs uppercase tracking-wider block">
+                <span className="text-[var(--muted)] font-mono text-[10px] sm:text-xs uppercase tracking-wider block">
                   {stat.label}
                 </span>
               </div>
@@ -143,101 +149,86 @@ export const DeveloperDashboard: React.FC = () => {
           ))}
         </div>
 
-        {/* GitHub Activity Matrix / Heatmap */}
+        {/* Development Heatmap Card */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="lg:col-span-8 bg-neutral-950 rounded-lg p-5 sm:p-6 border border-white/15 flex flex-col justify-between"
+          className="lg:col-span-8 bg-[var(--surface)] rounded-lg p-5 sm:p-6 border border-[var(--border-strong)] shadow-sm"
         >
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <GithubIcon size={16} className="text-white" />
-                <h3 className="font-display font-bold text-sm sm:text-base text-white">
-                  Contribution & Cadence Matrix
-                </h3>
-              </div>
-              <a
-                href={personalData.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs font-mono text-neutral-300 hover:text-white hover:underline flex items-center gap-1"
-              >
-                <span>GitHub Profile</span>
-                <ExternalLink size={11} />
-              </a>
+          <div className="flex items-center justify-between pb-3 mb-4 border-b border-[var(--border)]">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_6px_#10b981]" />
+              <span className="font-mono text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">
+                COMMIT CADENCE // 16 WEEKS
+              </span>
             </div>
+            <a
+              href={personalData.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-mono text-[var(--muted)] hover:text-[var(--foreground)] flex items-center gap-1"
+            >
+              <span>GitHub Graph</span>
+              <ExternalLink size={11} />
+            </a>
+          </div>
 
-            <p className="text-neutral-400 text-xs font-sans mb-5 leading-relaxed">
-              Engineering cadence across full-stack repositories, Django backend microservices, and machine learning projects.
-            </p>
+          {/* Micro Matrix */}
+          <div
+            className="grid gap-1.5 p-3 rounded-md bg-[var(--surface-secondary)] border border-[var(--border)] mb-4"
+            style={{ gridTemplateColumns: 'repeat(16, minmax(0, 1fr))' }}
+          >
+            {heatmapData.map((level, i) => (
+              <div
+                key={i}
+                className={`aspect-square rounded-[2px] transition-all hover:scale-125 ${getHeatmapColorClass(level)}`}
+                title={`Activity Level ${level}`}
+              />
+            ))}
+          </div>
 
-            {/* Contained Horizontal Scroll Container */}
-            <div className="p-4 rounded-2xl bg-black border border-white/10 overflow-x-auto w-full">
-              <div className="grid grid-rows-4 grid-flow-col gap-1.5 min-w-[480px]">
-                {heatmapData.map((level, i) => (
-                  <div
-                    key={i}
-                    className={`w-3.5 h-3.5 rounded-sm transition-all hover:scale-125 ${getHeatmapColor(
-                      level
-                    )}`}
-                    title={`Activity Node ${i + 1}`}
-                  />
-                ))}
-              </div>
-
-              <div className="flex items-center justify-between text-[10px] font-mono text-neutral-500 mt-3 pt-3 border-t border-white/10 min-w-[480px]">
-                <span>Repository Activity Distribution</span>
-                <div className="flex items-center gap-1.5">
-                  <span>Less</span>
-                  <span className="w-2.5 h-2.5 rounded-sm bg-neutral-900" />
-                  <span className="w-2.5 h-2.5 rounded-sm bg-neutral-700" />
-                  <span className="w-2.5 h-2.5 rounded-sm bg-neutral-500" />
-                  <span className="w-2.5 h-2.5 rounded-sm bg-neutral-300" />
-                  <span className="w-2.5 h-2.5 rounded-sm bg-white" />
-                  <span>More</span>
-                </div>
-              </div>
+          <div className="flex items-center justify-between text-[11px] font-mono text-[var(--muted)]">
+            <span>RHYTHM: CONTINUOUS</span>
+            <div className="flex items-center gap-1.5">
+              <span>Less</span>
+              <div className="w-2 h-2 rounded-[2px] bg-neutral-200 dark:bg-neutral-900 border border-[var(--border)]" />
+              <div className="w-2 h-2 rounded-[2px] bg-neutral-400 dark:bg-neutral-700" />
+              <div className="w-2 h-2 rounded-[2px] bg-neutral-700 dark:bg-neutral-300" />
+              <div className="w-2 h-2 rounded-[2px] bg-neutral-900 dark:bg-white" />
+              <span>More</span>
             </div>
           </div>
         </motion.div>
 
-        {/* Language Footprint Breakdown */}
+        {/* Codebase Composition */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="lg:col-span-4 bg-neutral-950 rounded-lg p-5 sm:p-6 border border-white/15 flex flex-col justify-between"
+          className="lg:col-span-4 bg-[var(--surface)] rounded-lg p-5 sm:p-6 border border-[var(--border-strong)] flex flex-col justify-between shadow-sm"
         >
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Code2 size={16} className="text-white" />
-              <h3 className="font-display font-bold text-sm sm:text-base text-white">
-                Language Footprint
-              </h3>
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-[var(--border)]">
+              <span className="font-mono text-xs font-bold text-[var(--foreground)] uppercase tracking-wider">
+                LANGUAGE QUOTAS
+              </span>
+              <GithubIcon size={14} className="text-[var(--muted)]" />
             </div>
-
-            <p className="text-neutral-400 text-xs font-sans mb-5">
-              Codebase composition across verified GitHub projects.
-            </p>
 
             <div className="space-y-3.5">
               {languages.map((lang) => (
                 <div key={lang.name}>
-                  <div className="flex justify-between text-xs font-mono mb-1.5">
-                    <span className="text-neutral-200">{lang.name}</span>
-                    <span className="text-neutral-400">{lang.percent}%</span>
+                  <div className="flex justify-between text-xs font-mono mb-1">
+                    <span className="text-[var(--foreground)] font-medium">{lang.name}</span>
+                    <span className="text-[var(--muted)]">{lang.percent}%</span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-neutral-900 overflow-hidden border border-white/10">
+                  <div className="h-1.5 w-full bg-[var(--surface-secondary)] rounded-full overflow-hidden border border-[var(--border)]">
                     <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${lang.percent}%`,
-                        backgroundColor: lang.color,
-                      }}
+                      className="h-full bg-[var(--foreground)] rounded-full transition-all duration-500"
+                      style={{ width: `${lang.percent}%` }}
                     />
                   </div>
                 </div>
@@ -245,9 +236,9 @@ export const DeveloperDashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-white/10 text-[11px] font-mono text-neutral-400 flex items-center justify-between">
-            <span>Core Focus</span>
-            <span className="text-white font-bold">Full-Stack & Applied AI</span>
+          <div className="pt-4 border-t border-[var(--border)] mt-4 flex items-center justify-between text-[11px] font-mono text-[var(--muted)]">
+            <span>INDEX: 8 REPOS</span>
+            <span className="text-emerald-500 font-semibold">SYNCHRONIZED</span>
           </div>
         </motion.div>
       </div>

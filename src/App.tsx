@@ -14,6 +14,9 @@ import { MobileNav } from './components/MobileNav';
 import { CustomCursor } from './components/CustomCursor';
 import { TerminalModal } from './components/TerminalModal';
 import { ResumeModal } from './components/ResumeModal';
+import { ThemeTransitionOverlay } from './components/ThemeTransitionOverlay';
+import { BootLoader } from './components/BootLoader';
+import { TXEDinoRunner } from './components/TXEDinoRunner';
 import { ThemeProvider } from './context/ThemeContext';
 import { MusicProvider } from './context/MusicContext';
 
@@ -24,7 +27,7 @@ export const AppContent: React.FC = () => {
   // Initialize Lenis Smooth Scrolling
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
@@ -46,8 +49,45 @@ export const AppContent: React.FC = () => {
     };
   }, []);
 
+  // Guarantee clean URL without hash routes or query parameters like ?boot=true
+  useEffect(() => {
+    const cleanUrl = () => {
+      let shouldClean = false;
+      const url = new URL(window.location.href);
+
+      if (url.hash) {
+        url.hash = '';
+        shouldClean = true;
+      }
+
+      if (url.searchParams.has('boot') || url.searchParams.has('reset')) {
+        url.searchParams.delete('boot');
+        url.searchParams.delete('reset');
+        shouldClean = true;
+      }
+
+      if (shouldClean) {
+        const cleanPath = url.pathname + (url.search ? url.search : '');
+        window.history.replaceState(null, '', cleanPath);
+      }
+    };
+
+    cleanUrl();
+    window.addEventListener('hashchange', cleanUrl);
+    return () => window.removeEventListener('hashchange', cleanUrl);
+  }, []);
+
   return (
-    <div className="relative min-h-screen bg-black text-white selection:bg-white/25 selection:text-white overflow-x-hidden">
+    <div className="relative min-h-screen bg-[var(--background)] text-[var(--foreground)] selection:bg-white/25 selection:text-white overflow-x-hidden">
+      {/* 4.0s Initial Boot Sequence (Appears on initial session load) */}
+      <BootLoader />
+
+      {/* System Reconfiguration Transition Overlay */}
+      <ThemeTransitionOverlay />
+
+      {/* Ambient Pixel Dino Runner in Music Mode */}
+      <TXEDinoRunner />
+
       {/* Interactive Cyber Custom Cursor */}
       <CustomCursor />
 
@@ -57,8 +97,8 @@ export const AppContent: React.FC = () => {
         onOpenResume={() => setResumeOpen(true)}
       />
 
-      {/* Primary Content Sections adhering to requested content hierarchy:
-          Identity → Projects → Experience → Skills → GitHub → LinkedIn → Certifications/Activities → Contact */}
+      {/* Primary Content Sections:
+          Identity → Projects → Experience → Skills → GitHub → LinkedIn → Contact */}
       <main className="relative z-10">
         <Hero
           onOpenTerminal={() => setTerminalOpen(true)}

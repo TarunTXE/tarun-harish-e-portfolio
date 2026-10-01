@@ -4,59 +4,83 @@
 
 @layer base {
   :root {
-    --bg-primary: #000000;
-    --bg-secondary: #050505;
-    --bg-card: #080808;
-    --bg-surface: #0A0A0A;
-    --bg-elevated: #101010;
-    --text-primary: #FFFFFF;
+    --background: #000000;
+    --foreground: #FFFFFF;
+    --muted: #888888;
+    --surface: #0A0A0A;
+    --surface-secondary: #121212;
+    --border: rgba(255, 255, 255, 0.12);
+    --border-strong: rgba(255, 255, 255, 0.3);
+    --accent: #10B981;
+    --accent-muted: rgba(16, 185, 129, 0.15);
+    --terminal-background: #080808;
+    --grid-line: rgba(255, 255, 255, 0.03);
+    --dot-matrix: rgba(255, 255, 255, 0.07);
+    --crosshair-color: rgba(255, 255, 255, 0.2);
+
+    /* Legacy compatibility tokens */
+    --bg-primary: var(--background);
+    --bg-secondary: var(--surface-secondary);
+    --bg-card: var(--surface);
+    --bg-surface: var(--surface);
+    --bg-elevated: var(--surface-secondary);
+    --text-primary: var(--foreground);
     --text-secondary: #A3A3A3;
-    --text-muted: #666666;
-    --border-subtle: rgba(255, 255, 255, 0.12);
-    --border-hover: rgba(255, 255, 255, 0.35);
-    --accent-emerald: #10B981;
+    --text-muted: var(--muted);
+    --border-subtle: var(--border);
+    --border-hover: var(--border-strong);
+    --accent-emerald: var(--accent);
   }
 
   html.light,
   :root.light {
-    --bg-primary: #F5F5F2;
-    --bg-secondary: #EAEAE4;
-    --bg-card: #FFFFFF;
-    --bg-surface: #F9F9F7;
-    --bg-elevated: #FFFFFF;
-    --text-primary: #121212;
-    --text-secondary: #4A4A4A;
-    --text-muted: #737373;
-    --border-subtle: #E2E2DC;
-    --border-hover: #B8B8B0;
-    --accent-emerald: #047857;
+    --background: #F5F5F2;
+    --foreground: #121212;
+    --muted: #555555;
+    --surface: #FFFFFF;
+    --surface-secondary: #EAEAE5;
+    --border: #DCDCD4;
+    --border-strong: #B8B8B0;
+    --accent: #047857;
+    --accent-muted: rgba(4, 120, 87, 0.12);
+    --terminal-background: #FAFAF8;
+    --grid-line: rgba(0, 0, 0, 0.04);
+    --dot-matrix: rgba(0, 0, 0, 0.08);
+    --crosshair-color: rgba(0, 0, 0, 0.25);
+
+    /* Legacy compatibility tokens */
+    --bg-primary: var(--background);
+    --bg-secondary: var(--surface-secondary);
+    --bg-card: var(--surface);
+    --bg-surface: var(--surface);
+    --bg-elevated: var(--surface-secondary);
+    --text-primary: var(--foreground);
+    --text-secondary: #3D3D3D;
+    --text-muted: var(--muted);
+    --border-subtle: var(--border);
+    --border-hover: var(--border-strong);
+    --accent-emerald: var(--accent);
   }
 
   html {
     scroll-behavior: smooth;
-    background-color: #000000;
-    color: #FFFFFF;
-    font-family: 'Inter', sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-tap-highlight-color: transparent;
   }
 
-  html.light,
-  html.light body {
-    background-color: #F5F5F2;
-    color: #121212;
-  }
-
   body {
-    background-color: #000000;
+    background-color: var(--background);
+    color: var(--foreground);
     overflow-x: hidden;
     margin: 0;
     padding: 0;
-    color: #FFFFFF;
   }
 
   /* Section scroll margins so anchor links don't hide under fixed navbar */
   section {
-    scroll-margin-top: 5.5rem;
+    scroll-margin-top: 5rem;
   }
 
   /* Custom monochrome scrollbar */
@@ -66,196 +90,175 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #000000;
-  }
-
-  html.light ::-webkit-scrollbar-track {
-    background: #F5F5F2;
+    background: var(--background);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--border-strong);
     border-radius: 9999px;
   }
 
-  html.light ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-  }
-
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.45);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  }
-
-  html.light ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    background: var(--foreground);
   }
 
   /* Smooth focus states */
   *:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.6);
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
 
-  html.light *:focus-visible {
-    outline: 2px solid rgba(0, 0, 0, 0.6);
-    outline-offset: 2px;
+  /* Sticky navbar scroll offset */
+  section[id],
+  div[id] {
+    scroll-margin-top: 85px;
   }
 
-  /* Smooth theme transition */
-  html.theme-transition,
-  html.theme-transition *,
-  html.theme-transition *::before,
-  html.theme-transition *::after {
-    transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease, fill 250ms ease, stroke 250ms ease, box-shadow 250ms ease !important;
+  @media (max-width: 768px) {
+    section[id],
+    div[id] {
+      scroll-margin-top: 65px;
+    }
   }
-}
 
-/* Subtle Black/White Grid & Dust */
-.cyber-grid {
-  background-size: 48px 48px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-}
-
-.cyber-dots {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-
-/* Monochromatic Glass Panels */
-.glass-panel {
-  background: #080808;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
-}
-
-.glass-panel:hover {
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.08);
-}
-
-.glass-panel-interactive {
-  background: #0A0A0A;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: all 0.25s ease;
-}
-
-.glass-panel-interactive:hover {
-  background: #101010;
-  border-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
-}
-
-/* Neon-White Text Gradients */
-.text-gradient-white {
-  background: linear-gradient(180deg, #FFFFFF 0%, #D4D4D4 55%, #888888 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.text-gradient-glow {
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.45);
-}
-
-/* Legacy class compatibility mapped cleanly to Neon White */
-.text-gradient-cyan,
-.text-gradient-purple,
-.text-gradient-gold {
-  background: linear-gradient(180deg, #FFFFFF 0%, #E5E5E5 50%, #999999 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Noise overlay */
-.bg-noise {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0);
-  background-size: 3px 3px;
-}
-
-/* Button System */
-.btn-primary {
-  background-color: #FFFFFF;
-  color: #000000;
-  font-weight: 700;
-  transition: all 0.25s ease;
-  min-height: 44px;
-}
-
-.btn-primary:hover {
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
-  transform: translateY(-2px);
-}
-
-.btn-secondary {
-  background-color: #080808;
-  color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  transition: all 0.25s ease;
-  min-height: 44px;
-}
-
-.btn-secondary:hover {
-  background-color: #121212;
-  border-color: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-}
-
-/* Hide desktop-only cursor on touch devices */
-@media (pointer: coarse), (hover: none) {
-  .desktop-only-cursor {
-    display: none !important;
-  }
-}
-
-/* Ambient Developer Code Stream Animations */
-@keyframes codeScrollSlow {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-50%);
-  }
-}
-
-@keyframes codeScrollSlowReverse {
-  0% {
-    transform: translateY(-50%);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-.animate-code-scroll-slow {
-  animation: codeScrollSlow 45s linear infinite;
-  will-change: transform;
-}
-
-.animate-code-scroll-slow-reverse {
-  animation: codeScrollSlowReverse 50s linear infinite;
-  will-change: transform;
-}
-
-/* Respect Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  /* Global theme transitions */
+  body,
+  header,
+  footer,
+  section,
+  nav,
+  div,
+  button,
+  a,
+  span,
+  input,
+  textarea {
+    transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease, box-shadow 250ms ease;
   }
 }
 
 /* ============================================================
-   LIGHT THEME ADAPTIVE SYSTEM
-   Editorial, technical paper aesthetic (#F5F5F2)
+   TECHNICAL DESIGN PATTERNS (Subtle, Static, Zero Performance Impact)
    ============================================================ */
+
+/* 1. Theme-Adaptive Technical Grid */
+.tech-grid {
+  background-image: 
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.tech-grid-dense {
+  background-image: 
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* 2. Theme-Adaptive Technical Dot Matrix */
+.tech-dots {
+  background-image: radial-gradient(var(--dot-matrix) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* 3. Subtle Technical Diagonal Hatch */
+.tech-hatch {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--grid-line),
+    var(--grid-line) 1px,
+    transparent 1px,
+    transparent 12px
+  );
+}
+
+/* 4. Technical Corner Brackets */
+.tech-corner-frame {
+  position: relative;
+}
+.tech-corner-frame::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid var(--border-strong);
+  border-left: 2px solid var(--border-strong);
+  pointer-events: none;
+  z-index: 10;
+}
+.tech-corner-frame::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid var(--border-strong);
+  border-right: 2px solid var(--border-strong);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* 5. Section Header Technical Line Extension */
+.tech-rule {
+  height: 1px;
+  background: linear-gradient(to right, var(--border-strong), transparent);
+}
+
+/* 6. Technical Crosshairs */
+.tech-crosshair {
+  position: relative;
+}
+.tech-crosshair::before,
+.tech-crosshair::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  background-color: var(--crosshair-color);
+}
+.tech-crosshair::before {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+.tech-crosshair::after {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+}
+
+/* ============================================================
+   THEME CLASSES & LIGHT MODE GLOBAL AUDIT
+   Ensures zero accidental dark/black blocks in light mode.
+   ============================================================ */
+
+/* Surface and Card Containers */
+.theme-surface {
+  background-color: var(--surface);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.theme-surface-secondary {
+  background-color: var(--surface-secondary);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.theme-terminal {
+  background-color: var(--terminal-background);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+/* Force light mode overrides for any lingering dark classes */
 html.light .bg-black {
   background-color: #F5F5F2 !important;
 }
@@ -265,21 +268,33 @@ html.light .bg-neutral-950 {
 }
 
 html.light .bg-neutral-900 {
-  background-color: #F8F8F5 !important;
-}
-
-html.light .bg-neutral-800 {
   background-color: #EFEFEA !important;
 }
 
-html.light .bg-neutral-900\/80,
-html.light .bg-neutral-900\/90,
+html.light .bg-neutral-800 {
+  background-color: #E4E4DC !important;
+}
+
+html.light .bg-\[\#080808\],
+html.light .bg-\[\#0A0A0A\],
+html.light .bg-\[\#050505\],
+html.light .bg-\[\#101010\],
+html.light .bg-\[\#0D0D0D\] {
+  background-color: #FFFFFF !important;
+}
+
 html.light .bg-neutral-950\/80,
 html.light .bg-neutral-950\/90,
 html.light .bg-neutral-950\/95,
+html.light .bg-neutral-900\/80,
+html.light .bg-neutral-900\/90,
+html.light .bg-neutral-900\/70,
+html.light .bg-neutral-900\/60,
+html.light .bg-neutral-950\/60,
 html.light .bg-black\/90,
-html.light .bg-black\/95 {
-  background-color: rgba(255, 255, 255, 0.94) !important;
+html.light .bg-black\/95,
+html.light .bg-black\/80 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
 }
 
 html.light .text-white {
@@ -291,7 +306,7 @@ html.light .text-neutral-100 {
 }
 
 html.light .text-neutral-200 {
-  color: #242424 !important;
+  color: #262626 !important;
 }
 
 html.light .text-neutral-300 {
@@ -303,39 +318,36 @@ html.light .text-neutral-400 {
 }
 
 html.light .text-neutral-500 {
-  color: #707070 !important;
+  color: #6E6E6E !important;
 }
 
-html.light .text-neutral-600 {
-  color: #8C8C8C !important;
+html.light .text-zinc-100,
+html.light .text-zinc-200,
+html.light .text-zinc-300 {
+  color: #1E1E1E !important;
 }
 
-html.light .text-zinc-400 {
-  color: #555555 !important;
+html.light .text-zinc-400,
+html.light .text-zinc-500 {
+  color: #5A5A5A !important;
 }
 
+html.light .border-white\/5,
 html.light .border-white\/10,
-html.light .border-white\/15,
-html.light .border-white\/20 {
-  border-color: #E2E2DC !important;
+html.light .border-white\/15 {
+  border-color: #DCDCD4 !important;
 }
 
+html.light .border-white\/20,
 html.light .border-white\/25,
-html.light .border-white\/30 {
-  border-color: #D2D2CA !important;
-}
-
+html.light .border-white\/30,
 html.light .border-white\/40,
 html.light .border-white\/50 {
-  border-color: #BDBDB2 !important;
+  border-color: #B8B8B0 !important;
 }
 
 html.light .border-white {
   border-color: #121212 !important;
-}
-
-html.light .border-white\/5 {
-  border-color: #ECECE7 !important;
 }
 
 html.light .bg-white\/5 {
@@ -363,66 +375,418 @@ html.light a.bg-white {
 
 html.light button.bg-white:hover,
 html.light a.bg-white:hover {
-  background-color: #2A2A2A !important;
+  background-color: #2D2D2D !important;
   color: #FFFFFF !important;
 }
 
-html.light .shadow-\[0_0_20px_rgba\(255\,255\,255\,0\.4\)\] {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+/* Ensure text inside primary dark button in light mode stays white */
+html.light button.bg-white *,
+html.light a.bg-white * {
+  color: #FFFFFF !important;
 }
 
-/* Glass panel */
-html.light .glass-panel {
-  background: #FFFFFF !important;
-  border-color: #E2E2DC !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03) !important;
-}
-
-html.light .glass-panel:hover {
-  border-color: #BDBDB2 !important;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06) !important;
-}
-
-html.light .glass-panel-interactive {
-  background: #FAFAF8 !important;
-  border-color: #E2E2DC !important;
-}
-
-html.light .glass-panel-interactive:hover {
-  background: #FFFFFF !important;
-  border-color: #A8A89C !important;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06) !important;
-}
-
-/* Cyber Grid & Dots in light mode */
-html.light .cyber-grid {
-  background-image: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px) !important;
-}
-
-html.light .cyber-dots {
-  background-image: radial-gradient(rgba(0, 0, 0, 0.07) 1px, transparent 1px) !important;
-}
-
-/* Text Gradient in light mode */
-html.light .text-gradient-white {
-  background: linear-gradient(180deg, #121212 0%, #303030 55%, #606060 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-}
-
-/* Modal backdrops in light mode */
+/* Modals backdrops in light mode */
 html.light .fixed.inset-0.bg-black\/80,
 html.light .fixed.inset-0.bg-black\/85,
 html.light .fixed.inset-0.bg-black\/90,
 html.light .fixed.inset-0.bg-black\/95 {
-  background-color: rgba(20, 20, 22, 0.55) !important;
+  background-color: rgba(18, 18, 18, 0.6) !important;
 }
 
-/* Selection in light mode */
+/* Selection */
+::selection {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
 html.light ::selection {
-  background-color: #121212 !important;
-  color: #FFFFFF !important;
+  background-color: #121212;
+  color: #FFFFFF;
+}
+
+/* ============================================================
+   SYSTEM RECONFIGURATION TRANSITION ANIMATIONS
+   ============================================================ */
+@keyframes reconfigWave4s {
+  0% {
+    transform: translate(50%, -50%) scale(0.01);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  38% {
+    transform: translate(50%, -50%) scale(0.8);
+    opacity: 0.7;
+  }
+  65% {
+    transform: translate(50%, -50%) scale(1.05);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(50%, -50%) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes reconfigScan4s {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  30% {
+    top: 15%;
+    opacity: 1;
+  }
+  65% {
+    top: 70%;
+    opacity: 1;
+  }
+  90% {
+    top: 100%;
+    opacity: 0.8;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes reconfigBackdrop4s {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.85;
+  }
+  62% {
+    opacity: 0.95;
+  }
+  85% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes reconfigHud4s {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%) scale(0.95);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(1.02);
+  }
+}
+
+/* ============================================================
+   MUSIC PLAYER EQUALIZER & PULSE ANIMATIONS
+   ============================================================ */
+@keyframes musicPulseExpand {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.music-pulse-ripple {
+  animation: musicPulseExpand 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes musicBarWave1 {
+  0%, 100% { height: 4px; }
+  50% { height: 12px; }
+}
+@keyframes musicBarWave2 {
+  0%, 100% { height: 10px; }
+  50% { height: 5px; }
+}
+@keyframes musicBarWave3 {
+  0%, 100% { height: 6px; }
+  50% { height: 14px; }
+}
+@keyframes musicBarWave4 {
+  0%, 100% { height: 13px; }
+  50% { height: 7px; }
+}
+@keyframes musicBarWave5 {
+  0%, 100% { height: 5px; }
+  50% { height: 11px; }
+}
+
+.music-bar-1 { animation: musicBarWave1 0.75s ease-in-out infinite; }
+.music-bar-2 { animation: musicBarWave2 0.65s ease-in-out infinite 0.1s; }
+.music-bar-3 { animation: musicBarWave3 0.85s ease-in-out infinite 0.2s; }
+.music-bar-4 { animation: musicBarWave4 0.7s ease-in-out infinite 0.15s; }
+.music-bar-5 { animation: musicBarWave5 0.9s ease-in-out infinite 0.05s; }
+
+
+/* ============================================================
+   TXE SYSTEM BOOT LOADER ANIMATIONS
+   ============================================================ */
+@keyframes txeBootIrisOpen {
+  0% {
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 0%, black 0%);
+    mask-image: radial-gradient(circle at 50% 50%, transparent 0%, black 0%);
+    opacity: 1;
+  }
+  30% {
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 20vmax, black 25vmax);
+    mask-image: radial-gradient(circle at 50% 50%, transparent 20vmax, black 25vmax);
+    opacity: 1;
+  }
+  75% {
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 90vmax, black 95vmax);
+    mask-image: radial-gradient(circle at 50% 50%, transparent 90vmax, black 95vmax);
+    opacity: 0.8;
+  }
+  100% {
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent 150vmax, black 150vmax);
+    mask-image: radial-gradient(circle at 50% 50%, transparent 150vmax, black 150vmax);
+    opacity: 0;
+  }
+}
+
+.txe-boot-unlocking {
+  animation: txeBootIrisOpen 550ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes txeRingExpand {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(20);
+    opacity: 0;
+  }
+}
+
+.txe-ring-expanding {
+  animation: txeRingExpand 550ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ============================================================
+   PAGE-WIDE MUSIC ACTIVATION INTRO ANIMATIONS (1.5s - 2.2s)
+   ============================================================ */
+
+/* 1. Hero Typography Power-On micro-settle */
+.music-active-intro #hero h1 {
+  animation: musicHeroPowerOn 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes musicHeroPowerOn {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  25% {
+    opacity: 0.88;
+    transform: translateY(-2px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: drop-shadow(0 0 16px rgba(16, 185, 129, 0.35));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: none;
+  }
+}
+
+/* 2. Navbar Reactivity */
+.music-active-intro header nav {
+  animation: musicNavPulse 1.4s ease-out forwards;
+}
+@keyframes musicNavPulse {
+  0% { border-color: var(--border); }
+  40% { border-color: var(--accent); }
+  100% { border-color: var(--border); }
+}
+
+.music-active-intro header .font-extrabold {
+  animation: musicLogoGlow 1.4s ease-out forwards;
+}
+@keyframes musicLogoGlow {
+  0% { text-shadow: none; }
+  50% { text-shadow: 0 0 12px #10B981; }
+  100% { text-shadow: none; }
+}
+
+/* 3. Cascading Section Micro-Activation */
+.music-active-intro #hero { animation: musicSectionCascade 1.4s ease-out 0ms forwards; }
+.music-active-intro #about { animation: musicSectionCascade 1.4s ease-out 150ms forwards; }
+.music-active-intro #stack { animation: musicSectionCascade 1.4s ease-out 300ms forwards; }
+.music-active-intro #projects { animation: musicSectionCascade 1.4s ease-out 450ms forwards; }
+.music-active-intro #experience { animation: musicSectionCascade 1.4s ease-out 600ms forwards; }
+.music-active-intro #contact { animation: musicSectionCascade 1.4s ease-out 750ms forwards; }
+
+@keyframes musicSectionCascade {
+  0% { transform: translateY(0); opacity: 1; }
+  35% { transform: translateY(-1.5px); opacity: 0.94; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* 4. Project Cards & Cognivia Accent Highlight */
+.music-active-intro #projects article,
+.music-active-intro #projects .tech-corner-frame {
+  animation: musicCardActivate 1.2s ease-out 450ms forwards;
+}
+
+@keyframes musicCardActivate {
+  0% { transform: translateY(0); border-color: var(--border); }
+  45% { transform: translateY(-2px); border-color: var(--accent); }
+  100% { transform: translateY(0); border-color: var(--border); }
+}
+
+/* 5. Horizontal Technical Signal Beam Sweep */
+@keyframes musicSignalSweep {
+  0% {
+    left: -25%;
+    width: 0%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.75;
+    width: 35vw;
+  }
+  75% {
+    opacity: 0.75;
+    width: 35vw;
+  }
+  100% {
+    left: 110%;
+    width: 0%;
+    opacity: 0;
+  }
+}
+
+.music-signal-beam {
+  animation: musicSignalSweep 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* ============================================================
+   HERO NAME GLOW ANIMATION — TXE
+   ============================================================ */
+
+@keyframes txeNameGlow {
+  0%, 100% {
+    text-shadow:
+      0 0 8px  rgba(255, 255, 255, 0.0),
+      0 0 20px rgba(255, 255, 255, 0.0),
+      0 0 48px rgba(16, 185, 129, 0.0);
+  }
+  50% {
+    text-shadow:
+      0 0 6px  rgba(255, 255, 255, 0.55),
+      0 0 20px rgba(255, 255, 255, 0.28),
+      0 0 48px rgba(16, 185, 129, 0.22),
+      0 0 80px rgba(16, 185, 129, 0.10);
+  }
+}
+
+@keyframes txeNameGlowMuted {
+  0%, 100% {
+    text-shadow:
+      0 0 8px  rgba(136, 136, 136, 0.0),
+      0 0 24px rgba(16, 185, 129, 0.0);
+  }
+  50% {
+    text-shadow:
+      0 0 8px  rgba(160, 160, 160, 0.40),
+      0 0 24px rgba(16, 185, 129, 0.15);
+  }
+}
+
+.txe-name-glow {
+  animation: txeNameGlow 3.6s ease-in-out infinite;
+}
+
+.txe-name-glow-muted {
+  animation: txeNameGlowMuted 3.6s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+/* Subtle static glow in light mode (no pulse) */
+html.light .txe-name-glow {
+  animation: none;
+  text-shadow:
+    0 0 14px rgba(4, 120, 87, 0.12),
+    0 0 28px rgba(4, 120, 87, 0.06);
+}
+
+html.light .txe-name-glow-muted {
+  animation: none;
+  text-shadow: none;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .txe-name-glow,
+  .txe-name-glow-muted {
+    animation: none;
+    text-shadow: none;
+  }
+}
+
+/* ============================================================
+   ADDITIONAL BLINK & GLOW ANIMATIONS
+   ============================================================ */
+
+@keyframes txeScannerBlink {
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px #10b981, 0 0 10px rgba(16,185,129,0.4); }
+  50%       { opacity: 0.55; box-shadow: 0 0 2px #10b981; }
+}
+.txe-scanner-blink { animation: txeScannerBlink 2.2s ease-in-out infinite; }
+
+@keyframes txeCyberPulse {
+  0%, 100% { box-shadow: 0 0 0px rgba(16,185,129,0); }
+  50%       { box-shadow: 0 0 14px rgba(16,185,129,0.22), 0 0 28px rgba(16,185,129,0.08); }
+}
+.txe-cyber-pulse { animation: txeCyberPulse 3.8s ease-in-out infinite; }
+
+@keyframes txeHeadingGlow {
+  0%, 100% { text-shadow: none; }
+  50% { text-shadow: 0 0 8px rgba(255,255,255,0.30), 0 0 20px rgba(16,185,129,0.14); }
+}
+.txe-heading-glow { animation: txeHeadingGlow 4.5s ease-in-out infinite; }
+
+@keyframes txeBorderFlash {
+  0%, 100% { border-color: var(--border-strong); }
+  50%       { border-color: rgba(16,185,129,0.7); box-shadow: 0 0 8px rgba(16,185,129,0.25); }
+}
+.txe-active-flash { animation: txeBorderFlash 2.8s ease-in-out infinite; }
+
+@keyframes txeOnlineGlow {
+  0%, 100% { box-shadow: 0 0 4px #10b981, 0 0 8px rgba(16,185,129,0.5); }
+  50%       { box-shadow: 0 0 8px #10b981, 0 0 20px rgba(16,185,129,0.7), 0 0 40px rgba(16,185,129,0.3); }
+}
+.txe-online-glow { animation: txeOnlineGlow 2.0s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .txe-scanner-blink, .txe-cyber-pulse, .txe-heading-glow,
+  .txe-active-flash, .txe-online-glow {
+    animation: none; box-shadow: none; text-shadow: none;
+  }
 }
 

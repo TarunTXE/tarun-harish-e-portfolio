@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 export type Theme = 'dark' | 'light';
+export type TransitionDirection = 'to-light' | 'to-dark' | null;
 
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
+  isTransitioning: boolean;
+  transitionDirection: TransitionDirection;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -14,26 +17,20 @@ const THEME_STORAGE_KEY = 'txe-theme';
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
-    // 1. Check saved localStorage preference first
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
       if (savedTheme === 'light' || savedTheme === 'dark') {
         return savedTheme;
       }
     }
-    // 2. Default is DARK MODE for the developer portfolio identity
     return 'dark';
   });
 
-  // Apply theme class and metadata
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState<TransitionDirection>(null);
+
   useEffect(() => {
     const root = document.documentElement;
-
-    // Apply temporary class for smooth transitions
-    root.classList.add('theme-transition');
-    const timer = setTimeout(() => {
-      root.classList.remove('theme-transition');
-    }, 350);
 
     if (theme === 'dark') {
       root.classList.add('dark');
@@ -47,24 +44,53 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       root.style.colorScheme = 'light';
     }
 
-    // Persist to localStorage
     try {
       localStorage.setItem(THEME_STORAGE_KEY, theme);
     } catch {
       // Ignore storage errors in restricted contexts
     }
 
-    // Update browser theme-color meta tag
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
       metaThemeColor.setAttribute('content', theme === 'dark' ? '#000000' : '#F5F5F2');
     }
-
-    return () => clearTimeout(timer);
   }, [theme]);
 
   const toggleTheme = () => {
-    setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    // Lock toggle: prevent clicks while 4-second transition is running
+    if (isTransitioning) return;
+
+    const nextTheme: Theme = theme === 'dark' ? 'light' : 'dark';
+    const direction: TransitionDirection = nextTheme === 'light' ? 'to-light' : 'to-dark';
+
+    // Check prefers-reduced-motion
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      setThemeState(nextTheme);
+      return;
+    }
+
+    setIsTransitioning(true);
+    setTransitionDirection(direction);
+
+    // Switch underlying theme state at 2.5s (2500ms), under the cover of the scanbeam & wave
+    const switchTimer = setTimeout(() => {
+      setThemeState(nextTheme);
+    }, 2500);
+
+    // Conclude 4-second reconfiguration sequence cleanly at 4000ms
+    const completeTimer = setTimeout(() => {
+      setIsTransitioning(false);
+      setTransitionDirection(null);
+    }, 4000);
+
+    return () => {
+      clearTimeout(switchTimer);
+      clearTimeout(completeTimer);
+    };
   };
 
   const setTheme = (newTheme: Theme) => {
@@ -72,7 +98,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        toggleTheme,
+        setTheme,
+        isTransitioning,
+        transitionDirection,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

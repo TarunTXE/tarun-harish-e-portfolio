@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { cyberAudio } from '../utils/audio';
 import { skillCategories } from '../data/skills';
+import { StackGraphic } from './graphics/SectionDecorations';
 
 export const TechStack: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -62,35 +63,47 @@ export const TechStack: React.FC = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      className="relative py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-black border-t border-white/10"
+      className="relative py-14 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-[var(--background)] border-t border-[var(--border)] overflow-hidden"
     >
       {/* Anchor for #skills backward compatibility */}
       <div id="skills" className="absolute -top-20" />
 
+      {/* Decorative Technical Node Network & Dot Matrix near Edge */}
+      <div data-music-motion="decorative">
+        <StackGraphic className="top-12 right-6 hidden md:block" />
+      </div>
+
       {/* Section Header: 02 / STACK */}
-      <div className="flex flex-col items-start mb-12 sm:mb-16">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-sm border border-white/15 bg-neutral-950 text-neutral-400 font-mono text-xs uppercase tracking-widest mb-3">
-          <Layers size={12} className="text-white" />
-          <span>02 // STACK</span>
+      <div data-music-motion="section-header" className="flex flex-col items-start mb-8 sm:mb-12 relative z-10">
+        <div className="w-full flex items-center gap-3 mb-3">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-sm border border-[var(--border-strong)] bg-[var(--surface)] text-[var(--foreground)] font-mono text-xs uppercase tracking-widest shrink-0">
+            <Layers size={12} className="text-emerald-500" />
+            <span className="font-bold">02 // STACK</span>
+          </div>
+          <div className="flex-1 h-[1px] bg-gradient-to-r from-[var(--border-strong)] via-[var(--border)] to-transparent" />
+          <span className="hidden sm:inline font-mono text-[10px] text-[var(--muted)] tracking-wider">
+            MATRIX: TECH_SPECS
+          </span>
         </div>
-        <h2 className="font-display font-bold text-3xl sm:text-5xl text-white tracking-tight">
-          TECHNICAL <span className="text-neutral-400">MODULES</span>
+
+        <h2 className="font-display font-bold text-3xl sm:text-5xl text-[var(--foreground)] tracking-tight">
+          TECHNICAL <span className="text-[var(--muted)]">MODULES</span>
         </h2>
-        <p className="mt-3 text-neutral-400 text-sm sm:text-base max-w-2xl font-sans leading-relaxed">
+        <p className="mt-3 text-[var(--muted)] text-sm sm:text-base max-w-2xl font-sans leading-relaxed">
           Interactive modules covering frontend clients, backend runtimes, core programming languages, AI/ML pipelines, and developer tooling.
         </p>
 
         {/* Filter Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 mt-6 p-1 bg-neutral-950 rounded-md border border-white/10">
+        <div className="flex flex-wrap items-center gap-1.5 mt-6 p-1 bg-[var(--surface)] rounded-md border border-[var(--border)] shadow-sm">
           <button
             onClick={() => {
               cyberAudio.playClick();
               setSelectedCategory('all');
             }}
-            className={`px-3 py-1.5 rounded-sm text-xs font-mono transition-all ${
+            className={`px-3 py-1.5 rounded-sm text-xs font-mono transition-all cursor-pointer ${
               selectedCategory === 'all'
-                ? 'bg-white text-black font-bold'
-                : 'text-neutral-400 hover:text-white'
+                ? 'bg-white text-black font-bold shadow-sm'
+                : 'text-[var(--muted)] hover:text-[var(--foreground)]'
             }`}
           >
             ALL MODULES
@@ -102,10 +115,10 @@ export const TechStack: React.FC = () => {
                 cyberAudio.playClick();
                 setSelectedCategory(cat.id);
               }}
-              className={`px-3 py-1.5 rounded-sm text-xs font-mono transition-all ${
+              className={`px-3 py-1.5 rounded-sm text-xs font-mono transition-all cursor-pointer ${
                 selectedCategory === cat.id
-                  ? 'bg-white text-black font-bold'
-                  : 'text-neutral-400 hover:text-white'
+                  ? 'bg-white text-black font-bold shadow-sm'
+                  : 'text-[var(--muted)] hover:text-[var(--foreground)]'
               }`}
             >
               {cat.name}
@@ -115,7 +128,7 @@ export const TechStack: React.FC = () => {
       </div>
 
       {/* Grid of Interactive Technical Modules */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
         {filteredCategories.map((category, index) => {
           const Icon = categoryIcons[category.id] || Layers;
 
@@ -126,25 +139,26 @@ export const TechStack: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.05 }}
-              className="bg-neutral-950 rounded-lg p-5 sm:p-6 border border-white/15 hover:border-white/40 transition-all duration-200 flex flex-col justify-between group"
+              data-music-motion="stack-card"
+              className="bg-[var(--surface)] rounded-lg p-5 sm:p-6 border border-[var(--border-strong)] hover:border-[var(--foreground)] transition-all duration-200 flex flex-col justify-between group shadow-sm"
             >
               <div>
                 {/* Header */}
-                <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+                <div className="flex items-center justify-between pb-3 mb-4 border-b border-[var(--border)]">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 rounded-sm bg-white/10 text-white">
+                    <div className="p-1.5 rounded-sm bg-[var(--surface-secondary)] border border-[var(--border)] text-[var(--foreground)]">
                       <Icon size={16} />
                     </div>
-                    <span className="font-mono font-bold text-sm text-white tracking-wider">
+                    <span className="font-mono font-bold text-sm text-[var(--foreground)] tracking-wider">
                       {category.name}
                     </span>
                   </div>
-                  <span className="font-mono text-[10px] px-2 py-0.5 rounded-sm bg-neutral-900 border border-white/10 text-neutral-400">
+                  <span className="font-mono text-[10px] px-2 py-0.5 rounded-sm bg-[var(--surface-secondary)] border border-[var(--border)] text-[var(--muted)]">
                     {category.badge}
                   </span>
                 </div>
 
-                <p className="text-neutral-400 text-xs leading-relaxed font-sans mb-5">
+                <p className="text-[var(--muted)] text-xs leading-relaxed font-sans mb-5">
                   {category.description}
                 </p>
 
@@ -158,13 +172,13 @@ export const TechStack: React.FC = () => {
                         setHoveredSkill(skill);
                       }}
                       onMouseLeave={() => setHoveredSkill(null)}
-                      className="p-2.5 rounded-md bg-neutral-900/70 border border-white/10 hover:border-white/40 hover:bg-neutral-900 transition-all flex flex-col justify-between group/skill cursor-default"
+                      className="p-2.5 rounded-md bg-[var(--surface-secondary)] border border-[var(--border)] hover:border-[var(--border-strong)] transition-all flex flex-col justify-between group/skill cursor-default"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-xs font-medium text-neutral-200 group-hover/skill:text-white">
+                        <span className="font-mono text-xs font-medium text-[var(--foreground)] group-hover/skill:text-emerald-500 transition-colors">
                           {skill}
                         </span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-neutral-600 group-hover/skill:bg-emerald-400 transition-colors" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--border-strong)] group-hover/skill:bg-emerald-500 transition-colors" />
                       </div>
                     </div>
                   ))}
@@ -172,9 +186,9 @@ export const TechStack: React.FC = () => {
               </div>
 
               {/* Module Footer Info */}
-              <div className="mt-5 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-neutral-500">
-                <span className="flex items-center gap-1 text-emerald-400/80">
-                  <span className="w-1 h-1 rounded-full bg-emerald-400" />
+              <div className="mt-5 pt-3 border-t border-[var(--border)] flex items-center justify-between text-[11px] font-mono text-[var(--muted)]">
+                <span className="flex items-center gap-1 text-emerald-500 font-medium">
+                  <span className="w-1 h-1 rounded-full bg-emerald-500" />
                   STANDARDIZED
                 </span>
                 <span>{category.skills.length} MODULES</span>
@@ -185,19 +199,19 @@ export const TechStack: React.FC = () => {
       </div>
 
       {/* Live Technical Inspector Bar */}
-      <div className="mt-6 p-4 rounded-lg bg-neutral-950 border border-white/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono">
-        <div className="flex items-center gap-2 text-neutral-400">
-          <Terminal size={14} className="text-emerald-400" />
-          <span className="text-neutral-500 uppercase">INSPECTOR:</span>
-          <span className="text-white font-medium">
+      <div className="mt-6 p-4 rounded-lg bg-[var(--surface)] border border-[var(--border-strong)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono shadow-sm relative z-10">
+        <div className="flex items-center gap-2 text-[var(--muted)]">
+          <Terminal size={14} className="text-emerald-500 shrink-0" />
+          <span className="uppercase font-semibold">INSPECTOR:</span>
+          <span className="text-[var(--foreground)] font-medium">
             {hoveredSkill ? hoveredSkill : 'Hover any module tile to inspect telemetry'}
           </span>
         </div>
-        <div className="text-neutral-400 text-[11px]">
+        <div className="text-[var(--muted)] text-[11px]">
           {hoveredSkill && skillContextMap[hoveredSkill] ? (
-            <span className="text-neutral-300">{skillContextMap[hoveredSkill]}</span>
+            <span className="text-[var(--foreground)]">{skillContextMap[hoveredSkill]}</span>
           ) : (
-            <span className="text-neutral-500">SYSTEM :: VERIFIED TECH STACK</span>
+            <span>SYSTEM :: VERIFIED TECH STACK</span>
           )}
         </div>
       </div>

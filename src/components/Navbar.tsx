@@ -17,11 +17,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
   const [activeSection, setActiveSection] = useState('hero');
 
   const navLinks = [
-    { name: 'ABOUT', href: '#about', sectionId: 'about' },
-    { name: 'STACK', href: '#stack', sectionId: 'stack' },
-    { name: 'PROJECTS', href: '#projects', sectionId: 'projects' },
-    { name: 'EXPERIENCE', href: '#experience', sectionId: 'experience' },
-    { name: 'CONTACT', href: '#contact', sectionId: 'contact' },
+    { name: 'ABOUT', sectionId: 'about' },
+    { name: 'STACK', sectionId: 'stack' },
+    { name: 'PROJECTS', sectionId: 'projects' },
+    { name: 'EXPERIENCE', sectionId: 'experience' },
+    { name: 'CONTACT', sectionId: 'contact' },
   ];
 
   useEffect(() => {
@@ -49,10 +49,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNavClick = (href: string) => {
-    cyberAudio.playClick();
+  const handleNavClick = (sectionId: string) => {
+    cyberAudio.playTab();
     setMobileMenuOpen(false);
-    const target = document.querySelector(href);
+    if (sectionId === 'hero' || sectionId === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const target = document.getElementById(sectionId);
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
     }
@@ -63,88 +67,93 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
       <header className="fixed top-0 left-0 right-0 z-40 transition-all duration-300">
         {/* Subtle Progress Bar */}
         <div
-          className="h-[1px] bg-white transition-all duration-100 ease-out shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+          className="h-[2px] bg-emerald-500 transition-all duration-100 ease-out shadow-[0_0_6px_#10b981]"
           style={{ width: `${scrollProgress}%` }}
         />
 
         <nav
           className={`mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 transition-all duration-300 ${
             scrolled
-              ? 'bg-black/90 backdrop-blur-md border-b border-white/10'
+              ? 'bg-[var(--background)]/90 backdrop-blur-md border-b border-[var(--border)] shadow-sm'
               : 'bg-transparent'
           }`}
         >
           <div className="flex items-center justify-between">
             {/* Brand Logo: TXE + Status Indicator */}
-            <a
-              href="#hero"
-              onClick={() => cyberAudio.playClick()}
-              className="flex items-center gap-3 group cursor-pointer"
+            <button
+              type="button"
+              data-music-motion="nav-brand"
+              onClick={() => {
+                cyberAudio.playClick();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="flex items-center gap-3 group cursor-pointer text-left bg-transparent border-0 p-0"
+              aria-label="Tarun Harish E - Return to Top"
             >
               <div className="flex items-center gap-2">
-                <span className="font-mono font-extrabold text-base tracking-widest text-white group-hover:text-neutral-300 transition-colors">
+                <span className="font-mono font-extrabold text-base tracking-widest text-[var(--foreground)] group-hover:text-emerald-500 transition-colors">
                   TXE
                 </span>
-                <span className="font-mono text-neutral-600 text-xs">/</span>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-neutral-950 border border-white/10 text-[10px] font-mono text-neutral-300">
+                <span className="font-mono text-[var(--muted)] text-xs">/</span>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[var(--surface)] border border-[var(--border)] text-[10px] font-mono text-[var(--foreground)] shadow-xs">
                   <span className="relative flex h-1.5 w-1.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 shadow-[0_0_6px_#10b981]" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500 shadow-[0_0_6px_#10b981] txe-online-glow" />
                   </span>
-                  <span className="tracking-wider uppercase text-neutral-300 font-medium">ONLINE</span>
+                  <span className="tracking-wider uppercase font-semibold text-[var(--foreground)]">ONLINE</span>
                 </div>
               </div>
-            </a>
+            </button>
 
-            {/* Desktop Navigation Links: ABOUT, STACK, PROJECTS, EXPERIENCE, CONTACT */}
+            {/* Desktop Navigation Links */}
             <div className="hidden md:flex items-center gap-1 lg:gap-2">
               {navLinks.map((link) => {
                 const isActive = activeSection === link.sectionId;
                 return (
-                  <a
+                  <button
                     key={link.name}
-                    href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavClick(link.href);
-                    }}
+                    type="button"
+                    data-music-motion="nav-item"
+                    onClick={() => handleNavClick(link.sectionId)}
                     onMouseEnter={() => cyberAudio.playHover()}
-                    className={`px-3 py-1.5 rounded-md text-xs font-mono tracking-wider transition-all duration-150 relative ${
+                    className={`px-3 py-1.5 rounded-md text-xs font-mono tracking-wider transition-all duration-150 relative cursor-pointer ${
                       isActive
-                        ? 'text-white bg-white/10 font-bold'
-                        : 'text-neutral-400 hover:text-white hover:bg-white/5'
+                        ? 'text-[var(--foreground)] bg-[var(--surface)] border border-[var(--border)] font-bold shadow-xs'
+                        : 'text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-secondary)] border border-transparent'
                     }`}
                   >
                     {link.name}
                     {isActive && (
-                      <span className="absolute bottom-0 left-2 right-2 h-[1px] bg-white shadow-[0_0_4px_#ffffff]" />
+                      <span className="absolute bottom-0 left-2 right-2 h-[1px] bg-emerald-500 shadow-[0_0_4px_#10b981] txe-scanner-blink" />
                     )}
-                  </a>
+                  </button>
                 );
               })}
             </div>
 
-            {/* Quick Actions: Resume, Terminal CLI, Theme Toggle, Hamburger */}
+            {/* Quick Actions: Resume, Terminal CLI, Theme Toggle, Music */}
             <div className="flex items-center gap-2">
               <a
                 href={personalData.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                data-music-motion="nav-action"
                 onClick={() => cyberAudio.playClick()}
                 onMouseEnter={() => cyberAudio.playHover()}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/5 border border-white/15 text-neutral-300 hover:text-white hover:border-white/40 text-xs font-mono transition-all"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] hover:border-[var(--foreground)] text-xs font-mono transition-all shadow-xs"
               >
                 <FileText size={12} />
                 <span>RESUME</span>
-                <ExternalLink size={10} className="text-neutral-400" />
+                <ExternalLink size={10} className="text-[var(--muted)]" />
               </a>
               <button
+                data-music-motion="nav-action"
                 onClick={() => {
                   cyberAudio.playClick();
                   onOpenResume();
                 }}
                 onMouseEnter={() => cyberAudio.playHover()}
-                className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/5 border border-white/15 text-neutral-300 hover:text-white hover:border-white/40 text-xs font-mono transition-all cursor-pointer"
+                className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] hover:border-[var(--foreground)] text-xs font-mono transition-all cursor-pointer shadow-xs"
                 title="Preview Interactive CV"
               >
                 <FileText size={12} />
@@ -152,12 +161,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
               </button>
 
               <button
+                data-music-motion="nav-action"
                 onClick={() => {
                   cyberAudio.playClick();
                   onOpenTerminal();
                 }}
                 onMouseEnter={() => cyberAudio.playHover()}
-                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-white/15 text-neutral-300 hover:text-white hover:border-white/40 text-xs font-mono transition-all"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] hover:border-[var(--foreground)] text-xs font-mono transition-all cursor-pointer shadow-xs"
                 title="Launch CLI Terminal"
               >
                 <Terminal size={13} />
@@ -169,7 +179,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
                 <MusicPlayer variant="nav" />
               </div>
 
-              {/* Desktop Minimal Terminal Toggle: [ ☾ DARK ] / [ ☀ LIGHT ] */}
+              {/* Desktop Theme Toggle: [ ☾ DARK ] / [ ☀ LIGHT ] */}
               <div className="hidden sm:block">
                 <ThemeToggle variant="nav" />
               </div>
@@ -183,7 +193,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
               {/* Mobile Hamburger Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden w-9 h-9 rounded-md border border-white/15 bg-neutral-950 flex items-center justify-center text-white active:scale-95 transition-transform"
+                className="md:hidden w-9 h-9 rounded-md border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center text-[var(--foreground)] active:scale-95 transition-transform cursor-pointer shadow-xs"
                 aria-label="Toggle navigation menu"
               >
                 {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -195,20 +205,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
 
       {/* Fullscreen Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl px-6 pt-20 pb-8 flex flex-col justify-between overflow-y-auto animate-in fade-in duration-200">
+        <div className="md:hidden fixed inset-0 z-50 bg-[var(--background)]/95 backdrop-blur-2xl px-6 pt-20 pb-8 flex flex-col justify-between overflow-y-auto animate-in fade-in duration-200 text-[var(--foreground)]">
           <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-2">
+            <div className="flex items-center justify-between pb-4 border-b border-[var(--border)] mb-2">
               <div className="flex items-center gap-2">
-                <span className="font-mono font-bold text-lg text-white">TXE</span>
-                <span className="text-neutral-600 font-mono">/</span>
-                <span className="flex items-center gap-1.5 text-xs font-mono text-emerald-400">
+                <span className="font-mono font-bold text-lg text-[var(--foreground)]">TXE</span>
+                <span className="text-[var(--muted)] font-mono">/</span>
+                <span className="flex items-center gap-1.5 text-xs font-mono text-emerald-500">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   ONLINE
                 </span>
               </div>
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-9 h-9 rounded-md border border-white/15 bg-neutral-900 flex items-center justify-center text-white"
+                className="w-9 h-9 rounded-md border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center text-[var(--foreground)] cursor-pointer"
                 aria-label="Close menu"
               >
                 <X size={18} />
@@ -218,27 +228,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
             {navLinks.map((link) => {
               const isActive = activeSection === link.sectionId;
               return (
-                <a
+                <button
                   key={link.name}
-                  href={link.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick(link.href);
-                  }}
-                  className={`min-h-[44px] px-4 py-3 rounded-md border flex items-center justify-between text-xs font-mono tracking-wider transition-all ${
+                  type="button"
+                  onClick={() => handleNavClick(link.sectionId)}
+                  className={`min-h-[44px] px-4 py-3 rounded-md border flex items-center justify-between text-xs font-mono tracking-wider transition-all cursor-pointer w-full text-left ${
                     isActive
-                      ? 'bg-white text-black font-bold border-white'
-                      : 'border-white/10 text-neutral-300 bg-neutral-950/60 hover:border-white/30 hover:text-white'
+                      ? 'bg-white text-black font-bold border-white shadow-sm'
+                      : 'border-[var(--border)] text-[var(--foreground)] bg-[var(--surface)] hover:border-[var(--foreground)]'
                   }`}
                 >
                   <span>{link.name}</span>
                   <span className="text-xs opacity-60 font-sans">&rarr;</span>
-                </a>
+                </button>
               );
             })}
           </div>
 
-          <div className="pt-6 border-t border-white/10 flex flex-col gap-2.5">
+          <div className="pt-6 border-t border-[var(--border)] flex flex-col gap-2.5">
             {/* Mobile Music Player Control */}
             <div className="mb-1">
               <MusicPlayer variant="drawer" />
@@ -253,7 +260,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
               href={personalData.resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="min-h-[44px] px-4 py-2.5 rounded-md bg-white text-black font-mono font-bold text-xs flex items-center justify-center gap-2"
+              className="min-h-[44px] px-4 py-2.5 rounded-md bg-white text-black font-mono font-bold text-xs flex items-center justify-center gap-2 shadow-sm"
             >
               <FileText size={14} />
               <span>DOWNLOAD RESUME (PDF)</span>
@@ -263,7 +270,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
                 setMobileMenuOpen(false);
                 onOpenResume();
               }}
-              className="min-h-[44px] px-4 py-2.5 rounded-md bg-neutral-900 border border-white/15 text-neutral-300 font-mono text-xs flex items-center justify-center gap-2"
+              className="min-h-[44px] px-4 py-2.5 rounded-md bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] font-mono text-xs flex items-center justify-center gap-2 cursor-pointer"
             >
               <FileText size={14} />
               <span>PREVIEW INTERACTIVE CV</span>
@@ -274,13 +281,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
                 setMobileMenuOpen(false);
                 onOpenTerminal();
               }}
-              className="min-h-[44px] px-4 py-2.5 rounded-md bg-neutral-950 border border-white/15 text-neutral-300 font-mono text-xs flex items-center justify-center gap-2"
+              className="min-h-[44px] px-4 py-2.5 rounded-md bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] font-mono text-xs flex items-center justify-center gap-2 cursor-pointer"
             >
               <Terminal size={14} />
               <span>OPEN TERMINAL CLI</span>
             </button>
 
-            <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 pt-2">
+            <div className="flex items-center justify-between text-[11px] font-mono text-[var(--muted)] pt-2">
               <span>{personalData.email}</span>
               <span>KERALA, IN</span>
             </div>

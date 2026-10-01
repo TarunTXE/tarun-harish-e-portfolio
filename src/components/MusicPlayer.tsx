@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, VolumeX, Play, Pause, Music } from 'lucide-react';
+import { Volume2, VolumeX, Play, Music } from 'lucide-react';
 import { useMusic } from '../context/MusicContext';
+import { useSoundSettings } from '../hooks/useUISound';
 import { cyberAudio } from '../utils/audio';
 
 interface MusicPlayerProps {
@@ -23,7 +24,10 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     toggleMute,
   } = useMusic();
 
+  const { isSoundEnabled, toggleSound } = useSoundSettings();
+
   const [panelOpen, setPanelOpen] = useState(false);
+  const [isActivating, setIsActivating] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Close volume popover when clicking outside
@@ -39,13 +43,26 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [panelOpen]);
 
+  // Audio activation animation (~900ms)
   const handlePlayToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    cyberAudio.playClick();
     if (!isAvailable) {
+      cyberAudio.playConfirm();
       setPanelOpen(true);
       return;
     }
+
+    if (!isPlaying) {
+      cyberAudio.playMusicStart();
+      // Trigger 900ms audio activation animation
+      setIsActivating(true);
+      setTimeout(() => {
+        setIsActivating(false);
+      }, 950);
+    } else {
+      cyberAudio.playMusicPause();
+    }
+
     togglePlay();
   };
 
@@ -57,33 +74,47 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
   // 1. Mobile Drawer Variant
   if (variant === 'drawer') {
     return (
-      <div className={`p-3 rounded-md border bg-neutral-950/80 border-white/10 dark:bg-neutral-950/80 dark:border-white/10 light:bg-white light:border-neutral-300 font-mono text-xs ${className}`}>
+      <div className={`p-3 rounded-md border font-mono text-xs transition-colors bg-[var(--surface)] border-[var(--border)] ${className}`}>
         <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-2">
-            <Music size={14} className={isPlaying ? 'text-emerald-400' : 'text-neutral-400'} />
-            <span className="font-semibold text-neutral-300 dark:text-neutral-300 light:text-neutral-800 uppercase tracking-wider">
+            <Music size={14} className={isPlaying ? 'text-emerald-500' : 'text-[var(--muted)]'} />
+            <span className="font-semibold text-[var(--foreground)] uppercase tracking-wider">
               AUDIO STREAM
             </span>
           </div>
-          <span className="text-[11px] text-neutral-400 font-mono">
+          <span className="text-[11px] text-[var(--muted)] font-mono">
             {isPlaying ? formattedTime : 'PAUSED'}
           </span>
         </div>
 
         {isAvailable ? (
           <div className="space-y-2.5">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 relative">
               <button
                 onClick={handlePlayToggle}
-                className={`flex-1 min-h-[38px] px-3 py-1.5 rounded border flex items-center justify-center gap-2 font-bold tracking-wider uppercase transition-all ${
+                className={`flex-1 min-h-[38px] px-3 py-1.5 rounded border flex items-center justify-center gap-2 font-bold tracking-wider uppercase transition-all cursor-pointer relative overflow-hidden ${
                   isPlaying
-                    ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400'
-                    : 'bg-white/5 border-white/15 text-neutral-300 hover:text-white dark:bg-white/5 dark:border-white/15 light:bg-neutral-100 light:border-neutral-300 light:text-neutral-800'
+                    ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-500'
+                    : 'bg-[var(--surface-secondary)] border-[var(--border)] text-[var(--foreground)] hover:border-[var(--foreground)]'
                 }`}
-                aria-label={isPlaying ? 'Pause background music' : 'Play background music'}
+                aria-label={isPlaying ? 'Pause music' : 'Play music'}
               >
-                {isPlaying ? <Pause size={12} /> : <Play size={12} />}
-                <span>{isPlaying ? 'PAUSE [ ♪ ON ]' : 'PLAY [ ♪ OFF ]'}</span>
+                {/* Outward Signal Ripple on activation */}
+                {isActivating && (
+                  <span className="absolute inset-0 bg-emerald-400/20 music-pulse-ripple pointer-events-none rounded" />
+                )}
+
+                {isPlaying ? (
+                  <span className="flex items-end gap-0.5 h-3">
+                    <span className="w-0.5 bg-emerald-500 rounded-full music-bar-1" />
+                    <span className="w-0.5 bg-emerald-500 rounded-full music-bar-2" />
+                    <span className="w-0.5 bg-emerald-500 rounded-full music-bar-3" />
+                    <span className="w-0.5 bg-emerald-500 rounded-full music-bar-4" />
+                  </span>
+                ) : (
+                  <Play size={12} />
+                )}
+                <span>{isPlaying ? 'PAUSE MUSIC' : 'PLAY MUSIC'}</span>
               </button>
 
               <button
@@ -91,16 +122,15 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
                   cyberAudio.playClick();
                   toggleMute();
                 }}
-                className="w-9 h-[38px] rounded border border-white/15 dark:border-white/15 light:border-neutral-300 bg-white/5 dark:bg-white/5 light:bg-neutral-100 flex items-center justify-center text-neutral-300 dark:text-neutral-300 light:text-neutral-700"
+                className="w-9 h-[38px] rounded border border-[var(--border)] bg-[var(--surface-secondary)] flex items-center justify-center text-[var(--foreground)] transition-colors cursor-pointer"
                 aria-label={isMuted ? 'Unmute music' : 'Mute music'}
               >
                 {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
               </button>
             </div>
 
-            {/* Volume slider */}
-            <div className="flex items-center gap-2 pt-1 text-[11px] text-neutral-400">
-              <span className="text-[10px] uppercase tracking-wider">VOL</span>
+            <div className="flex items-center gap-2 pt-1">
+              <Volume2 size={12} className="text-[var(--muted)]" />
               <input
                 type="range"
                 min="0"
@@ -108,96 +138,99 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
                 step="0.05"
                 value={isMuted ? 0 : volume}
                 onChange={handleVolumeChange}
-                className="flex-1 accent-emerald-500 cursor-pointer h-1 bg-neutral-800 rounded"
-                aria-label="Adjust music volume"
+                className="w-full accent-emerald-500 cursor-pointer h-1 bg-[var(--border-strong)] rounded"
+                aria-label="Volume slider"
               />
-              <span className="w-8 text-right font-mono text-[10px]">
+              <span className="w-7 text-right text-[10px] text-[var(--muted)] font-mono">
                 {Math.round((isMuted ? 0 : volume) * 100)}%
               </span>
             </div>
           </div>
         ) : (
-          <div className="text-[11px] text-neutral-400 py-1 font-mono">
-            [ ♪ NO AUDIO IN /public/music/ ]
+          <div className="text-[11px] text-[var(--muted)] italic">
+            Audio stream offline
           </div>
         )}
       </div>
     );
   }
 
-  // 2. Compact Icon Variant (for small mobile headers)
+  // 2. Compact Icon Variant (for compact headers or floating bar)
   if (variant === 'compact') {
     return (
-      <button
-        onClick={handlePlayToggle}
-        className={`inline-flex items-center justify-center w-8 h-8 rounded-md border text-xs font-mono transition-all duration-200 cursor-pointer ${
-          isPlaying
-            ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400'
-            : 'bg-white/5 border-white/15 text-neutral-400 hover:text-white dark:border-white/15 light:border-neutral-300 light:text-neutral-700'
-        } ${className}`}
-        aria-label={isPlaying ? 'Pause background music' : 'Play background music'}
-        title={isPlaying ? `Playing (${formattedTime})` : 'Play background music'}
-      >
-        {isPlaying ? (
-          <span className="flex items-center gap-0.5">
-            <span className="w-0.5 h-2 bg-emerald-400 animate-pulse" />
-            <span className="w-0.5 h-3 bg-emerald-400 animate-pulse delay-75" />
-            <span className="w-0.5 h-1.5 bg-emerald-400 animate-pulse delay-150" />
-          </span>
-        ) : (
-          <span className="font-mono text-xs">♪</span>
-        )}
-      </button>
+      <div className="relative inline-block">
+        <button
+          onClick={handlePlayToggle}
+          onMouseEnter={() => cyberAudio.playHover()}
+          className={`inline-flex items-center justify-center w-8 h-8 rounded-md border text-xs font-mono transition-all relative overflow-hidden cursor-pointer ${
+            isPlaying
+              ? 'bg-emerald-500/15 border-emerald-500/50 text-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.2)]'
+              : 'bg-[var(--surface)] border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:border-[var(--foreground)]'
+          } ${className}`}
+          aria-label={isPlaying ? 'Pause ambient music' : 'Play ambient music'}
+          title={isPlaying ? 'Pause music' : 'Play music'}
+        >
+          {/* Signal Pulse on activation */}
+          {isActivating && (
+            <span className="absolute inset-0 bg-emerald-400/30 music-pulse-ripple rounded-md pointer-events-none" />
+          )}
+
+          {isPlaying ? (
+            <span className="flex items-end gap-0.5 h-3" aria-hidden="true">
+              <span className="w-0.5 bg-emerald-500 rounded-full music-bar-1" />
+              <span className="w-0.5 bg-emerald-500 rounded-full music-bar-2" />
+              <span className="w-0.5 bg-emerald-500 rounded-full music-bar-3" />
+            </span>
+          ) : (
+            <span className="font-mono text-xs">♪</span>
+          )}
+        </button>
+      </div>
     );
   }
 
-  // 3. Desktop Terminal Nav Variant: [ ♪ PLAY ] / [ ♪ 01:24 ]
+  // 3. Desktop Terminal Nav Variant: [ ♪ PLAY ] / [ ▂▅▇▅▂ PLAYING ]
   return (
     <div ref={containerRef} className={`relative inline-block ${className}`}>
-      <div className="inline-flex items-center rounded-md border border-white/15 dark:border-white/15 light:border-neutral-300 bg-white/5 dark:bg-white/5 light:bg-white text-xs font-mono transition-all shadow-sm">
+      <div className="inline-flex items-center rounded-md border border-[var(--border)] bg-[var(--surface)] text-xs font-mono transition-all shadow-xs relative">
+        {/* Outward Signal Pulse Ripple originating from button on activation */}
+        {isActivating && (
+          <span className="absolute -inset-1 bg-emerald-400/25 rounded-lg music-pulse-ripple pointer-events-none" />
+        )}
+
         {/* Main Play/Pause Button */}
         <button
           onClick={handlePlayToggle}
           onMouseEnter={() => cyberAudio.playHover()}
-          className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 transition-colors cursor-pointer select-none ${
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 transition-colors cursor-pointer select-none relative ${
             isPlaying
-              ? 'text-emerald-400 font-semibold'
+              ? 'text-emerald-500 font-semibold'
               : isAvailable
-              ? 'text-neutral-300 hover:text-white dark:text-neutral-300 dark:hover:text-white light:text-neutral-700 light:hover:text-black'
-              : 'text-neutral-500 cursor-help'
+              ? 'text-[var(--muted)] hover:text-[var(--foreground)]'
+              : 'text-[var(--muted)] opacity-60'
           }`}
-          aria-label={
-            !isAvailable
-              ? 'No audio file found in /public/music/'
-              : isPlaying
-              ? `Pause background music (${formattedTime})`
-              : 'Play background music'
-          }
-          title={
-            !isAvailable
-              ? 'Custom music file portfolio.mp3 not found in /public/music/'
-              : isPlaying
-              ? `Audio playing: ${formattedTime} (Click to pause)`
-              : 'Click to play ambient music'
-          }
+          aria-label={isPlaying ? 'Pause ambient music' : 'Play ambient music'}
+          title={isPlaying ? 'Pause music' : 'Play music'}
         >
           {isPlaying ? (
             <>
-              {/* Subtle animated mini equalizer */}
-              <span className="flex items-end gap-0.5 h-2.5" aria-hidden="true">
-                <span className="w-0.5 h-2.5 bg-emerald-400 animate-pulse" />
-                <span className="w-0.5 h-1.5 bg-emerald-400 animate-pulse delay-75" />
-                <span className="w-0.5 h-2 bg-emerald-400 animate-pulse delay-150" />
+              {/* Subtle 5-Bar Mini Equalizer: ▂ ▅ ▇ ▅ ▂ */}
+              <span className="flex items-end gap-0.5 h-3 pb-0.5" aria-hidden="true">
+                <span className="w-0.5 bg-emerald-500 rounded-full music-bar-1" />
+                <span className="w-0.5 bg-emerald-500 rounded-full music-bar-2" />
+                <span className="w-0.5 bg-emerald-500 rounded-full music-bar-3" />
+                <span className="w-0.5 bg-emerald-500 rounded-full music-bar-4" />
+                <span className="w-0.5 bg-emerald-500 rounded-full music-bar-5" />
               </span>
-              <span className="font-mono text-[11px] tracking-wider text-emerald-400">
-                ♪ {formattedTime}
+              <span className="font-mono text-[11px] tracking-wider font-semibold text-emerald-500">
+                PLAYING
               </span>
             </>
           ) : (
             <>
-              <span className="font-mono text-xs text-neutral-400 dark:text-neutral-400 light:text-neutral-500">♪</span>
+              <span className="font-mono text-xs text-[var(--muted)]">♪</span>
               <span className="font-mono text-[11px] tracking-wider font-semibold">
-                OFF
+                PLAY MUSIC
               </span>
             </>
           )}
@@ -210,8 +243,8 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
               cyberAudio.playClick();
               setPanelOpen(!panelOpen);
             }}
-            className="px-1.5 py-1.5 border-l border-white/10 dark:border-white/10 light:border-neutral-200 text-neutral-400 hover:text-white dark:hover:text-white light:hover:text-black transition-colors cursor-pointer"
-            aria-label="Audio volume settings"
+            className="px-1.5 py-1.5 border-l border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
+            aria-label="Audio settings"
             title="Adjust volume"
           >
             {isMuted ? <VolumeX size={11} /> : <Volume2 size={11} />}
@@ -221,9 +254,9 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
       {/* Popover Volume Control Panel */}
       {panelOpen && (
-        <div className="absolute right-0 top-full mt-2 w-48 p-3 rounded-lg border border-white/15 dark:border-white/15 light:border-neutral-300 bg-neutral-950/95 dark:bg-neutral-950/95 light:bg-white shadow-2xl backdrop-blur-md z-50 animate-in fade-in slide-in-from-top-1 duration-150 font-mono text-xs">
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 dark:border-white/10 light:border-neutral-200">
-            <span className="text-[10px] text-neutral-400 uppercase tracking-widest font-semibold">
+        <div className="absolute right-0 top-full mt-2 w-44 p-3 rounded-lg border border-[var(--border-strong)] bg-[var(--surface)] text-[var(--foreground)] shadow-2xl backdrop-blur-md z-50 animate-in fade-in slide-in-from-top-1 duration-150 font-mono text-xs">
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-[var(--border)]">
+            <span className="text-[10px] text-[var(--muted)] uppercase tracking-widest font-semibold">
               AUDIO CONTROL
             </span>
             <button
@@ -231,7 +264,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
                 cyberAudio.playClick();
                 toggleMute();
               }}
-              className="text-[10px] text-neutral-300 hover:text-emerald-400 flex items-center gap-1 cursor-pointer"
+              className="text-[10px] text-[var(--foreground)] hover:text-emerald-500 flex items-center gap-1 cursor-pointer"
               aria-label={isMuted ? 'Unmute' : 'Mute'}
             >
               {isMuted ? <VolumeX size={12} /> : <Volume2 size={12} />}
@@ -247,16 +280,33 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
               step="0.05"
               value={isMuted ? 0 : volume}
               onChange={handleVolumeChange}
-              className="w-full accent-emerald-500 cursor-pointer h-1 bg-neutral-800 dark:bg-neutral-800 light:bg-neutral-200 rounded"
-              aria-label="Adjust music volume"
+              className="w-full accent-emerald-500 cursor-pointer h-1 bg-[var(--border-strong)] rounded"
+              aria-label="Adjust volume"
             />
-            <span className="w-8 text-right font-mono text-[10px] text-neutral-300 dark:text-neutral-300 light:text-neutral-700">
+            <span className="w-8 text-right font-mono text-[10px] text-[var(--muted)]">
               {Math.round((isMuted ? 0 : volume) * 100)}%
             </span>
           </div>
 
-          <div className="mt-2 text-[9px] text-neutral-500 font-mono truncate">
-            /public/music/portfolio.mp3
+          <div className="mt-2 pt-1.5 border-t border-[var(--border)] text-[10px] text-[var(--muted)] font-mono flex items-center justify-between">
+            <span>TXE // AMBIENT</span>
+            <span>{isPlaying ? formattedTime : 'OFF'}</span>
+          </div>
+
+          <div className="mt-2 pt-2 border-t border-[var(--border)] flex items-center justify-between text-[10px] font-mono">
+            <span className="text-[var(--muted)] uppercase tracking-wider">UI SOUNDS</span>
+            <button
+              onClick={() => {
+                toggleSound();
+              }}
+              className={`px-2 py-0.5 rounded border text-[10px] cursor-pointer transition-colors ${
+                isSoundEnabled
+                  ? 'border-emerald-500/40 text-emerald-500 bg-emerald-500/10 font-semibold'
+                  : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--foreground)]'
+              }`}
+            >
+              {isSoundEnabled ? 'ENABLED' : 'MUTED'}
+            </button>
           </div>
         </div>
       )}

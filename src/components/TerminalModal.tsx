@@ -23,18 +23,18 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
     {
       command: 'sys.init',
       output: (
-        <div className="text-zinc-300">
-          <p className="text-white font-bold tracking-wide">
+        <div className="text-[var(--muted)]">
+          <p className="text-[var(--foreground)] font-bold tracking-wide">
             Tarun Harish Terminal Interface v3.0.0 [UNIX x86_64]
           </p>
-          <p className="text-zinc-500 text-xs mt-0.5">
-            Type <span className="text-white font-semibold underline underline-offset-2">'help'</span> for available commands or <span className="text-white font-semibold underline underline-offset-2">'about'</span> to view bio telemetry.
+          <p className="text-[var(--muted)] text-xs mt-0.5">
+            Type <span className="text-[var(--foreground)] font-semibold underline underline-offset-2">'help'</span> for available commands or <span className="text-[var(--foreground)] font-semibold underline underline-offset-2">'about'</span> to view bio telemetry.
           </p>
         </div>
       ),
     },
   ]);
-  const [isMatrixMode, setIsMatrixMode] = useState(false);
+  const [isPhosphorMode, setIsPhosphorMode] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -61,56 +61,56 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
     switch (trimmed) {
       case 'help':
         output = (
-          <div className="space-y-1 text-zinc-300">
-            <p className="text-white font-bold">Available Commands:</p>
-            <p><span className="text-white font-semibold">about</span>      - Display developer identity & education</p>
-            <p><span className="text-white font-semibold">skills</span>     - List technical competencies & toolchains</p>
-            <p><span className="text-white font-semibold">experience</span> - View industry internships & roles</p>
-            <p><span className="text-white font-semibold">projects</span>   - View active GitHub repositories</p>
-            <p><span className="text-white font-semibold">cognivia</span>   - Inspect Cognivia AI learning assistant architecture</p>
-            <p><span className="text-white font-semibold">resume</span>     - Open PDF curriculum vitae in new tab</p>
-            <p><span className="text-white font-semibold">contact</span>    - Display email, phone & social uplinks</p>
-            <p><span className="text-white font-semibold">matrix</span>     - Toggle monochrome phosphor glow mode</p>
-            <p><span className="text-white font-semibold">clear</span>      - Clear terminal buffer</p>
-            <p><span className="text-white font-semibold">exit</span>       - Close terminal window</p>
+          <div className="space-y-1 text-[var(--muted)]">
+            <p className="text-[var(--foreground)] font-bold">Available Commands:</p>
+            <p><span className="text-[var(--foreground)] font-semibold">about</span>      - Display developer identity & education</p>
+            <p><span className="text-[var(--foreground)] font-semibold">skills</span>     - List technical competencies & toolchains</p>
+            <p><span className="text-[var(--foreground)] font-semibold">experience</span> - View industry internships & roles</p>
+            <p><span className="text-[var(--foreground)] font-semibold">projects</span>   - View active GitHub repositories</p>
+            <p><span className="text-[var(--foreground)] font-semibold">cognivia</span>   - Inspect Cognivia AI learning assistant architecture</p>
+            <p><span className="text-[var(--foreground)] font-semibold">resume</span>     - Open PDF curriculum vitae in new tab</p>
+            <p><span className="text-[var(--foreground)] font-semibold">contact</span>    - Display email, phone & social uplinks</p>
+            <p><span className="text-[var(--foreground)] font-semibold">phosphor</span>   - Toggle amber/green terminal phosphor glow</p>
+            <p><span className="text-[var(--foreground)] font-semibold">clear</span>      - Clear terminal buffer</p>
+            <p><span className="text-[var(--foreground)] font-semibold">exit</span>       - Close terminal window</p>
           </div>
         );
         break;
 
       case 'about':
         output = (
-          <div className="space-y-1 text-zinc-300">
-            <p className="text-white font-bold">{personalData.name} — {personalData.primaryTitle}</p>
+          <div className="space-y-1 text-[var(--muted)]">
+            <p className="text-[var(--foreground)] font-bold">{personalData.name} — {personalData.primaryTitle}</p>
             <p>Degree: {educationData[0].degree} in {educationData[0].field}</p>
             <p>Institution: {educationData[0].institution}</p>
             <p>Location: {educationData[0].location} ({educationData[0].period})</p>
-            <p className="text-zinc-400 text-xs mt-1">{personalData.summary}</p>
+            <p className="text-[var(--muted)] text-xs mt-1">{personalData.summary}</p>
           </div>
         );
         break;
 
       case 'skills':
         output = (
-          <div className="space-y-1 text-zinc-300">
-            <p className="text-white font-bold">Technical Competencies:</p>
-            <p><span className="text-zinc-400">Frontend:</span> React, Vite, JavaScript, HTML, CSS, Tailwind CSS</p>
-            <p><span className="text-zinc-400">Backend:</span> Node.js, Express.js, MongoDB, JWT, REST APIs</p>
-            <p><span className="text-zinc-400">Languages:</span> C, C++, Java, Python, SQL</p>
-            <p><span className="text-zinc-400">AI / ML:</span> Python, Machine Learning, RAG, LLM, Google Gemini API</p>
-            <p><span className="text-zinc-400">Tools:</span> Git, GitHub, VS Code, Vercel</p>
+          <div className="space-y-1 text-[var(--muted)]">
+            <p className="text-[var(--foreground)] font-bold">Technical Competencies:</p>
+            <p><span className="text-[var(--foreground)]">Frontend:</span> React, Vite, JavaScript, HTML, CSS, Tailwind CSS</p>
+            <p><span className="text-[var(--foreground)]">Backend:</span> Node.js, Express.js, MongoDB, JWT, REST APIs</p>
+            <p><span className="text-[var(--foreground)]">Languages:</span> C, C++, Java, Python, SQL</p>
+            <p><span className="text-[var(--foreground)]">AI / ML:</span> Python, Machine Learning, RAG, LLM, Google Gemini API</p>
+            <p><span className="text-[var(--foreground)]">Tools:</span> Git, GitHub, VS Code, Vercel</p>
           </div>
         );
         break;
 
       case 'experience':
         output = (
-          <div className="space-y-2 text-zinc-300">
-            <p className="text-white font-bold">Experience History:</p>
+          <div className="space-y-2 text-[var(--muted)]">
+            <p className="text-[var(--foreground)] font-bold">Experience History:</p>
             {experiencesData.map((e) => (
               <div key={e.id} className="text-xs">
-                <p className="text-white font-semibold">{e.role} @ {e.company} ({e.period})</p>
-                <p className="text-zinc-400">{e.location}</p>
-                <p className="text-zinc-300">{e.points[0]}</p>
+                <p className="text-[var(--foreground)] font-semibold">{e.role} @ {e.company} ({e.period})</p>
+                <p className="text-[var(--muted)]">{e.location}</p>
+                <p className="text-[var(--foreground)]">{e.points[0]}</p>
               </div>
             ))}
           </div>
@@ -119,12 +119,12 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
 
       case 'projects':
         output = (
-          <div className="space-y-1.5 text-zinc-300">
-            <p className="text-white font-bold">Synchronized Repositories:</p>
+          <div className="space-y-1.5 text-[var(--muted)]">
+            <p className="text-[var(--foreground)] font-bold">Synchronized Repositories:</p>
             {repositoriesData.map((p) => (
               <p key={p.id} className="text-xs">
-                <span className="text-white font-semibold">{p.title}</span> &bull; {p.language} &bull;{' '}
-                <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white underline underline-offset-2">
+                <span className="text-[var(--foreground)] font-semibold">{p.title}</span> &bull; {p.language} &bull;{' '}
+                <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--foreground)] underline underline-offset-2">
                   {p.githubUrl}
                 </a>
               </p>
@@ -135,11 +135,11 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
 
       case 'cognivia':
         output = (
-          <div className="space-y-1 text-zinc-300">
-            <p className="text-white font-bold">Cognivia — AI-Powered Personalized Learning Assistant</p>
+          <div className="space-y-1 text-[var(--muted)]">
+            <p className="text-[var(--foreground)] font-bold">Cognivia — AI-Powered Personalized Learning Assistant</p>
             <p>Architecture: React + Vite + Express REST API + Google Gemini API</p>
             <p>Features: AI study planner, topic-specific notes, interactive quizzes, weak topic diagnostics</p>
-            <p>Live Demo: <a href="https://cognivia-ivory.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-white underline">https://cognivia-ivory.vercel.app/</a></p>
+            <p>Live Demo: <a href="https://cognivia-ivory.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-emerald-500 underline">https://cognivia-ivory.vercel.app/</a></p>
           </div>
         );
         break;
@@ -147,7 +147,7 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
       case 'resume':
         window.open(personalData.resumeUrl, '_blank');
         output = (
-          <p className="text-white">
+          <p className="text-[var(--foreground)]">
             Opening verified curriculum vitae ({personalData.resumeUrl}) in a new browser tab...
           </p>
         );
@@ -155,21 +155,22 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
 
       case 'contact':
         output = (
-          <div className="space-y-1 text-zinc-300">
-            <p className="text-white font-bold">Communication Uplinks:</p>
-            <p>Email: <a href={`mailto:${personalData.email}`} className="text-zinc-300 hover:text-white underline underline-offset-2">{personalData.email}</a></p>
+          <div className="space-y-1 text-[var(--muted)]">
+            <p className="text-[var(--foreground)] font-bold">Communication Uplinks:</p>
+            <p>Email: <a href={`mailto:${personalData.email}`} className="text-[var(--foreground)] underline underline-offset-2">{personalData.email}</a></p>
             <p>Phone: {personalData.phone}</p>
-            <p>GitHub: <a href={personalData.githubUrl} target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white underline underline-offset-2">{personalData.githubUrl}</a></p>
-            <p>LinkedIn: <a href={personalData.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white underline underline-offset-2">{personalData.linkedinUrl}</a></p>
+            <p>GitHub: <a href={personalData.githubUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--foreground)] underline underline-offset-2">{personalData.githubUrl}</a></p>
+            <p>LinkedIn: <a href={personalData.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-[var(--foreground)] underline underline-offset-2">{personalData.linkedinUrl}</a></p>
           </div>
         );
         break;
 
+      case 'phosphor':
       case 'matrix':
-        setIsMatrixMode(!isMatrixMode);
+        setIsPhosphorMode(!isPhosphorMode);
         output = (
-          <p className="text-white font-mono">
-            {isMatrixMode ? 'Phosphor glow mode deactivated.' : 'Phosphor glow mode activated.'}
+          <p className="text-emerald-500 font-mono">
+            {isPhosphorMode ? 'Phosphor glow mode deactivated.' : 'Phosphor glow mode activated.'}
           </p>
         );
         break;
@@ -185,8 +186,8 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
 
       default:
         output = (
-          <p className="text-zinc-400">
-            Command not recognized: '{cmd}'. Type <span className="text-white underline underline-offset-2">'help'</span> for available commands.
+          <p className="text-[var(--muted)]">
+            Command not recognized: '{cmd}'. Type <span className="text-[var(--foreground)] underline underline-offset-2">'help'</span> for available commands.
           </p>
         );
     }
@@ -211,7 +212,7 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="fixed inset-0 bg-black/80 backdrop-blur-md"
+        className="fixed inset-0 bg-black/75 backdrop-blur-md"
       />
 
       {/* Terminal Window */}
@@ -219,29 +220,29 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
-        className={`relative w-full max-w-3xl rounded-2xl border z-10 overflow-hidden flex flex-col h-[520px] transition-colors bg-[#0A0A0A] ${
-          isMatrixMode
-            ? 'border-white/40 shadow-[0_0_40px_rgba(255,255,255,0.2)]'
-            : 'border-white/15 shadow-[0_0_40px_rgba(255,255,255,0.06)]'
+        className={`relative w-full max-w-3xl rounded-2xl border z-10 overflow-hidden flex flex-col h-[520px] transition-colors bg-[var(--terminal-background)] border-[var(--border-strong)] shadow-2xl ${
+          isPhosphorMode
+            ? 'shadow-[0_0_40px_rgba(16,185,129,0.25)] border-emerald-500/50'
+            : ''
         }`}
       >
         {/* Terminal Header */}
-        <div className="px-4 py-3 bg-[#101010] border-b border-white/10 flex items-center justify-between shrink-0 select-none">
+        <div className="px-4 py-3 bg-[var(--surface-secondary)] border-b border-[var(--border)] flex items-center justify-between shrink-0 select-none">
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-              <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-              <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
             </div>
-            <span className="font-mono text-xs text-zinc-300 ml-2 flex items-center gap-1.5">
-              <TerminalIcon size={12} className="text-white" />
+            <span className="font-mono text-xs text-[var(--foreground)] ml-2 flex items-center gap-1.5 font-medium">
+              <TerminalIcon size={12} className="text-emerald-500" />
               tarun@terminal:~
             </span>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-1 rounded-md text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface)] transition-colors cursor-pointer"
           >
             <X size={15} />
           </button>
@@ -251,16 +252,16 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
         <div
           ref={scrollRef}
           className={`flex-1 p-4 sm:p-6 overflow-y-auto font-mono text-xs sm:text-sm space-y-4 ${
-            isMatrixMode ? 'text-white drop-shadow-[0_0_4px_rgba(255,255,255,0.7)]' : 'text-zinc-200'
+            isPhosphorMode ? 'text-emerald-500 drop-shadow-[0_0_6px_rgba(16,185,129,0.7)]' : 'text-[var(--foreground)]'
           }`}
         >
           {history.map((item, idx) => (
             <div key={idx} className="space-y-1">
-              <div className="flex items-center gap-2 text-white">
-                <span className="text-white font-bold">&gt;</span>
-                <span className="text-zinc-100 font-semibold">{item.command}</span>
+              <div className="flex items-center gap-2 text-[var(--foreground)]">
+                <span className="text-emerald-500 font-bold">&gt;</span>
+                <span className="font-semibold">{item.command}</span>
               </div>
-              <div className="pl-4 border-l border-white/10">{item.output}</div>
+              <div className="pl-4 border-l border-[var(--border)]">{item.output}</div>
             </div>
           ))}
         </div>
@@ -268,20 +269,20 @@ export const TerminalModal: React.FC<TerminalModalProps> = ({ isOpen, onClose })
         {/* Input Prompt */}
         <form
           onSubmit={handleSubmit}
-          className="p-3 sm:p-4 bg-[#0D0D0D] border-t border-white/10 flex items-center gap-2 shrink-0 font-mono text-xs sm:text-sm"
+          className="p-3 sm:p-4 bg-[var(--surface-secondary)] border-t border-[var(--border)] flex items-center gap-2 shrink-0 font-mono text-xs sm:text-sm"
         >
-          <span className="text-white font-bold">&gt;</span>
+          <span className="text-emerald-500 font-bold">&gt;</span>
           <input
             ref={inputRef}
             type="text"
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
-            placeholder="Type 'help' for command manual..."
-            className="flex-1 bg-transparent text-white outline-none placeholder-zinc-600 font-mono"
+            placeholder="Type 'help' for manual..."
+            className="flex-1 bg-transparent text-[var(--foreground)] outline-none placeholder-[var(--muted)] font-mono"
           />
           <button
             type="submit"
-            className="p-1.5 rounded-lg bg-white text-black hover:bg-white/90 transition-colors"
+            className="p-1.5 rounded-md bg-white text-black hover:shadow-md transition-all cursor-pointer"
           >
             <CornerDownLeft size={14} />
           </button>

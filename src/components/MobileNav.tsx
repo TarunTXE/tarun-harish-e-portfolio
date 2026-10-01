@@ -4,17 +4,21 @@ import { cyberAudio } from '../utils/audio';
 
 export const MobileNav: React.FC = () => {
   const navItems = [
-    { icon: Home, label: 'HOME', href: '#hero' },
-    { icon: User, label: 'WHOAMI', href: '#about' },
-    { icon: Layers, label: 'STACK', href: '#stack' },
-    { icon: FolderGit2, label: 'PROJECTS', href: '#projects' },
-    { icon: Briefcase, label: 'CAREER', href: '#experience' },
-    { icon: Send, label: 'CONTACT', href: '#contact' },
+    { icon: Home, label: 'HOME', sectionId: 'hero' },
+    { icon: User, label: 'WHOAMI', sectionId: 'about' },
+    { icon: Layers, label: 'STACK', sectionId: 'stack' },
+    { icon: FolderGit2, label: 'PROJECTS', sectionId: 'projects' },
+    { icon: Briefcase, label: 'CAREER', sectionId: 'experience' },
+    { icon: Send, label: 'CONTACT', sectionId: 'contact' },
   ];
 
-  const handleClick = (href: string) => {
-    cyberAudio.playClick();
-    const el = document.querySelector(href);
+  const handleClick = (sectionId: string) => {
+    cyberAudio.playTab();
+    if (sectionId === 'hero' || sectionId === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const el = document.getElementById(sectionId);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
@@ -22,12 +26,12 @@ export const MobileNav: React.FC = () => {
 
   return (
     <nav className="md:hidden fixed bottom-3 inset-x-3 z-40">
-      <div className="bg-neutral-950/95 backdrop-blur-md rounded-md border border-white/15 px-2 py-1 shadow-2xl flex items-center justify-around">
+      <div className="bg-[var(--surface)]/95 backdrop-blur-md rounded-md border border-[var(--border-strong)] px-2 py-1 shadow-2xl flex items-center justify-around">
         {navItems.map((item) => (
           <button
             key={item.label}
-            onClick={() => handleClick(item.href)}
-            className="min-w-[42px] min-h-[40px] flex flex-col items-center justify-center gap-0.5 p-1 text-neutral-400 hover:text-white active:scale-95 transition-all focus:outline-none"
+            onClick={() => handleClick(item.sectionId)}
+            className="min-w-[42px] min-h-[40px] flex flex-col items-center justify-center gap-0.5 p-1 text-[var(--muted)] hover:text-[var(--foreground)] active:scale-95 transition-all focus:outline-none cursor-pointer"
             aria-label={`Navigate to ${item.label}`}
           >
             <item.icon size={15} />

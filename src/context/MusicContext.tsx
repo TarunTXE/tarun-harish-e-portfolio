@@ -5,6 +5,8 @@ interface MusicContextType {
   isPlaying: boolean;
   isAvailable: boolean;
   isMuted: boolean;
+  isMusicActiveIntro: boolean;
+  hasActivatedOnce: boolean;
   volume: number;
   currentTime: number;
   duration: number;
@@ -22,9 +24,13 @@ const VOLUME_STORAGE_KEY = 'txe-music-volume';
 
 export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const introTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [isAvailable, setIsAvailable] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const [isMusicActiveIntro, setIsMusicActiveIntro] = useState(false);
+  const [hasActivatedOnce, setHasActivatedOnce] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -67,6 +73,11 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setIsPlaying(false);
     };
 
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setIsMusicActiveIntro(false);
+    };
+
     const handleError = () => {
       // Audio file not present or unplayable - graceful fallback
       setIsAvailable(false);
@@ -77,32 +88,56 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
+    audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
 
     return () => {
+      if (introTimerRef.current) clearTimeout(introTimerRef.current);
       audio.pause();
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('play', handlePlay);
       audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError);
       audioRef.current = null;
     };
   }, []);
 
   const play = () => {
-    if (!audioRef.current || !isAvailable) return;
+    if (!audioRef.current) return;
+
+    // Check prefers-reduced-motion
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Trigger page-wide activation sequence (1.5-2.2s initial, 800ms resume)
+    const isFirstTime = !hasActivatedOnce;
+    setHasActivatedOnce(true);
+
+    if (introTimerRef.current) clearTimeout(introTimerRef.current);
+
+    setIsPlaying(true);
+    setIsMusicActiveIntro(true);
+    const introDuration = prefersReducedMotion ? 400 : isFirstTime ? 2200 : 1000;
+
+    introTimerRef.current = setTimeout(() => {
+      setIsMusicActiveIntro(false);
+    }, introDuration);
+
+    // Audio starts immediately without delay
     audioRef.current
       .play()
-      .then(() => setIsPlaying(true))
-      .catch(() => {
-        // User gesture required or file missing
-        setIsPlaying(false);
+      .catch((err) => {
+        console.warn('[MusicPlayer] Audio play notice:', err.message);
       });
   };
 
   const pause = () => {
     if (!audioRef.current) return;
+    if (introTimerRef.current) clearTimeout(introTimerRef.current);
+    setIsMusicActiveIntro(false);
     audioRef.current.pause();
     setIsPlaying(false);
   };
@@ -139,11 +174,11 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     audioRef.current.muted = newMuted;
   };
 
-  const formatTime = (secs: number) => {
-    if (isNaN(secs) || secs <= 0) return '00:00';
-    const m = Math.floor(secs / 60);
-    const s = Math.floor(secs % 60);
-    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  const formatTime = (seconds: number) => {
+    if (isNaN(seconds) || seconds === 0) return '00:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -152,6 +187,8 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         isPlaying,
         isAvailable,
         isMuted,
+        isMusicActiveIntro,
+        hasActivatedOnce,
         volume,
         currentTime,
         duration,
