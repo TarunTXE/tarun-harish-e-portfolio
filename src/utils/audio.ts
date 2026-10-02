@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TXE PORTFOLIO - UI SOUND SYSTEM
  * All sounds procedurally synthesised via Web Audio API.
  * MASTER_VOL = 0.45 - clearly audible, non-intrusive.
@@ -219,6 +219,78 @@ class CyberAudio {
       o2.type = 'triangle'; o2.frequency.setValueAtTime(2600,t+0.01); o2.frequency.exponentialRampToValueAtTime(1500,t+0.095);
       g2.gain.setValueAtTime(0.35*MASTER_VOL,t+0.01); g2.gain.exponentialRampToValueAtTime(0.0001,t+0.105);
       o2.connect(g2); g2.connect(comp); o2.start(t+0.01); o2.stop(t+0.11);
+    } catch {}
+  }
+
+  public playDinoHit(): void {
+    if (!this.enabled) return;
+    const ctx = this.getCtx(); if (!ctx) return;
+    try {
+      const t = ctx.currentTime; const comp = this.makeComp(ctx);
+      // Glitchy downward square crash
+      const o1 = ctx.createOscillator(); const g1 = ctx.createGain();
+      o1.type = 'sawtooth';
+      o1.frequency.setValueAtTime(280, t);
+      o1.frequency.exponentialRampToValueAtTime(50, t + 0.22);
+      g1.gain.setValueAtTime(0.65 * MASTER_VOL, t);
+      g1.gain.exponentialRampToValueAtTime(0.0001, t + 0.23);
+      o1.connect(g1); g1.connect(comp);
+      o1.start(t); o1.stop(t + 0.24);
+
+      // White-noise burst
+      const bufferSize = ctx.sampleRate * 0.12;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.4 * MASTER_VOL, t);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      noise.connect(noiseGain); noiseGain.connect(comp);
+      noise.start(t);
+    } catch {}
+  }
+
+  public playDinoScoreMilestone(): void {
+    if (!this.enabled) return;
+    const ctx = this.getCtx(); if (!ctx) return;
+    try {
+      const t = ctx.currentTime; const comp = this.makeComp(ctx);
+      const playNote = (freq: number, start: number, dur: number) => {
+        const o = ctx.createOscillator(); const g = ctx.createGain();
+        o.type = 'square';
+        o.frequency.setValueAtTime(freq, start);
+        g.gain.setValueAtTime(0.35 * MASTER_VOL, start);
+        g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+        o.connect(g); g.connect(comp);
+        o.start(start); o.stop(start + dur + 0.01);
+      };
+      // Classic 8-bit double chime (C6 -> G6)
+      playNote(1046.5, t, 0.09);
+      playNote(1567.98, t + 0.1, 0.18);
+    } catch {}
+  }
+
+  public playDinoCollect(): void {
+    if (!this.enabled) return;
+    const ctx = this.getCtx(); if (!ctx) return;
+    try {
+      const t = ctx.currentTime; const comp = this.makeComp(ctx);
+      const playNote = (freq: number, start: number) => {
+        const o = ctx.createOscillator(); const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(freq, start);
+        g.gain.setValueAtTime(0.4 * MASTER_VOL, start);
+        g.gain.exponentialRampToValueAtTime(0.0001, start + 0.05);
+        o.connect(g); g.connect(comp);
+        o.start(start); o.stop(start + 0.055);
+      };
+      playNote(880, t);
+      playNote(1174.66, t + 0.045);
+      playNote(1760, t + 0.09);
     } catch {}
   }
 }
