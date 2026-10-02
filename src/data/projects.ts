@@ -94,7 +94,7 @@ export const portfolioCreatorProject: ProjectData = {
   stars: 1,
   forks: 0,
   githubUrl: 'https://github.com/TarunTXE/signal-hire',
-  demoUrl: 'https://portfolio-creator-portfolio-builder.vercel.app',
+  demoUrl: 'https://signal-hire-gamma.vercel.app',
   updatedAt: '2026-09-06',
   isFeatured: true,
   category: 'Full Stack',

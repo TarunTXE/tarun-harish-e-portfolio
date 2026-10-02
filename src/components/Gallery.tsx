@@ -24,7 +24,7 @@ export const Gallery: React.FC = () => {
       image: '/projects/portfolio-creator/main page.png',
       description: 'Dynamic portfolio generator with live template WYSIWYG editor and instant PDF compile engine.',
       tags: ['React', 'Node.js', 'MongoDB', 'Vercel'],
-      link: 'https://portfolio-creator-portfolio-builder.vercel.app',
+      link: 'https://signal-hire-gamma.vercel.app',
     },
     {
       id: 'gallery-cognivia',
