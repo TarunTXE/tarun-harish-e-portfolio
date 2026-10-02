@@ -33,7 +33,7 @@ export const AppContent: React.FC = () => {
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 1,
-      touchMultiplier: 2,
+      touchMultiplier: 1.2,
     });
 
     let rafId: number;

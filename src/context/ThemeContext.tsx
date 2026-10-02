@@ -56,41 +56,32 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [theme]);
 
+  const switchTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const completeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const toggleTheme = () => {
-    // Lock toggle: prevent clicks while 4-second transition is running
+    // Prevent double clicking while transition is running
     if (isTransitioning) return;
 
     const nextTheme: Theme = theme === 'dark' ? 'light' : 'dark';
     const direction: TransitionDirection = nextTheme === 'light' ? 'to-light' : 'to-dark';
 
-    // Check prefers-reduced-motion
-    const prefersReducedMotion =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (prefersReducedMotion) {
-      setThemeState(nextTheme);
-      return;
-    }
-
     setIsTransitioning(true);
     setTransitionDirection(direction);
 
-    // Switch underlying theme state at 2.5s (2500ms), under the cover of the scanbeam & wave
-    const switchTimer = setTimeout(() => {
-      setThemeState(nextTheme);
-    }, 2500);
+    if (switchTimerRef.current) clearTimeout(switchTimerRef.current);
+    if (completeTimerRef.current) clearTimeout(completeTimerRef.current);
 
-    // Conclude 4-second reconfiguration sequence cleanly at 4000ms
-    const completeTimer = setTimeout(() => {
+    // Switch underlying theme state at 220ms under the cover of the animated scanbeam & wave
+    switchTimerRef.current = setTimeout(() => {
+      setThemeState(nextTheme);
+    }, 220);
+
+    // Conclude visual reconfiguration sequence cleanly at 750ms
+    completeTimerRef.current = setTimeout(() => {
       setIsTransitioning(false);
       setTransitionDirection(null);
-    }, 4000);
-
-    return () => {
-      clearTimeout(switchTimer);
-      clearTimeout(completeTimer);
-    };
+    }, 750);
   };
 
   const setTheme = (newTheme: Theme) => {

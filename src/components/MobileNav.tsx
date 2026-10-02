@@ -25,7 +25,7 @@ export const MobileNav: React.FC = () => {
   };
 
   return (
-    <nav className="md:hidden fixed bottom-3 inset-x-3 z-40">
+    <nav className="md:hidden fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-3 z-40">
       <div className="bg-[var(--surface)]/95 backdrop-blur-md rounded-md border border-[var(--border-strong)] px-2 py-1 shadow-2xl flex items-center justify-around">
         {navItems.map((item) => (
           <button

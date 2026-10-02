@@ -176,17 +176,19 @@ export const DeveloperDashboard: React.FC = () => {
           </div>
 
           {/* Micro Matrix */}
-          <div
-            className="grid gap-1.5 p-3 rounded-md bg-[var(--surface-secondary)] border border-[var(--border)] mb-4"
-            style={{ gridTemplateColumns: 'repeat(16, minmax(0, 1fr))' }}
-          >
-            {heatmapData.map((level, i) => (
-              <div
-                key={i}
-                className={`aspect-square rounded-[2px] transition-all hover:scale-125 ${getHeatmapColorClass(level)}`}
-                title={`Activity Level ${level}`}
-              />
-            ))}
+          <div className="w-full overflow-x-auto pb-1 scrollbar-none">
+            <div
+              className="grid gap-1.5 p-3 rounded-md bg-[var(--surface-secondary)] border border-[var(--border)] mb-4 min-w-[280px]"
+              style={{ gridTemplateColumns: 'repeat(16, minmax(0, 1fr))' }}
+            >
+              {heatmapData.map((level, i) => (
+                <div
+                  key={i}
+                  className={`aspect-square rounded-[2px] transition-all hover:scale-125 ${getHeatmapColorClass(level)}`}
+                  title={`Activity Level ${level}`}
+                />
+              ))}
+            </div>
           </div>
 
           <div className="flex items-center justify-between text-[11px] font-mono text-[var(--muted)]">

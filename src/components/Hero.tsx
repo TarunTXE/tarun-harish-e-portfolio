@@ -98,18 +98,18 @@ export const Hero: React.FC<HeroProps> = ({ onOpenTerminal, onOpenResume }) => {
 
         {/* Step 2: Large Typography: TARUN HARISH E */}
         <div className="w-full flex justify-center mb-2.5 sm:mb-3">
-          <h1 className="font-display font-extrabold tracking-tighter text-[var(--foreground)] leading-[0.92] text-balance text-[clamp(2.75rem,8.5vw,6.5rem)] select-none">
+          <h1 className="font-display font-extrabold tracking-tighter text-[var(--foreground)] leading-[0.92] text-balance text-[clamp(2.15rem,7.5vw,6.5rem)] select-none">
             <motion.span
               variants={itemVariants}
               data-music-motion="hero-first"
-              className="inline-block text-[var(--foreground)] txe-name-glow"
+              className="inline-block txe-glow-tarun cursor-default transition-all duration-300"
             >
               TARUN
             </motion.span>
             <motion.span
               variants={itemVariants}
               data-music-motion="hero-last"
-              className="inline-block text-[var(--muted)] ml-3 sm:ml-4 txe-name-glow-muted"
+              className="inline-block ml-2.5 sm:ml-4 txe-glow-harish cursor-default transition-all duration-300"
             >
               HARISH E
             </motion.span>

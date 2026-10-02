@@ -171,7 +171,7 @@ export const Projects: React.FC = () => {
 
                   {/* Thumbnail Selector */}
                   {screenshots.length > 1 && (
-                    <div className="grid grid-cols-6 gap-2">
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-2">
                       {screenshots.map((shot, idx) => (
                         <button
                           key={shot}

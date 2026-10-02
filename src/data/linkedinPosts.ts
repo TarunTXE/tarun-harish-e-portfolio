@@ -22,7 +22,7 @@ export const linkedinPostsData: LinkedInPost[] = [
   },
   {
     id: 'portfolio-creator-post',
-    title: 'Project Announcement: Portfolio Creator – Evaluation & Job Portal',
+    title: 'Project Announcement:Signal Hire – Portfolio & Job Portal',
     date: 'September 2026',
     category: 'Project Launch',
     description:

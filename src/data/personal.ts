@@ -1,4 +1,5 @@
 import profileImage from '../assets/profile';
+import resumePdf from '../assets/resume.pdf';
 
 export interface PersonalInfo {
   name: string;
@@ -33,6 +34,6 @@ export const personalData: PersonalInfo = {
   githubUrl: 'https://github.com/TarunTXE',
   githubUsername: 'TarunTXE',
   linkedinUrl: 'https://linkedin.com/in/taruntxe',
-  resumeUrl: '/Tarun_Harish_E_Resume.pdf',
+  resumeUrl: resumePdf || '/Tarun_Harish_E_Resume.pdf',
   avatarUrl: profileImage,
 };

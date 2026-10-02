@@ -19,7 +19,7 @@ export const Gallery: React.FC = () => {
   const galleryItems: GalleryItem[] = [
     {
       id: 'gallery-portfolio',
-      title: 'Portfolio Creator & Career Hub',
+      title: 'Signal Hire - Portfolio & Career Hub',
       category: 'Full Stack SaaS',
       image: 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=800&q=80',
       description: 'Dynamic portfolio generator with live template WYSIWYG editor and instant PDF compile engine.',

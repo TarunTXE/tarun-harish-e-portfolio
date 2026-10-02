@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTheme } from '../context/ThemeContext';
+import { cyberAudio } from '../utils/audio';
 
 interface BootLoaderProps {
   onComplete?: () => void;
@@ -9,25 +10,6 @@ interface BootLoaderProps {
 export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-
-  // Check sessionStorage so loader runs ONCE per browsing session
-  const [shouldShow] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    // Check manual override via URL param (?boot=true or ?reset=true)
-    const params = new URLSearchParams(window.location.search);
-    const hasBootParam = params.get('boot') === 'true' || params.get('reset') === 'true';
-
-    if (hasBootParam) {
-      params.delete('boot');
-      params.delete('reset');
-      const cleanSearch = params.toString() ? `?${params.toString()}` : '';
-      window.history.replaceState(null, '', window.location.pathname + cleanSearch);
-      return true;
-    }
-
-    // Normal session check
-    return sessionStorage.getItem('txeBootShown') !== 'true';
-  });
 
   const [step, setStep] = useState<number>(0);
   const [isUnlocking, setIsUnlocking] = useState<boolean>(false);
@@ -38,91 +20,125 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
     setMounted(true);
   }, []);
 
-  // Expose developer reset hook in window (safe & non-intrusive)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      (window as unknown as { __resetTxeBoot?: () => void }).__resetTxeBoot = () => {
-        sessionStorage.removeItem('txeBootShown');
-        console.log('[TXE BOOT] Boot session reset. Reload page to see the boot sequence.');
-      };
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!shouldShow) {
+  const handleSkip = useCallback(() => {
+    setIsUnlocking(true);
+    setTimeout(() => {
+      setIsComplete(true);
       if (onComplete) onComplete();
-      return;
-    }
+    }, 450);
+  }, [onComplete]);
 
-    const prefersReducedMotion =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Keyboard shortcut (Escape or Space to skip)
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.code === 'Space') {
+        handleSkip();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [handleSkip]);
 
-    // Reduced motion fast-path: 800ms
-    if (prefersReducedMotion) {
-      const fastTimer = setTimeout(() => {
-        sessionStorage.setItem('txeBootShown', 'true');
-        setIsComplete(true);
-        if (onComplete) onComplete();
-      }, 800);
-      return () => clearTimeout(fastTimer);
-    }
-
-    // Precise ~4.0-second cinematic boot sequence (Target: 3.8–4.2s)
+  // Precise ~3.8-second cinematic boot sequence
+  useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    // 0.3s: Tiny central point appears
-    timers.push(setTimeout(() => setStep(1), 300));
+    // 0.25s: Tiny central point appears
+    timers.push(
+      setTimeout(() => {
+        setStep(1);
+      }, 250)
+    );
 
-    // 0.6s: Point expands into thin technical ring
-    timers.push(setTimeout(() => setStep(2), 600));
+    // 0.55s: Point expands into thin technical ring
+    timers.push(
+      setTimeout(() => {
+        setStep(2);
+      }, 550)
+    );
 
-    // 0.9s: "TXE" appears
-    timers.push(setTimeout(() => setStep(3), 900));
+    // 0.85s: "TXE" appears
+    timers.push(
+      setTimeout(() => {
+        setStep(3);
+      }, 850)
+    );
 
-    // 1.2s: "SYSTEM BOOT" appears
-    timers.push(setTimeout(() => setStep(4), 1200));
+    // 1.15s: "SYSTEM BOOT" appears
+    timers.push(
+      setTimeout(() => {
+        setStep(4);
+      }, 1150)
+    );
 
-    // 1.5s: "INITIALIZING DEVELOPER SYSTEM" appears + horizontal line
-    timers.push(setTimeout(() => setStep(5), 1500));
+    // 1.45s: "INITIALIZING DEVELOPER SYSTEM" appears + progress bar
+    timers.push(
+      setTimeout(() => {
+        setStep(5);
+      }, 1450)
+    );
 
-    // 2.0s: CORE ........ OK
-    timers.push(setTimeout(() => setStep(6), 2000));
+    // 1.85s: CORE ........ OK
+    timers.push(
+      setTimeout(() => {
+        setStep(6);
+        cyberAudio.playKey();
+      }, 1850)
+    );
 
-    // 2.3s: INTERFACE ... OK
-    timers.push(setTimeout(() => setStep(7), 2300));
+    // 2.15s: INTERFACE ... OK
+    timers.push(
+      setTimeout(() => {
+        setStep(7);
+        cyberAudio.playKey();
+      }, 2150)
+    );
 
-    // 2.6s: PROJECTS .... OK
-    timers.push(setTimeout(() => setStep(8), 2600));
+    // 2.45s: PROJECTS .... OK
+    timers.push(
+      setTimeout(() => {
+        setStep(8);
+        cyberAudio.playKey();
+      }, 2450)
+    );
 
-    // 2.9s: PORTFOLIO ... OK
-    timers.push(setTimeout(() => setStep(9), 2900));
+    // 2.75s: PORTFOLIO ... OK
+    timers.push(
+      setTimeout(() => {
+        setStep(9);
+        cyberAudio.playKey();
+      }, 2750)
+    );
 
-    // 3.3s: SYSTEM READY ●
-    timers.push(setTimeout(() => setStep(10), 3300));
+    // 3.05s: SYSTEM READY ●
+    timers.push(
+      setTimeout(() => {
+        setStep(10);
+        cyberAudio.playConfirm();
+      }, 3050)
+    );
 
-    // 3.55s: Central ring expands outward & reveals actual portfolio
+    // 3.35s: Iris expansion outward & reveals actual portfolio
     timers.push(
       setTimeout(() => {
         setIsUnlocking(true);
-      }, 3550)
+      }, 3350)
     );
 
-    // 4.05s: Sequence fully completed (~4.0s total); unmount loader cleanly
+    // 3.85s: Complete & cleanly unmount
     timers.push(
       setTimeout(() => {
-        sessionStorage.setItem('txeBootShown', 'true');
         setIsComplete(true);
         if (onComplete) onComplete();
-      }, 4050)
+      }, 3850)
     );
 
     return () => {
       timers.forEach((t) => clearTimeout(t));
     };
-  }, [shouldShow, onComplete]);
+  }, [onComplete]);
 
-  if (!shouldShow || isComplete || !mounted) return null;
+  if (isComplete || !mounted) return null;
 
   // Compute progress percentage based on step
   const progressPercent =
@@ -153,6 +169,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
       role="status"
       aria-live="polite"
       aria-label="TXE Developer System boot sequence initializing"
+      onClick={handleSkip}
     >
       {/* Subtle Technical Grid Background Texture */}
       <div
@@ -192,7 +209,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
         CALICUT, IN • DEV_SYS_STABLE
       </div>
 
-      {/* Expanding Iris/Aperture Ring Animation on Unlock (3.55s - 4.05s) */}
+      {/* Expanding Iris/Aperture Ring Animation on Unlock */}
       {isUnlocking && (
         <div
           className={`absolute rounded-full border-2 txe-ring-expanding pointer-events-none ${
@@ -206,7 +223,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
       <div className="relative z-10 flex flex-col items-center justify-center max-w-sm w-full px-6 text-center">
         {/* Central Circular Element */}
         <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center mb-3">
-          {/* 0.3s: Tiny central green point */}
+          {/* 0.25s: Tiny central green point */}
           <span
             className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
               isDark
@@ -215,7 +232,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
             } ${step >= 1 ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
           />
 
-          {/* 0.6s: Point expands into thin technical circular outline */}
+          {/* 0.55s: Point expands into thin technical circular outline */}
           <div
             className={`absolute inset-0 rounded-full border transition-all duration-500 ease-out ${
               isDark ? 'border-white/35' : 'border-black/35'
@@ -231,7 +248,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
             } ${step >= 2 ? 'opacity-100 scale-100 animate-[spin_12s_linear_infinite]' : 'opacity-0 scale-75'}`}
           />
 
-          {/* 0.9s: "TXE" text appears */}
+          {/* 0.85s: "TXE" text appears */}
           <div
             className={`absolute inset-0 flex items-center justify-center font-mono font-black text-xl sm:text-2xl tracking-[0.25em] pl-1 transition-all duration-300 ${
               step >= 3 ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
@@ -241,7 +258,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
           </div>
         </div>
 
-        {/* 1.2s: "SYSTEM BOOT" label */}
+        {/* 1.15s: "SYSTEM BOOT" label */}
         <div
           className={`font-mono text-[11px] sm:text-xs font-bold tracking-[0.3em] uppercase transition-all duration-300 mb-2 ${
             isDark ? 'text-white' : 'text-black'
@@ -250,7 +267,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
           SYSTEM BOOT
         </div>
 
-        {/* 1.5s: Horizontal technical rule with live progress fill */}
+        {/* 1.45s: Horizontal technical rule with live progress fill */}
         <div className="relative mb-2.5 flex items-center justify-center">
           <div
             className={`h-[1px] relative overflow-hidden transition-all duration-400 ease-out ${
@@ -267,7 +284,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
           </div>
         </div>
 
-        {/* 1.5s: "INITIALIZING DEVELOPER SYSTEM" */}
+        {/* 1.45s: "INITIALIZING DEVELOPER SYSTEM" */}
         <div
           className={`font-mono text-[9px] sm:text-[10px] tracking-[0.22em] uppercase font-semibold transition-all duration-300 mb-4 flex items-center gap-1.5 ${
             isDark ? 'text-neutral-300' : 'text-neutral-700'
@@ -279,9 +296,9 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
           </span>
         </div>
 
-        {/* 2.0s–3.1s: Sequential Status Telemetry Lines (All visible on all screens) */}
+        {/* 1.85s–2.75s: Sequential Status Telemetry Lines */}
         <div className="w-full max-w-[220px] sm:max-w-[240px] font-mono text-[11px] sm:text-xs space-y-1.5 text-left mb-4">
-          {/* Check 1: CORE ........ OK (2.0s) */}
+          {/* Check 1: CORE ........ OK */}
           <div
             className={`flex justify-between items-center transition-all duration-200 ${
               step >= 6 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1'
@@ -292,7 +309,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
             <span className={`font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>OK</span>
           </div>
 
-          {/* Check 2: INTERFACE ... OK (2.3s) */}
+          {/* Check 2: INTERFACE ... OK */}
           <div
             className={`flex justify-between items-center transition-all duration-200 ${
               step >= 7 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1'
@@ -303,7 +320,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
             <span className={`font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>OK</span>
           </div>
 
-          {/* Check 3: PROJECTS .... OK (2.6s) */}
+          {/* Check 3: PROJECTS .... OK */}
           <div
             className={`flex justify-between items-center transition-all duration-200 ${
               step >= 8 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1'
@@ -314,7 +331,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
             <span className={`font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>OK</span>
           </div>
 
-          {/* Check 4: PORTFOLIO ... OK (2.9s) */}
+          {/* Check 4: PORTFOLIO ... OK */}
           <div
             className={`flex justify-between items-center transition-all duration-200 ${
               step >= 9 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1'
@@ -326,7 +343,7 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
           </div>
         </div>
 
-        {/* 3.3s: "SYSTEM READY ●" Indicator */}
+        {/* 3.05s: "SYSTEM READY ●" Indicator */}
         <div
           className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded border font-mono text-[11px] sm:text-xs font-bold tracking-widest uppercase transition-all duration-300 ${
             isDark
@@ -338,6 +355,11 @@ export const BootLoader: React.FC<BootLoaderProps> = ({ onComplete }) => {
         >
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <span>SYSTEM READY</span>
+        </div>
+
+        {/* Subtle Skip Hint */}
+        <div className="mt-4 font-mono text-[9px] tracking-widest text-[var(--muted)] opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+          [ ESC / CLICK TO SKIP ]
         </div>
       </div>
     </div>

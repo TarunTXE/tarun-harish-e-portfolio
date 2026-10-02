@@ -14,6 +14,13 @@ import {
 import confetti from 'canvas-confetti';
 import { useMusic } from '../context/MusicContext';
 import { cyberAudio } from '../utils/audio';
+import {
+  getPlayerId,
+  getStoredPlayerName,
+  setStoredPlayerName,
+  submitGlobalScore,
+} from '../services/leaderboard';
+import { DinoLeaderboardPanel } from './DinoLeaderboardPanel';
 
 // ─── Constants & Storage ───────────────────────────────────────────────────────
 const HIGH_SCORE_KEY = 'txe_dino_runner_high_score';
@@ -77,6 +84,7 @@ export const TXEDinoRunner: React.FC = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [isArcadeModal, setIsArcadeModal] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [sfxMuted, setSfxMuted] = useState<boolean>(() => {
     try {
       return localStorage.getItem(SFX_MUTED_KEY) === 'true';
@@ -97,6 +105,34 @@ export const TXEDinoRunner: React.FC = () => {
   });
   const [isNewRecord, setIsNewRecord] = useState(false);
   const [gameState, setGameState] = useState<'idle' | 'playing' | 'gameover'>('idle');
+
+  // ── Player Initialization & Callsign State ──
+  const [callsign, setCallsign] = useState(() => getStoredPlayerName());
+  const [isInitialized, setIsInitialized] = useState(() => {
+    const stored = getStoredPlayerName();
+    return Boolean(stored && stored.trim().length >= 2);
+  });
+  const [showCallsignModal, setShowCallsignModal] = useState(false);
+  const [callsignInput, setCallsignInput] = useState('');
+  const [callsignError, setCallsignError] = useState<string | null>(null);
+
+  // ── Global Leaderboard Auto-Sync States ──
+  const [autoSyncStatus, setAutoSyncStatus] = useState<
+    'idle' | 'syncing' | 'synced' | 'failed'
+  >('idle');
+  const [syncErrorMessage, setSyncErrorMessage] = useState<string | null>(null);
+  const [leaderboardRefreshKey, setLeaderboardRefreshKey] = useState(0);
+
+  // Refs for race-condition prevention & animation loop
+  const runIdRef = useRef(1);
+  const lastSubmittedRunIdRef = useRef(0);
+  const autoSyncStatusRef = useRef<'idle' | 'syncing' | 'synced' | 'failed'>('idle');
+  const callsignRef = useRef(callsign);
+  const isNewRecordRef = useRef(false);
+  const lastCrashScoreRef = useRef(0);
+  const highScoreRef = useRef(highScore);
+  const scoreDisplayRef = useRef(0);
+  const lastTouchTime = useRef(0);
 
   // DOM Refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -175,7 +211,6 @@ export const TXEDinoRunner: React.FC = () => {
       type = isHigh ? 'drone_high' : 'drone_low';
       width = 32;
       height = 20;
-      // High drone requires ducking or early jump; low drone requires jump
       y = isHigh ? groundY - 48 : groundY - 26;
     } else if (roll < 0.55 && currentScore > 120) {
       type = 'cactus_double';
@@ -252,19 +287,110 @@ export const TXEDinoRunner: React.FC = () => {
     }
   };
 
+  // ── Auto-Score Submission Logic ──
+  const triggerAutoSubmit = useCallback(async (finalScore: number, _runId: number) => {
+    const currentName = getStoredPlayerName().trim() || callsignRef.current.trim();
+    if (!currentName || currentName.length < 2) return;
+
+    setAutoSyncStatus('syncing');
+    autoSyncStatusRef.current = 'syncing';
+    setSyncErrorMessage(null);
+
+    try {
+      const res = await submitGlobalScore(finalScore, currentName);
+      setAutoSyncStatus('synced');
+      autoSyncStatusRef.current = 'synced';
+      setLeaderboardRefreshKey((prev) => prev + 1);
+
+      if (res.updated && res.high_score) {
+        setHighScore(res.high_score);
+        try {
+          localStorage.setItem(HIGH_SCORE_KEY, res.high_score.toString());
+        } catch {
+          // Ignore
+        }
+      }
+    } catch (err: any) {
+      console.warn('[Leaderboard Auto-Sync Notice]:', err.message);
+      setAutoSyncStatus('failed');
+      autoSyncStatusRef.current = 'failed';
+      setSyncErrorMessage(err.message || 'LEADERBOARD SYNC FAILED');
+    }
+  }, []);
+
+  const triggerAutoSubmitRef = useRef(triggerAutoSubmit);
+  useEffect(() => {
+    triggerAutoSubmitRef.current = triggerAutoSubmit;
+  }, [triggerAutoSubmit]);
+
+  const retryAutoSubmit = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    cyberAudio.playConfirm();
+    triggerAutoSubmit(lastCrashScoreRef.current, runIdRef.current);
+  };
+
+  const handleInitializePlayer = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const clean = callsignInput.trim();
+    if (clean.length < 2 || clean.length > 16) {
+      setCallsignError('Name must be 2–16 characters.');
+      return;
+    }
+
+    setStoredPlayerName(clean);
+    getPlayerId(); // Guarantees txe_dino_player_id exists in localStorage
+    setCallsign(clean);
+    callsignRef.current = clean;
+    setIsInitialized(true);
+    setShowCallsignModal(false);
+    setCallsignError(null);
+    cyberAudio.playConfirm();
+  };
+
+  const openCallsignModal = () => {
+    setCallsignInput(callsign || getStoredPlayerName());
+    setCallsignError(null);
+    setShowCallsignModal(true);
+  };
+
   // ── Jump & Action Trigger ──
   const triggerJump = useCallback(() => {
+    // If not initialized, player must enter callsign first
+    if (!isInitialized) {
+      return;
+    }
+
+    // If viewing leaderboard, tapping/jumping returns to game
+    if (showLeaderboard) {
+      setShowLeaderboard(false);
+      return;
+    }
+
     if (stateRef.current === 'idle') {
       stateRef.current = 'playing';
       setGameState('playing');
+      runIdRef.current += 1;
+      setAutoSyncStatus('idle');
+      autoSyncStatusRef.current = 'idle';
+      setSyncErrorMessage(null);
       rawScore.current = 0;
+      scoreDisplayRef.current = 0;
       setScoreDisplay(0);
       setIsNewRecord(false);
+      isNewRecordRef.current = false;
       speed.current = BASE_SPEED;
+      dinoY.current = 0;
       dinoVy.current = JUMP_FORCE;
       isJumping.current = true;
+      isDucking.current = false;
       jumpHolding.current = true;
       jumpHoldFrames.current = 0;
+      obstacles.current = [];
+      notes.current = [];
+      particles.current = [];
+      floatingTexts.current = [];
+      nextSpawnDistance.current = 160;
+      nextNoteDistance.current = 380;
       if (!sfxMuted) cyberAudio.playDinoJump();
       if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
       return;
@@ -274,19 +400,28 @@ export const TXEDinoRunner: React.FC = () => {
       // Instant Restart
       stateRef.current = 'playing';
       setGameState('playing');
+      runIdRef.current += 1;
+      setAutoSyncStatus('idle');
+      autoSyncStatusRef.current = 'idle';
+      setSyncErrorMessage(null);
       rawScore.current = 0;
+      scoreDisplayRef.current = 0;
       setScoreDisplay(0);
       setIsNewRecord(false);
+      isNewRecordRef.current = false;
       speed.current = BASE_SPEED;
       dinoY.current = 0;
       dinoVy.current = JUMP_FORCE;
       isJumping.current = true;
       isDucking.current = false;
+      jumpHolding.current = true;
+      jumpHoldFrames.current = 0;
       obstacles.current = [];
       notes.current = [];
       particles.current = [];
       floatingTexts.current = [];
       nextSpawnDistance.current = 160;
+      nextNoteDistance.current = 380;
       if (!sfxMuted) cyberAudio.playDinoJump();
       if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
       return;
@@ -300,7 +435,26 @@ export const TXEDinoRunner: React.FC = () => {
       if (!sfxMuted) cyberAudio.playDinoJump();
       if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
     }
-  }, [sfxMuted]);
+  }, [isInitialized, sfxMuted, showLeaderboard]);
+
+  const handleTouchJump = useCallback(
+    (e: React.TouchEvent) => {
+      e.preventDefault();
+      lastTouchTime.current = Date.now();
+      triggerJump();
+    },
+    [triggerJump]
+  );
+
+  const handleClickJump = useCallback(
+    (e?: React.MouseEvent) => {
+      if (e) e.stopPropagation();
+      // Suppress delayed synthetic click from mobile touch
+      if (Date.now() - lastTouchTime.current < 450) return;
+      triggerJump();
+    },
+    [triggerJump]
+  );
 
   const setDuck = useCallback((ducking: boolean) => {
     if (stateRef.current !== 'playing') return;
@@ -316,9 +470,12 @@ export const TXEDinoRunner: React.FC = () => {
     if (!isPlaying || isDismissed) return;
 
     const onKeyDown = (e: KeyboardEvent) => {
-      // Skip if typing in an input or textarea
+      // Skip if typing in an input, textarea or contenteditable element
       const target = e.target as HTMLElement;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+      if (
+        target &&
+        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
+      ) {
         return;
       }
 
@@ -333,6 +490,8 @@ export const TXEDinoRunner: React.FC = () => {
         triggerJump();
       } else if (e.code === 'KeyM') {
         toggleSfx();
+      } else if (e.code === 'KeyL') {
+        setShowLeaderboard((prev) => !prev);
       }
     };
 
@@ -358,12 +517,6 @@ export const TXEDinoRunner: React.FC = () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       return;
     }
-
-    const activeCanvas = isArcadeModal ? arcadeCanvasRef.current : canvasRef.current;
-    if (!activeCanvas) return;
-
-    const ctx = activeCanvas.getContext('2d');
-    if (!ctx) return;
 
     let running = true;
 
@@ -417,7 +570,7 @@ export const TXEDinoRunner: React.FC = () => {
 
       // Audio beat rhythm wave / equalizer in background
       beatTime.current += 0.04;
-      const beatPulse = (Math.sin(beatTime.current * 4) + 1) * 0.5; // ~120bpm pulse
+      const beatPulse = (Math.sin(beatTime.current * 4) + 1) * 0.5;
 
       c.fillStyle = 'rgba(16, 185, 129, 0.07)';
       const barCount = Math.floor(cssW / 18);
@@ -449,7 +602,10 @@ export const TXEDinoRunner: React.FC = () => {
         // Increment score
         rawScore.current += 0.18;
         const curScoreInt = Math.floor(rawScore.current);
-        setScoreDisplay(curScoreInt);
+        if (curScoreInt !== scoreDisplayRef.current) {
+          scoreDisplayRef.current = curScoreInt;
+          setScoreDisplay(curScoreInt);
+        }
 
         // Score milestone chime (every 100 points)
         if (curScoreInt > 0 && curScoreInt % 100 === 0 && curScoreInt !== lastMilestone.current) {
@@ -457,15 +613,12 @@ export const TXEDinoRunner: React.FC = () => {
           if (!sfxMuted) cyberAudio.playDinoScoreMilestone();
         }
 
-        // High score detection
-        if (curScoreInt > highScore) {
+        // High score detection (local record in-memory during run)
+        if (curScoreInt > highScoreRef.current) {
+          highScoreRef.current = curScoreInt;
           setHighScore(curScoreInt);
-          try {
-            localStorage.setItem(HIGH_SCORE_KEY, curScoreInt.toString());
-          } catch {
-            // Ignore
-          }
-          if (!isNewRecord) {
+          if (!isNewRecordRef.current) {
+            isNewRecordRef.current = true;
             setIsNewRecord(true);
             spawnConfetti();
           }
@@ -476,7 +629,6 @@ export const TXEDinoRunner: React.FC = () => {
 
         // Jump physics
         if (isJumping.current) {
-          // Variable jump height: extra upward boost while holding key early
           if (jumpHolding.current && jumpHoldFrames.current < 6) {
             dinoVy.current -= 0.4;
             jumpHoldFrames.current += 1;
@@ -554,7 +706,6 @@ export const TXEDinoRunner: React.FC = () => {
               rawScore.current += 50;
               if (!sfxMuted) cyberAudio.playDinoCollect();
 
-              // Add floating text
               entityIdCounter.current += 1;
               floatingTexts.current.push({
                 id: entityIdCounter.current,
@@ -565,7 +716,6 @@ export const TXEDinoRunner: React.FC = () => {
                 color: '#34D399',
               });
 
-              // Burst particles
               for (let p = 0; p < 8; p++) {
                 particles.current.push({
                   x: note.x + 8,
@@ -582,7 +732,7 @@ export const TXEDinoRunner: React.FC = () => {
           }
         });
 
-        // Obstacle collision check (forgiving bounding box: 4px padding)
+        // Obstacle collision check (forgiving bounding box)
         const pad = 5;
         const dinoBox = {
           left: curDinoX + pad,
@@ -611,7 +761,6 @@ export const TXEDinoRunner: React.FC = () => {
             if (!sfxMuted) cyberAudio.playDinoHit();
             if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(40);
 
-            // Spawn crash burst particles
             for (let i = 0; i < 18; i++) {
               particles.current.push({
                 x: curDinoX + DINO_W / 2,
@@ -624,6 +773,33 @@ export const TXEDinoRunner: React.FC = () => {
                 maxLife: 26,
               });
             }
+
+            const finalS = Math.floor(rawScore.current);
+            lastCrashScoreRef.current = finalS;
+            setScoreDisplay(finalS);
+
+            // Record check
+            if (finalS > highScore) {
+              setHighScore(finalS);
+              setIsNewRecord(true);
+              isNewRecordRef.current = true;
+              try {
+                localStorage.setItem(HIGH_SCORE_KEY, finalS.toString());
+              } catch {
+                // Ignore
+              }
+              spawnConfetti();
+            } else {
+              setIsNewRecord(false);
+              isNewRecordRef.current = false;
+            }
+
+            // AUTO SCORE SUBMISSION (strictly once per run)
+            const thisRunId = runIdRef.current;
+            if (lastSubmittedRunIdRef.current !== thisRunId) {
+              lastSubmittedRunIdRef.current = thisRunId;
+              triggerAutoSubmitRef.current(finalS, thisRunId);
+            }
             break;
           }
         }
@@ -632,17 +808,14 @@ export const TXEDinoRunner: React.FC = () => {
       // ── Draw Obstacles ──
       obstacles.current.forEach((obs) => {
         if (obs.type.startsWith('cactus')) {
-          // Cyber Cactus Drawing
           c.fillStyle = '#10B981';
           c.strokeStyle = '#34D399';
           c.lineWidth = 1;
 
           if (obs.type === 'cactus_small') {
             c.fillRect(obs.x + 4, obs.y, 6, obs.height);
-            // Left arm
             c.fillRect(obs.x, obs.y + 8, 4, 3);
             c.fillRect(obs.x, obs.y + 3, 3, 6);
-            // Right arm
             c.fillRect(obs.x + 10, obs.y + 11, 4, 3);
             c.fillRect(obs.x + 11, obs.y + 6, 3, 6);
           } else if (obs.type === 'cactus_double') {
@@ -651,7 +824,6 @@ export const TXEDinoRunner: React.FC = () => {
             c.fillRect(obs.x, obs.y + 12, 4, 3);
             c.fillRect(obs.x + 21, obs.y + 9, 4, 3);
           } else {
-            // cactus_tall
             c.fillRect(obs.x + 5, obs.y, 8, obs.height);
             c.fillRect(obs.x, obs.y + 14, 5, 4);
             c.fillRect(obs.x, obs.y + 7, 4, 8);
@@ -659,16 +831,13 @@ export const TXEDinoRunner: React.FC = () => {
             c.fillRect(obs.x + 14, obs.y + 11, 4, 8);
           }
         } else {
-          // Flying Cyber Drone / Pterodactyl
           const wingUp = Math.sin(obs.wingFrame || 0) > 0;
-          c.fillStyle = '#F59E0B'; // Amber neon
-          c.fillRect(obs.x + 8, obs.y + 6, 16, 6); // body
-          c.fillRect(obs.x + 22, obs.y + 4, 8, 5); // beak/head
-          // Visor eye
+          c.fillStyle = '#F59E0B';
+          c.fillRect(obs.x + 8, obs.y + 6, 16, 6);
+          c.fillRect(obs.x + 22, obs.y + 4, 8, 5);
           c.fillStyle = '#10B981';
           c.fillRect(obs.x + 24, obs.y + 5, 3, 2);
 
-          // Wings
           c.fillStyle = '#F59E0B';
           if (wingUp) {
             c.fillRect(obs.x + 10, obs.y - 4, 8, 10);
@@ -688,7 +857,6 @@ export const TXEDinoRunner: React.FC = () => {
         c.shadowColor = '#10B981';
         c.shadowBlur = 8;
 
-        // Music Note pixel shape
         const nx = note.x;
         const ny = note.y + pulse;
         c.fillRect(nx + 4, ny, 10, 3);
@@ -757,23 +925,59 @@ export const TXEDinoRunner: React.FC = () => {
           c.fillText('PRESS SPACE OR TAP TO PLAY', cssW / 2, cssH / 2 + 12);
         }
       } else if (stateRef.current === 'gameover') {
-        c.fillStyle = 'rgba(0, 0, 0, 0.55)';
+        c.fillStyle = 'rgba(0, 0, 0, 0.65)';
         c.fillRect(0, 0, cssW, cssH);
 
         c.fillStyle = '#EF4444';
         c.font = 'bold 13px monospace';
         c.textAlign = 'center';
-        c.fillText('SYSTEM CRASH // GAME OVER', cssW / 2, cssH / 2 - 14);
+        c.fillText('SYSTEM CRASH // GAME OVER', cssW / 2, cssH / 2 - 20);
 
         c.fillStyle = '#FFFFFF';
         c.font = '11px monospace';
-        c.fillText(`SCORE: ${Math.floor(rawScore.current)}  •  BEST: ${highScore}`, cssW / 2, cssH / 2 + 4);
+        const finalS = Math.floor(rawScore.current);
+        c.fillText(
+          `SCORE: ${finalS}  •  BEST: ${highScore}`,
+          cssW / 2,
+          cssH / 2 - 5
+        );
+
+        const currentName = callsignRef.current || 'TXE';
+        if (isNewRecordRef.current) {
+          c.fillStyle = '#F59E0B';
+          c.font = 'bold 10px monospace';
+          c.fillText('★ NEW RECORD', cssW / 2, cssH / 2 + 9);
+
+          c.fillStyle = '#10B981';
+          c.font = '10px monospace';
+          const statusText =
+            autoSyncStatusRef.current === 'syncing'
+              ? `${currentName} // SYNCING...`
+              : autoSyncStatusRef.current === 'failed'
+              ? `${currentName} // SYNC FAILED`
+              : `${currentName} // SCORE AUTO-SAVED`;
+          c.fillText(statusText, cssW / 2, cssH / 2 + 21);
+        } else {
+          c.fillStyle = '#10B981';
+          c.font = '10px monospace';
+          const statusText =
+            autoSyncStatusRef.current === 'syncing'
+              ? `${currentName} // SYNCING...`
+              : autoSyncStatusRef.current === 'failed'
+              ? `${currentName} // SYNC FAILED`
+              : `${currentName} // SCORE AUTO-SAVED`;
+          c.fillText(statusText, cssW / 2, cssH / 2 + 10);
+        }
 
         const blink = Math.floor(Date.now() / 400) % 2 === 0;
         if (blink) {
-          c.fillStyle = '#10B981';
-          c.font = 'bold 10px monospace';
-          c.fillText('PRESS SPACE OR TAP TO RETRY', cssW / 2, cssH / 2 + 22);
+          c.fillStyle = '#9CA3AF';
+          c.font = 'bold 9px monospace';
+          c.fillText(
+            'PRESS SPACE OR TAP TO RETRY',
+            cssW / 2,
+            cssH / 2 + (isNewRecordRef.current ? 33 : 24)
+          );
         }
       }
 
@@ -787,7 +991,7 @@ export const TXEDinoRunner: React.FC = () => {
       running = false;
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [isPlaying, isDismissed, isArcadeModal, highScore, sfxMuted]);
+  }, [isPlaying, isDismissed, isArcadeModal, isInitialized, showLeaderboard, sfxMuted]);
 
   // ── Helper to Draw Pixel Dino ──
   const drawPixelDino = (
@@ -803,18 +1007,13 @@ export const TXEDinoRunner: React.FC = () => {
     const eyeColor = dead ? '#EF4444' : '#10B981';
 
     if (ducking && !jumping) {
-      // Ducking Dino Sprite: Low profile (width 40, height 22)
-      // Body & Tail
       c.fillRect(x, y + 10, 16, 6);
       c.fillRect(x + 12, y + 8, 16, 7);
-      // Head lowered forward
       c.fillRect(x + 26, y + 4, 14, 8);
       c.fillRect(x + 32, y + 12, 8, 3);
-      // Eye
       c.fillStyle = eyeColor;
       c.fillRect(x + 33, y + 6, 3, 3);
       c.fillStyle = '#FFFFFF';
-      // Low legs
       if (rFrame % 2 === 0) {
         c.fillRect(x + 10, y + 16, 4, 5);
         c.fillRect(x + 22, y + 16, 4, 3);
@@ -825,8 +1024,6 @@ export const TXEDinoRunner: React.FC = () => {
       return;
     }
 
-    // Standard Standing / Running Dino (34x36)
-    // Head & Snout
     c.fillRect(x + 10, y + 0, 14, 2);
     c.fillRect(x + 8, y + 2, 18, 2);
     c.fillRect(x + 8, y + 4, 20, 4);
@@ -834,10 +1031,8 @@ export const TXEDinoRunner: React.FC = () => {
     c.fillRect(x + 8, y + 10, 18, 2);
     c.fillRect(x + 8, y + 12, 9, 2);
 
-    // Eye
     c.fillStyle = eyeColor;
     if (dead) {
-      // Cross eye
       c.fillRect(x + 13, y + 4, 2, 2);
       c.fillRect(x + 16, y + 4, 2, 2);
       c.fillRect(x + 14, y + 6, 2, 2);
@@ -848,43 +1043,35 @@ export const TXEDinoRunner: React.FC = () => {
     }
     c.fillStyle = '#FFFFFF';
 
-    // Jaw / snout bottom
     c.fillRect(x + 14, y + 12, 12, 2);
     c.fillRect(x + 17, y + 14, 8, 2);
 
-    // Neck & Arm
     c.fillRect(x + 6, y + 14, 8, 3);
     c.fillRect(x + 5, y + 17, 10, 4);
-    c.fillRect(x + 18, y + 17, 3, 3); // tiny arm
+    c.fillRect(x + 18, y + 17, 3, 3);
     c.fillRect(x + 19, y + 20, 2, 3);
 
-    // Body & Tail
     c.fillRect(x + 2, y + 18, 4, 3);
     c.fillRect(x + 0, y + 21, 17, 4);
     c.fillRect(x + 2, y + 25, 14, 2);
     c.fillRect(x + 4, y + 27, 10, 2);
 
-    // Legs
     if (jumping) {
-      // Tucked legs
       c.fillRect(x + 6, y + 29, 3, 3);
       c.fillRect(x + 4, y + 32, 4, 2);
       c.fillRect(x + 12, y + 29, 3, 3);
       c.fillRect(x + 10, y + 32, 4, 2);
     } else if (rFrame === 1) {
-      // Run A
       c.fillRect(x + 4, y + 29, 3, 4);
       c.fillRect(x + 2, y + 33, 4, 2);
       c.fillRect(x + 12, y + 29, 3, 5);
       c.fillRect(x + 14, y + 34, 4, 2);
     } else if (rFrame === 3) {
-      // Run B
       c.fillRect(x + 6, y + 29, 3, 5);
       c.fillRect(x + 7, y + 34, 4, 2);
       c.fillRect(x + 12, y + 29, 3, 4);
       c.fillRect(x + 13, y + 33, 4, 2);
     } else {
-      // Neutral
       c.fillRect(x + 6, y + 29, 3, 5);
       c.fillRect(x + 6, y + 34, 4, 2);
       c.fillRect(x + 12, y + 29, 3, 5);
@@ -892,16 +1079,16 @@ export const TXEDinoRunner: React.FC = () => {
     }
   };
 
-  // ── Render Guard: Only active when music is playing and not dismissed ──
+  // ── Render Guard ──
   if (!isPlaying || isDismissed) return null;
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // 1. Minimized Pill Badge (Zero obstruction when user wants to read portfolio)
+  // 1. Minimized Pill Badge
   // ─────────────────────────────────────────────────────────────────────────────
   if (isMinimized) {
     return (
       <div
-        className="fixed bottom-[68px] md:bottom-6 right-4 z-40 animate-in fade-in slide-in-from-bottom-2 select-none"
+        className="fixed bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+56px)] md:bottom-6 right-3 md:right-8 z-[45] animate-in fade-in slide-in-from-bottom-2 select-none"
         style={{ pointerEvents: 'auto' }}
       >
         <button
@@ -909,7 +1096,7 @@ export const TXEDinoRunner: React.FC = () => {
             cyberAudio.playConfirm();
             setIsMinimized(false);
           }}
-          className="group flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-[var(--surface)]/95 border border-[var(--border-strong)] text-[var(--foreground)] shadow-xl backdrop-blur-md hover:border-emerald-500/60 hover:shadow-emerald-500/10 transition-all cursor-pointer font-mono text-xs active:scale-95"
+          className="group flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-[var(--surface)]/95 border border-[var(--border-strong)] text-[var(--foreground)] shadow-xl backdrop-blur-md hover:border-emerald-500/60 hover:shadow-emerald-500/10 transition-all cursor-pointer font-mono text-xs active:scale-95"
           aria-label="Expand Dino Runner Mini Game"
         >
           <span className="relative flex h-2 w-2">
@@ -932,17 +1119,45 @@ export const TXEDinoRunner: React.FC = () => {
   // ─────────────────────────────────────────────────────────────────────────────
   if (isArcadeModal) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-        <div className="relative w-full max-w-2xl bg-[var(--surface)] border border-emerald-500/50 rounded-xl shadow-2xl overflow-hidden flex flex-col font-mono">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
+        <div className="relative w-full max-w-2xl max-h-[94vh] bg-[var(--surface)] border border-emerald-500/50 rounded-xl shadow-2xl overflow-hidden flex flex-col font-mono my-auto">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-2.5 bg-black/40 border-b border-[var(--border)]">
+          <div className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 bg-black/40 border-b border-[var(--border)]">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-emerald-400 font-bold text-xs tracking-wider">
                 TXE CYBER ARCADE // DINO RUNNER
               </span>
             </div>
-            <div className="flex items-center gap-4 text-xs">
+            <div className="flex items-center gap-2 sm:gap-3 text-xs">
+              {/* Leaderboard toggle in arcade header */}
+              <button
+                onClick={() => {
+                  cyberAudio.playConfirm();
+                  setShowLeaderboard((prev) => !prev);
+                }}
+                className={`px-2 py-1 rounded border flex items-center gap-1.5 transition-all text-xs cursor-pointer ${
+                  showLeaderboard
+                    ? 'bg-amber-500/20 border-amber-500/60 text-amber-300'
+                    : 'bg-black/40 border-[var(--border)] text-[var(--muted)] hover:text-white'
+                }`}
+                title="Global Leaderboard"
+              >
+                <Trophy size={13} className="text-amber-400" />
+                <span>{showLeaderboard ? 'GAME' : 'LEADERBOARD'}</span>
+              </button>
+
+              {isInitialized && callsign && (
+                <button
+                  onClick={openCallsignModal}
+                  className="px-2 py-0.5 rounded bg-black/40 hover:bg-emerald-500/15 border border-[var(--border)] hover:border-emerald-500/40 text-xs text-emerald-400 font-bold cursor-pointer transition-colors flex items-center gap-1"
+                  title="Change Name"
+                >
+                  <span>{callsign}</span>
+                  <span className="text-[10px] text-[var(--muted)]">✎</span>
+                </button>
+              )}
+
               <div className="flex items-center gap-1.5 text-[var(--muted)]">
                 <Trophy size={13} className="text-amber-400" />
                 <span>HI: {highScore.toString().padStart(5, '0')}</span>
@@ -970,19 +1185,139 @@ export const TXEDinoRunner: React.FC = () => {
             </div>
           </div>
 
-          {/* Large Game View */}
-          <div
-            className="relative w-full h-[220px] sm:h-[260px] bg-black cursor-pointer select-none touch-none"
-            onClick={triggerJump}
-            onTouchStart={(e) => {
-              e.preventDefault();
-              triggerJump();
-            }}
-          >
-            <canvas ref={arcadeCanvasRef} className="w-full h-full block touch-none" />
-            {/* CRT Scanline overlay effect */}
-            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)] opacity-80" />
-          </div>
+          {/* Large Game View: Player Initialization OR Leaderboard OR Game Canvas */}
+          {!isInitialized ? (
+            <div className="w-full h-[220px] sm:h-[260px] bg-black flex flex-col items-center justify-center p-6 text-center font-mono">
+              <div className="text-xs text-emerald-500 font-bold tracking-widest mb-1">
+                TXE CYBER ARCADE
+              </div>
+              <div className="text-[10px] text-[var(--muted)] tracking-wider mb-2">
+                // DINO RUNNER
+              </div>
+              <div className="text-sm text-emerald-400 font-bold tracking-wider mb-1">
+                PLAYER INITIALIZATION
+              </div>
+              <p className="text-[11px] text-[var(--muted)] mb-3 uppercase tracking-wider">
+                ENTER YOUR NAME
+              </p>
+              <form
+                onSubmit={handleInitializePlayer}
+                className="w-full max-w-[280px] flex flex-col gap-2.5"
+              >
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="ENTER YOUR NAME"
+                  maxLength={16}
+                  value={callsignInput}
+                  onChange={(e) => {
+                    setCallsignInput(e.target.value);
+                    if (callsignError) setCallsignError(null);
+                  }}
+                  className="w-full bg-neutral-900 border border-emerald-500/50 focus:border-emerald-400 text-emerald-400 text-center text-sm py-2 px-3 rounded uppercase font-bold tracking-wider outline-none placeholder:text-neutral-600"
+                />
+                <div className="flex items-center justify-between text-[10px] text-[var(--muted)] px-1">
+                  <span>2–16 CHARACTERS</span>
+                  <span>{callsignInput.trim().length}/16</span>
+                </div>
+                {callsignError && (
+                  <div className="text-red-400 text-[10px] font-bold">{callsignError}</div>
+                )}
+                <button
+                  type="submit"
+                  disabled={callsignInput.trim().length < 2}
+                  className="w-full py-2 bg-emerald-500 hover:bg-emerald-400 active:scale-95 disabled:opacity-40 text-black font-bold text-xs rounded uppercase tracking-wider cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all"
+                >
+                  START PLAYING
+                </button>
+              </form>
+            </div>
+          ) : showLeaderboard ? (
+            <div className="w-full h-[220px] sm:h-[260px] bg-black">
+              <DinoLeaderboardPanel
+                className="w-full h-full"
+                refreshTrigger={leaderboardRefreshKey}
+                currentCallsign={callsign}
+                onChangeCallsign={openCallsignModal}
+                onClose={() => setShowLeaderboard(false)}
+              />
+            </div>
+          ) : (
+            <div
+              className="relative w-full h-[220px] sm:h-[260px] bg-black cursor-pointer select-none touch-none"
+              onClick={handleClickJump}
+              onTouchStart={handleTouchJump}
+            >
+              <canvas ref={arcadeCanvasRef} className="w-full h-full block touch-none" />
+              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)] opacity-80" />
+            </div>
+          )}
+
+          {/* Arcade Score Auto-Saved HUD on Game Over */}
+          {gameState === 'gameover' && !showLeaderboard && isInitialized && (
+            <div
+              className="px-4 py-2.5 bg-neutral-950 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-3 text-xs"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <span className="text-emerald-400 font-bold">{callsign}</span>
+                  <button
+                    onClick={openCallsignModal}
+                    className="text-[10px] text-[var(--muted)] hover:text-white transition-colors"
+                    title="Change Name"
+                  >
+                    ✎
+                  </button>
+                </div>
+                <span className="text-[var(--muted)]">•</span>
+                <span className="text-[var(--muted)] font-bold text-[11px]">SCORE:</span>
+                <span className="text-white font-bold text-sm">{scoreDisplay}</span>
+
+                {autoSyncStatus === 'syncing' && (
+                  <span className="text-emerald-400 text-xs flex items-center gap-1.5 ml-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                    SYNCING TO LEADERBOARD...
+                  </span>
+                )}
+                {autoSyncStatus === 'synced' && (
+                  <span className="text-emerald-400 text-xs font-bold flex items-center gap-1 ml-2">
+                    ✓ SCORE AUTO-SAVED
+                  </span>
+                )}
+                {autoSyncStatus === 'failed' && (
+                  <div className="flex items-center gap-2 ml-2">
+                    <span className="text-red-400 text-xs font-bold">
+                      {syncErrorMessage || 'LEADERBOARD SYNC FAILED'}
+                    </span>
+                    <button
+                      onClick={retryAutoSubmit}
+                      className="px-2 py-0.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 rounded text-[10px] font-bold cursor-pointer"
+                    >
+                      RETRY
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowLeaderboard(true)}
+                  className="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded font-bold text-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Trophy size={12} />
+                  <span>VIEW LEADERBOARD</span>
+                </button>
+                <button
+                  onClick={handleClickJump}
+                  className="px-3 py-1 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded text-xs cursor-pointer flex items-center gap-1.5"
+                >
+                  <RotateCcw size={12} />
+                  <span>PLAY AGAIN</span>
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Controls Footer */}
           <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 bg-[var(--surface-secondary)] border-t border-[var(--border)] text-xs text-[var(--muted)]">
@@ -994,17 +1329,15 @@ export const TXEDinoRunner: React.FC = () => {
                 <span className="text-emerald-400 font-bold">↓</span> DUCK
               </span>
               <span className="inline-flex items-center gap-1 bg-black/40 px-2 py-0.5 rounded border border-[var(--border)]">
-                <span className="text-emerald-400 font-bold">CLICK</span> PLAY
+                <span className="text-emerald-400 font-bold">L</span> LEADERBOARD
               </span>
             </div>
 
             {/* Mobile Touch Controls inside Arcade Modal */}
             <div className="flex items-center gap-2 sm:hidden w-full pt-1">
               <button
-                onTouchStart={(e) => {
-                  e.preventDefault();
-                  triggerJump();
-                }}
+                onClick={handleClickJump}
+                onTouchStart={handleTouchJump}
                 className="flex-1 py-2.5 bg-emerald-500/20 active:bg-emerald-500/30 border border-emerald-500/60 rounded text-emerald-400 font-bold text-center active:scale-95 transition-transform"
               >
                 JUMP 🚀
@@ -1018,7 +1351,11 @@ export const TXEDinoRunner: React.FC = () => {
                   e.preventDefault();
                   setDuck(false);
                 }}
-                className="w-24 py-2.5 bg-[var(--surface)] active:bg-emerald-500/10 border border-[var(--border)] rounded text-[var(--foreground)] font-bold text-center active:scale-95 transition-transform"
+                onTouchCancel={() => setDuck(false)}
+                onMouseDown={() => setDuck(true)}
+                onMouseUp={() => setDuck(false)}
+                onMouseLeave={() => setDuck(false)}
+                className="w-24 py-2.5 bg-[var(--surface)] active:bg-emerald-500/10 border border-[var(--border)] rounded text-[var(--foreground)] font-bold text-center active:scale-95 transition-transform select-none touch-none"
               >
                 DUCK ⚡
               </button>
@@ -1045,7 +1382,7 @@ export const TXEDinoRunner: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="fixed z-[42] transition-all duration-300 select-none bottom-[68px] left-3 right-3 md:bottom-6 md:left-auto md:right-8 md:w-[460px]"
+      className="fixed z-[42] transition-all duration-300 select-none bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+56px)] left-2.5 right-2.5 md:bottom-6 md:left-auto md:right-8 md:w-[460px]"
       style={{ pointerEvents: 'auto' }}
     >
       <div className="bg-[var(--surface)]/95 border border-[var(--border-strong)] hover:border-emerald-500/40 rounded-xl shadow-2xl backdrop-blur-md overflow-hidden flex flex-col font-mono text-xs transition-colors">
@@ -1056,16 +1393,43 @@ export const TXEDinoRunner: React.FC = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span className="font-bold text-emerald-400 tracking-wider truncate">
-              TXE RUNNER
-            </span>
-            <span className="hidden sm:inline-block text-[9px] px-1.5 py-0.2 bg-emerald-500/10 text-emerald-400 rounded border border-emerald-500/30">
-              MUSIC SYNC
-            </span>
+            <span className="font-bold text-emerald-400 tracking-wider truncate">TXE RUNNER</span>
+
+            {isInitialized && callsign && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openCallsignModal();
+                }}
+                className="px-1.5 py-0.5 rounded bg-white/5 hover:bg-emerald-500/15 border border-white/10 hover:border-emerald-500/40 text-[9px] text-emerald-400 font-bold truncate max-w-[80px] cursor-pointer transition-colors"
+                title="Change Name"
+              >
+                {callsign} ✎
+              </button>
+            )}
+
+            {/* Global Leaderboard Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                cyberAudio.playConfirm();
+                setShowLeaderboard((prev) => !prev);
+              }}
+              className={`px-1.5 py-0.5 rounded border text-[9px] flex items-center gap-1 font-bold cursor-pointer transition-colors ${
+                showLeaderboard
+                  ? 'bg-amber-500/20 border-amber-500/50 text-amber-300'
+                  : 'bg-white/5 border-[var(--border)] text-[var(--muted)] hover:text-white'
+              }`}
+              title="Global Leaderboard"
+              aria-label="Toggle Leaderboard"
+            >
+              <Trophy size={10} className="text-amber-400" />
+              <span>{showLeaderboard ? 'GAME' : 'RANKS'}</span>
+            </button>
           </div>
 
           {/* Scores */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <div className="flex items-center gap-1 text-[var(--muted)] text-[10px]">
               <Trophy size={11} className="text-amber-400 flex-shrink-0" />
               <span>{highScore.toString().padStart(5, '0')}</span>
@@ -1121,62 +1485,182 @@ export const TXEDinoRunner: React.FC = () => {
           </div>
         </div>
 
-        {/* Game Canvas Screen */}
-        <div
-          className="relative w-full h-[110px] md:h-[120px] bg-black cursor-pointer overflow-hidden touch-none"
-          onClick={triggerJump}
-          onTouchStart={(e) => {
-            // Prevent default touch scrolling inside game canvas
-            e.preventDefault();
-            triggerJump();
-          }}
-        >
-          <canvas ref={canvasRef} className="w-full h-full block touch-none" />
-
-          {/* Tap-to-jump indicator on hover/start */}
-          {gameState === 'playing' && (
-            <div className="absolute top-1.5 left-2 pointer-events-none opacity-40 text-[9px] text-[var(--muted)]">
-              TAP OR SPACE TO JUMP
+        {/* Main Content: Player Initialization OR Leaderboard OR Game Canvas */}
+        {!isInitialized ? (
+          <div className="p-4 bg-black/95 flex flex-col items-center justify-center text-center font-mono">
+            <div className="text-[10px] text-emerald-500 font-bold tracking-widest mb-0.5">
+              TXE CYBER ARCADE
             </div>
-          )}
-        </div>
-
-        {/* Mobile Tactile Action Buttons (Ensures smooth one-thumb play on phones) */}
-        <div className="flex md:hidden items-center gap-2 p-1.5 bg-[var(--surface-secondary)] border-t border-[var(--border)]">
-          <button
-            onTouchStart={(e) => {
-              e.preventDefault();
-              triggerJump();
-            }}
-            className="flex-1 min-h-[38px] flex items-center justify-center gap-1.5 bg-emerald-500/15 active:bg-emerald-500/30 border border-emerald-500/50 rounded text-emerald-400 font-bold active:scale-95 transition-all text-xs"
-          >
-            <Zap size={13} /> JUMP
-          </button>
-          <button
-            onTouchStart={(e) => {
-              e.preventDefault();
-              setDuck(true);
-            }}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              setDuck(false);
-            }}
-            className="w-20 min-h-[38px] flex items-center justify-center bg-[var(--surface)] active:bg-emerald-500/10 border border-[var(--border)] rounded text-[var(--foreground)] font-bold active:scale-95 transition-all text-xs"
-          >
-            DUCK ⬇
-          </button>
-          {gameState === 'gameover' && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                triggerJump();
-              }}
-              className="px-2.5 min-h-[38px] flex items-center justify-center bg-emerald-500 text-black font-bold rounded active:scale-95 transition-all text-xs"
+            <div className="text-[9px] text-[var(--muted)] tracking-wider mb-2">
+              // DINO RUNNER
+            </div>
+            <div className="text-xs text-emerald-400 font-bold tracking-wider mb-1 uppercase">
+              PLAYER INITIALIZATION
+            </div>
+            <p className="text-[10px] text-[var(--muted)] mb-2 uppercase tracking-wider">
+              ENTER YOUR NAME
+            </p>
+            <form
+              onSubmit={handleInitializePlayer}
+              className="w-full max-w-[260px] flex flex-col gap-2"
             >
-              <RotateCcw size={13} />
+              <input
+                type="text"
+                autoFocus
+                placeholder="ENTER YOUR NAME"
+                maxLength={16}
+                value={callsignInput}
+                onChange={(e) => {
+                  setCallsignInput(e.target.value);
+                  if (callsignError) setCallsignError(null);
+                }}
+                className="w-full bg-neutral-900 border border-emerald-500/50 focus:border-emerald-400 text-emerald-400 text-center text-xs py-1.5 px-3 rounded uppercase font-bold tracking-wider outline-none placeholder:text-neutral-600"
+              />
+              <div className="flex items-center justify-between text-[9px] text-[var(--muted)] px-1">
+                <span>2–16 CHARACTERS</span>
+                <span>{callsignInput.trim().length}/16</span>
+              </div>
+              {callsignError && (
+                <div className="text-red-400 text-[10px] font-bold">{callsignError}</div>
+              )}
+              <button
+                type="submit"
+                disabled={callsignInput.trim().length < 2}
+                className="w-full py-1.5 bg-emerald-500 hover:bg-emerald-400 active:scale-95 disabled:opacity-40 text-black font-bold text-xs rounded uppercase tracking-wider cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all"
+              >
+                START PLAYING
+              </button>
+            </form>
+          </div>
+        ) : showLeaderboard ? (
+          <div className="w-full h-[145px] bg-black">
+            <DinoLeaderboardPanel
+              compact
+              refreshTrigger={leaderboardRefreshKey}
+              currentCallsign={callsign}
+              onChangeCallsign={openCallsignModal}
+              onClose={() => setShowLeaderboard(false)}
+            />
+          </div>
+        ) : (
+          <div
+            className="relative w-full h-[110px] md:h-[120px] bg-black cursor-pointer overflow-hidden touch-none"
+            onClick={handleClickJump}
+            onTouchStart={handleTouchJump}
+          >
+            <canvas ref={canvasRef} className="w-full h-full block touch-none" />
+
+            {gameState === 'playing' && (
+              <div className="absolute top-1.5 left-2 pointer-events-none opacity-40 text-[9px] text-[var(--muted)]">
+                TAP OR SPACE TO JUMP
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Game Over Auto-Saved HUD Bar */}
+        {gameState === 'gameover' && !showLeaderboard && isInitialized && (
+          <div
+            className="p-2 bg-neutral-950 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-1.5 text-xs animate-in fade-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-1.5">
+              <span className="text-emerald-400 font-bold">{callsign}</span>
+              <button
+                onClick={openCallsignModal}
+                className="text-[9px] text-[var(--muted)] hover:text-white transition-colors"
+                title="Change Name"
+              >
+                ✎
+              </button>
+              <span className="text-[var(--muted)]">•</span>
+              <span className="text-[var(--muted)] text-[10px]">CRASH:</span>
+              <span className="text-white font-bold">{scoreDisplay}</span>
+
+              {autoSyncStatus === 'syncing' && (
+                <span className="text-emerald-400 text-[10px] flex items-center gap-1 ml-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  SYNCING...
+                </span>
+              )}
+              {autoSyncStatus === 'synced' && (
+                <span className="text-emerald-400 text-[10px] font-bold flex items-center gap-1 ml-1">
+                  ✓ AUTO-SAVED
+                </span>
+              )}
+              {autoSyncStatus === 'failed' && (
+                <div className="flex items-center gap-1 ml-1">
+                  <span className="text-red-400 text-[10px] font-bold">SYNC FAILED</span>
+                  <button
+                    onClick={retryAutoSubmit}
+                    className="px-1.5 py-0.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 rounded text-[9px] font-bold cursor-pointer"
+                  >
+                    RETRY
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 ml-auto">
+              <button
+                onClick={() => setShowLeaderboard(true)}
+                className="px-2 py-1 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded font-bold text-[10px] flex items-center gap-1 cursor-pointer"
+              >
+                <Trophy size={11} />
+                <span>LEADERBOARD</span>
+              </button>
+              <button
+                onClick={triggerJump}
+                className="px-2.5 py-1 bg-emerald-500 text-black font-bold text-[10px] rounded hover:bg-emerald-400 cursor-pointer flex items-center gap-1 active:scale-95 transition-all"
+              >
+                <RotateCcw size={11} />
+                <span>PLAY AGAIN</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Tactile Action Buttons */}
+        {!showLeaderboard && isInitialized && (
+          <div className="flex md:hidden items-center gap-2 p-1.5 bg-[var(--surface-secondary)] border-t border-[var(--border)]">
+            <button
+              onClick={handleClickJump}
+              onTouchStart={handleTouchJump}
+              className="flex-1 min-h-[38px] flex items-center justify-center gap-1.5 bg-emerald-500/15 active:bg-emerald-500/30 border border-emerald-500/50 rounded text-emerald-400 font-bold active:scale-95 transition-all text-xs touch-none select-none cursor-pointer"
+            >
+              <Zap size={13} /> JUMP
             </button>
-          )}
-        </div>
+            <button
+              onTouchStart={(e) => {
+                e.preventDefault();
+                setDuck(true);
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                setDuck(false);
+              }}
+              onTouchCancel={() => setDuck(false)}
+              onMouseDown={() => setDuck(true)}
+              onMouseUp={() => setDuck(false)}
+              onMouseLeave={() => setDuck(false)}
+              className="w-20 min-h-[38px] flex items-center justify-center bg-[var(--surface)] active:bg-emerald-500/10 border border-[var(--border)] rounded text-[var(--foreground)] font-bold active:scale-95 transition-all text-xs touch-none select-none cursor-pointer"
+            >
+              DUCK ⬇
+            </button>
+            {gameState === 'gameover' && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClickJump(e);
+                }}
+                onTouchStart={handleTouchJump}
+                className="px-2.5 min-h-[38px] flex items-center justify-center bg-emerald-500 text-black font-bold rounded active:scale-95 transition-all text-xs touch-none cursor-pointer"
+              >
+                <RotateCcw size={13} />
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Desktop Controls Quick Hint */}
         <div className="hidden md:flex items-center justify-between px-3 py-1 bg-[var(--surface-secondary)] border-t border-[var(--border)] text-[10px] text-[var(--muted)]">
@@ -1185,7 +1669,7 @@ export const TXEDinoRunner: React.FC = () => {
             <span>•</span>
             <span>[↓] DUCK</span>
             <span>•</span>
-            <span>CLICK TO PLAY</span>
+            <span>[L] RANKS</span>
           </div>
           {isNewRecord && (
             <span className="text-emerald-400 font-bold flex items-center gap-1 animate-pulse">
@@ -1194,6 +1678,69 @@ export const TXEDinoRunner: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Callsign Change Modal */}
+      {showCallsignModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+          onClick={() => setShowCallsignModal(false)}
+        >
+          <div
+            className="relative w-full max-w-sm bg-neutral-950 border border-emerald-500/50 rounded-xl p-5 shadow-2xl font-mono text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowCallsignModal(false)}
+              className="absolute top-3 right-3 text-[var(--muted)] hover:text-white p-1 cursor-pointer"
+            >
+              <X size={15} />
+            </button>
+            <div className="text-xs text-emerald-400 font-bold tracking-wider mb-1">
+              TXE CYBER ARCADE
+            </div>
+            <div className="text-sm text-white font-bold tracking-wider mb-4">
+              UPDATE YOUR NAME
+            </div>
+            <form onSubmit={handleInitializePlayer} className="flex flex-col gap-2.5">
+              <input
+                type="text"
+                autoFocus
+                placeholder="ENTER YOUR NAME"
+                maxLength={16}
+                value={callsignInput}
+                onChange={(e) => {
+                  setCallsignInput(e.target.value);
+                  if (callsignError) setCallsignError(null);
+                }}
+                className="w-full bg-black border border-emerald-500/50 focus:border-emerald-400 text-emerald-400 text-center text-sm py-2 px-3 rounded uppercase font-bold tracking-wider outline-none placeholder:text-neutral-600"
+              />
+              <div className="flex items-center justify-between text-[10px] text-[var(--muted)] px-1">
+                <span>2–16 CHARACTERS</span>
+                <span>{callsignInput.trim().length}/16</span>
+              </div>
+              {callsignError && (
+                <div className="text-red-400 text-[10px] font-bold">{callsignError}</div>
+              )}
+              <div className="flex items-center gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCallsignModal(false)}
+                  className="flex-1 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-[var(--muted)] hover:text-white font-bold text-xs rounded border border-white/10 cursor-pointer"
+                >
+                  CANCEL
+                </button>
+                <button
+                  type="submit"
+                  disabled={callsignInput.trim().length < 2}
+                  className="flex-1 py-1.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-bold text-xs rounded cursor-pointer"
+                >
+                  SAVE NAME
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

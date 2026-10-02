@@ -84,7 +84,7 @@ export const ragProject: ProjectData = {
 export const portfolioCreatorProject: ProjectData = {
   id: 'portfolio-creator',
   name: 'Portfolio-Creator-Portfolio-Builder-with-Job-Assistance',
-  title: 'Portfolio Creator – Evaluation & Job Portal',
+  title: 'SignalHire – Portfolio & Career Platform',
   badge: 'Full-Stack Flagship Platform',
   description:
     'Full-stack platform for creating, customizing, previewing, and sharing professional portfolios with real-time evaluation, feedback rating system, and skill-based job matching.',

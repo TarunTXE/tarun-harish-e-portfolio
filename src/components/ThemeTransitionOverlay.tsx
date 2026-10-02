@@ -13,13 +13,13 @@ export const ThemeTransitionOverlay: React.FC = () => {
       className="fixed inset-0 z-50 pointer-events-none overflow-hidden select-none"
       aria-hidden="true"
     >
-      {/* 1. Backdrop wash smoothing out the theme color flip at 2.5s */}
+      {/* 1. Backdrop wash smoothing out the theme color flip at 220ms */}
       <div
-        className={`absolute inset-0 transition-colors duration-500 ${
-          isToLight ? 'bg-[#FBFBFA]/80' : 'bg-black/85'
+        className={`absolute inset-0 transition-colors duration-300 ${
+          isToLight ? 'bg-[#FBFBFA]/75' : 'bg-black/85'
         }`}
         style={{
-          animation: 'reconfigBackdrop4s 4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+          animation: 'reconfigBackdropFast 750ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
         }}
       />
 
@@ -27,18 +27,18 @@ export const ThemeTransitionOverlay: React.FC = () => {
       <div
         className={`absolute -top-16 -right-16 rounded-full ${
           isToLight
-            ? 'bg-gradient-to-br from-white/60 via-[#F5F5F2]/40 to-transparent'
-            : 'bg-gradient-to-br from-neutral-900/80 via-black/60 to-transparent'
+            ? 'bg-gradient-to-br from-emerald-500/20 via-[#F5F5F2]/50 to-transparent'
+            : 'bg-gradient-to-br from-emerald-500/25 via-neutral-900/70 to-transparent'
         }`}
         style={{
           width: '280vmax',
           height: '280vmax',
           transform: 'translate(50%, -50%)',
-          animation: 'reconfigWave4s 4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+          animation: 'reconfigWaveFast 750ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
         }}
       />
 
-      {/* 3. Horizontal High-Tech Scanline Beam sweeping across viewport (1.5s - 3.0s) */}
+      {/* 3. Horizontal High-Tech Scanline Beam sweeping across viewport */}
       <div
         className={`absolute left-0 right-0 h-[2px] shadow-lg ${
           isToLight
@@ -46,19 +46,11 @@ export const ThemeTransitionOverlay: React.FC = () => {
             : 'bg-emerald-400 shadow-[0_0_15px_#10B981]'
         }`}
         style={{
-          animation: 'reconfigScan4s 4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+          animation: 'reconfigScanFast 750ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
         }}
       />
 
-      {/* 4. Subtle Technical Grid Sweep */}
-      <div
-        className="absolute inset-0 opacity-25 tech-grid"
-        style={{
-          animation: 'reconfigBackdrop4s 4s ease-out forwards',
-        }}
-      />
-
-      {/* 5. Minimal HUD Reconfiguration Readout in Center (4s duration) */}
+      {/* 4. Minimal HUD Reconfiguration Readout in Center */}
       <div
         className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-5 py-3 rounded-md border shadow-2xl backdrop-blur-md font-mono text-[11px] sm:text-xs tracking-widest uppercase flex items-center gap-3 ${
           isToLight
@@ -66,7 +58,7 @@ export const ThemeTransitionOverlay: React.FC = () => {
             : 'bg-neutral-950/95 text-white border-white/20'
         }`}
         style={{
-          animation: 'reconfigHud4s 4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+          animation: 'reconfigHudFast 750ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
         }}
       >
         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
@@ -77,7 +69,7 @@ export const ThemeTransitionOverlay: React.FC = () => {
               : 'SYS::RECONFIG // DEVELOPER SYSTEM'}
           </span>
           <span className="text-[9px] opacity-60 tracking-wider">
-            TRANSITIONING VISUAL SUBSYSTEMS • 4.0S
+            TRANSITIONING VISUAL SUBSYSTEMS
           </span>
         </div>
       </div>

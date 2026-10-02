@@ -171,7 +171,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTerminal, onOpenResume }) 
                 title="Launch CLI Terminal"
               >
                 <Terminal size={13} />
-                <span>&gt;_ CLI</span>
+                <span>CLI</span>
               </button>
 
               {/* Music Player Control */}

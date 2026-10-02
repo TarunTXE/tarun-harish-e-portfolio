@@ -51,7 +51,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenTerminal }) => {
             }}
             className="text-[var(--foreground)] hover:text-emerald-500 hover:underline flex items-center gap-1 font-medium cursor-pointer"
           >
-            <Terminal size={12} /> &gt;_ CLI
+            <Terminal size={12} /> CLI
           </button>
         </div>
 
