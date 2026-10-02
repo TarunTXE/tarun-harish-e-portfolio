@@ -204,7 +204,7 @@ export const repositoriesData: ProjectData[] = [
     stars: 0,
     forks: 0,
     githubUrl: 'https://github.com/TarunTXE/vhe-website',
-    demoUrl: 'https://vhe-website.vercel.app',
+    demoUrl: 'https://dr-varunharishe-official.vercel.app',
     updatedAt: '2026-07-22',
     isFeatured: false,
     category: 'Web Apps',
@@ -224,7 +224,7 @@ export const repositoriesData: ProjectData[] = [
   {
     id: 'posture-tracker-dev',
     name: 'Posture-Tracker',
-    title: 'Posture & Ergonomic Tracker',
+    title: 'Pressure Relief Push-up Detection System',
     badge: 'In Development / Coming Soon',
     description:
       'Experimental prototype exploring computer vision techniques for posture tracking and ergonomic awareness. Early research in progress.',

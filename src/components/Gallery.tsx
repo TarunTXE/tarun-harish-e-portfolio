@@ -58,7 +58,7 @@ export const Gallery: React.FC = () => {
       image: '/projects/vhe-website/portal.png',
       description: 'Official web portal and personal brand platform for Doctor and Author Varun Harish E, showcasing literary works and medical practice.',
       tags: ['TypeScript', 'React', 'Author Portfolio', 'Vercel'],
-      link: 'https://vhe-website.vercel.app',
+      link: 'https://dr-varunharishe-official.vercel.app',
     },
   ];
 
