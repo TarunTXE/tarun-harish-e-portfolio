@@ -17,9 +17,12 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     isPlaying,
     isAvailable,
     isMuted,
+    isDinoOpen,
     volume,
     formattedTime,
     togglePlay,
+    play,
+    openDino,
     setVolume,
     toggleMute,
   } = useMusic();
@@ -59,11 +62,17 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
       setTimeout(() => {
         setIsActivating(false);
       }, 950);
+      play();
+      openDino();
     } else {
-      cyberAudio.playMusicPause();
+      if (!isDinoOpen) {
+        cyberAudio.playConfirm(true);
+        openDino();
+      } else {
+        cyberAudio.playMusicPause();
+        togglePlay();
+      }
     }
-
-    togglePlay();
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -230,7 +239,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             <>
               <span className="font-mono text-xs text-[var(--muted)]">♪</span>
               <span className="font-mono text-[11px] tracking-wider font-semibold">
-                PLAY MUSIC
+                PLAY
               </span>
             </>
           )}

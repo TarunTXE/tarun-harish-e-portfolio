@@ -102,16 +102,17 @@ export const Hero: React.FC<HeroProps> = ({ onOpenTerminal, onOpenResume }) => {
             <motion.span
               variants={itemVariants}
               data-music-motion="hero-first"
-              className="inline-block txe-glow-tarun cursor-default transition-all duration-300"
+              className="inline-block txe-glow-tarun cursor-default"
             >
               TARUN
             </motion.span>
             <motion.span
               variants={itemVariants}
               data-music-motion="hero-last"
-              className="inline-block ml-2.5 sm:ml-4 txe-glow-harish cursor-default transition-all duration-300"
+              className="inline-block ml-2.5 sm:ml-4 cursor-default whitespace-nowrap"
             >
-              HARISH E
+              <span className="inline-block txe-glow-harish">HARISH</span>
+              <span className="inline-block ml-2.5 sm:ml-4 txe-glow-e">E</span>
             </motion.span>
           </h1>
         </div>

@@ -27,13 +27,37 @@ class CyberAudio {
         this.enabled = true;
       }
       const warmUp = () => {
-        this.getCtx();
+        this.resume().catch(() => {});
         window.removeEventListener('pointerdown', warmUp);
         window.removeEventListener('keydown', warmUp);
+        window.removeEventListener('touchstart', warmUp);
+        window.removeEventListener('touchend', warmUp);
+        window.removeEventListener('click', warmUp);
       };
       window.addEventListener('pointerdown', warmUp, { passive: true });
       window.addEventListener('keydown', warmUp, { passive: true });
+      window.addEventListener('touchstart', warmUp, { passive: true });
+      window.addEventListener('touchend', warmUp, { passive: true });
+      window.addEventListener('click', warmUp, { passive: true });
     }
+  }
+
+  public async resume(): Promise<void> {
+    const ctx = this.getCtx();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') {
+      try {
+        await ctx.resume();
+      } catch {}
+    }
+    // Safari / iOS audio unlock trick
+    try {
+      const buffer = ctx.createBuffer(1, 1, 22050);
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(ctx.destination);
+      source.start(0);
+    } catch {}
   }
 
   private getCtx(): AudioContext | null {
@@ -136,10 +160,11 @@ class CyberAudio {
     } catch {}
   }
 
-  public playConfirm(): void {
-    if (!this.enabled) return;
+  public playConfirm(force: boolean = false): void {
+    if (!this.enabled && !force) return;
     const now = Date.now(); if (now - this.lastClickTime < 40) return; this.lastClickTime = now;
     const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
     try {
       const t = ctx.currentTime;
       const o = ctx.createOscillator(); const g = ctx.createGain();
@@ -155,6 +180,7 @@ class CyberAudio {
     if (!this.enabled) return;
     const now = Date.now(); if (now - this.lastHoverTime < 80) return; this.lastHoverTime = now;
     const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
     try {
       const t = ctx.currentTime;
       const o = ctx.createOscillator(); const g = ctx.createGain();
@@ -167,6 +193,7 @@ class CyberAudio {
   public playModal(): void {
     if (!this.enabled) return;
     const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
     try {
       const t = ctx.currentTime;
       const o = ctx.createOscillator(); const g = ctx.createGain();
@@ -179,6 +206,7 @@ class CyberAudio {
   public playKey(): void {
     if (!this.enabled) return;
     const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
     try {
       const t = ctx.currentTime;
       const o = ctx.createOscillator(); const g = ctx.createGain();
@@ -188,10 +216,11 @@ class CyberAudio {
     } catch {}
   }
 
-  public playDinoJump(): void {
-    if (!this.enabled) return;
-    const now = Date.now(); if (now - this.lastJumpSfxTime < 320) return; this.lastJumpSfxTime = now;
+  public playDinoJump(force: boolean = false): void {
+    if (!this.enabled && !force) return;
+    const now = Date.now(); if (now - this.lastJumpSfxTime < 200) return; this.lastJumpSfxTime = now;
     const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
     try {
       const t = ctx.currentTime; const comp = this.makeComp(ctx);
       const o1 = ctx.createOscillator(); const g1 = ctx.createGain();
@@ -205,10 +234,11 @@ class CyberAudio {
     } catch {}
   }
 
-  public playDinoBoop(): void {
-    if (!this.enabled) return;
-    const now = Date.now(); if (now - this.lastBoopTime < 500) return; this.lastBoopTime = now;
+  public playDinoBoop(force: boolean = false): void {
+    if (!this.enabled && !force) return;
+    const now = Date.now(); if (now - this.lastBoopTime < 400) return; this.lastBoopTime = now;
     const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
     try {
       const t = ctx.currentTime; const comp = this.makeComp(ctx);
       const o1 = ctx.createOscillator(); const g1 = ctx.createGain();
@@ -222,9 +252,10 @@ class CyberAudio {
     } catch {}
   }
 
-  public playDinoHit(): void {
-    if (!this.enabled) return;
+  public playDinoHit(force: boolean = false): void {
+    if (!this.enabled && !force) return;
     const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
     try {
       const t = ctx.currentTime; const comp = this.makeComp(ctx);
       // Glitchy downward square crash
@@ -254,9 +285,10 @@ class CyberAudio {
     } catch {}
   }
 
-  public playDinoScoreMilestone(): void {
-    if (!this.enabled) return;
+  public playDinoScoreMilestone(force: boolean = false): void {
+    if (!this.enabled && !force) return;
     const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
     try {
       const t = ctx.currentTime; const comp = this.makeComp(ctx);
       const playNote = (freq: number, start: number, dur: number) => {
@@ -274,9 +306,10 @@ class CyberAudio {
     } catch {}
   }
 
-  public playDinoCollect(): void {
-    if (!this.enabled) return;
+  public playDinoCollect(force: boolean = false): void {
+    if (!this.enabled && !force) return;
     const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
     try {
       const t = ctx.currentTime; const comp = this.makeComp(ctx);
       const playNote = (freq: number, start: number) => {
@@ -291,6 +324,100 @@ class CyberAudio {
       playNote(880, t);
       playNote(1174.66, t + 0.045);
       playNote(1760, t + 0.09);
+    } catch {}
+  }
+
+  public playDinoLand(force: boolean = false): void {
+    if (!this.enabled && !force) return;
+    const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
+    try {
+      const t = ctx.currentTime; const comp = this.makeComp(ctx);
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(140, t);
+      o.frequency.exponentialRampToValueAtTime(45, t + 0.04);
+      g.gain.setValueAtTime(0.3 * MASTER_VOL, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
+      o.connect(g); g.connect(comp);
+      o.start(t); o.stop(t + 0.05);
+    } catch {}
+  }
+
+  public playDinoPowerup(type: string, force: boolean = false): void {
+    if (!this.enabled && !force) return;
+    const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
+    try {
+      const t = ctx.currentTime; const comp = this.makeComp(ctx);
+      const playChime = (freq: number, start: number, dur: number) => {
+        const o = ctx.createOscillator(); const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(freq, start);
+        o.frequency.exponentialRampToValueAtTime(freq * 1.5, start + dur);
+        g.gain.setValueAtTime(0.45 * MASTER_VOL, start);
+        g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+        o.connect(g); g.connect(comp);
+        o.start(start); o.stop(start + dur + 0.01);
+      };
+      if (type === 'invincible') {
+        playChime(523.25, t, 0.08); // C5
+        playChime(659.25, t + 0.06, 0.08); // E5
+        playChime(783.99, t + 0.12, 0.08); // G5
+        playChime(1046.5, t + 0.18, 0.18); // C6
+      } else if (type === 'shield') {
+        playChime(440, t, 0.07);
+        playChime(880, t + 0.06, 0.12);
+        playChime(1320, t + 0.12, 0.16);
+      } else if (type === 'slowmo') {
+        playChime(987.77, t, 0.1);
+        playChime(659.25, t + 0.08, 0.14);
+        playChime(440, t + 0.16, 0.2);
+      } else {
+        // Multiplier / default
+        playChime(659.25, t, 0.07);
+        playChime(987.77, t + 0.05, 0.07);
+        playChime(1318.51, t + 0.1, 0.14);
+      }
+    } catch {}
+  }
+
+  public playDinoShieldBreak(force: boolean = false): void {
+    if (!this.enabled && !force) return;
+    const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
+    try {
+      const t = ctx.currentTime; const comp = this.makeComp(ctx);
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(900, t);
+      o.frequency.exponentialRampToValueAtTime(200, t + 0.15);
+      g.gain.setValueAtTime(0.5 * MASTER_VOL, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+      o.connect(g); g.connect(comp);
+      o.start(t); o.stop(t + 0.17);
+    } catch {}
+  }
+
+  public playDinoGameOver(force: boolean = false): void {
+    if (!this.enabled && !force) return;
+    const ctx = this.getCtx(); if (!ctx) return;
+    if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
+    try {
+      const t = ctx.currentTime; const comp = this.makeComp(ctx);
+      const playStep = (freq: number, start: number, dur: number) => {
+        const o = ctx.createOscillator(); const g = ctx.createGain();
+        o.type = 'sawtooth';
+        o.frequency.setValueAtTime(freq, start);
+        g.gain.setValueAtTime(0.4 * MASTER_VOL, start);
+        g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+        o.connect(g); g.connect(comp);
+        o.start(start); o.stop(start + dur + 0.01);
+      };
+      playStep(440, t, 0.09);
+      playStep(370, t + 0.09, 0.09);
+      playStep(311.13, t + 0.18, 0.09);
+      playStep(233.08, t + 0.27, 0.22);
     } catch {}
   }
 }

@@ -7,6 +7,7 @@ interface MusicContextType {
   isMuted: boolean;
   isMusicActiveIntro: boolean;
   hasActivatedOnce: boolean;
+  isDinoOpen: boolean;
   volume: number;
   currentTime: number;
   duration: number;
@@ -16,6 +17,10 @@ interface MusicContextType {
   pause: () => void;
   setVolume: (volume: number) => void;
   toggleMute: () => void;
+  openDino: () => void;
+  closeDino: () => void;
+  toggleDino: () => void;
+  setIsDinoOpen: (open: boolean) => void;
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined);
@@ -31,6 +36,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isMuted, setIsMuted] = useState(false);
   const [isMusicActiveIntro, setIsMusicActiveIntro] = useState(false);
   const [hasActivatedOnce, setHasActivatedOnce] = useState(false);
+  const [isDinoOpen, setIsDinoOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -134,6 +140,18 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
   };
 
+  const openDino = () => {
+    setIsDinoOpen(true);
+  };
+
+  const closeDino = () => {
+    setIsDinoOpen(false);
+  };
+
+  const toggleDino = () => {
+    setIsDinoOpen((prev) => !prev);
+  };
+
   const pause = () => {
     if (!audioRef.current) return;
     if (introTimerRef.current) clearTimeout(introTimerRef.current);
@@ -147,6 +165,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       pause();
     } else {
       play();
+      setIsDinoOpen(true);
     }
   };
 
@@ -189,6 +208,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         isMuted,
         isMusicActiveIntro,
         hasActivatedOnce,
+        isDinoOpen,
         volume,
         currentTime,
         duration,
@@ -198,6 +218,10 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         pause,
         setVolume,
         toggleMute,
+        openDino,
+        closeDino,
+        toggleDino,
+        setIsDinoOpen,
       }}
     >
       {children}
