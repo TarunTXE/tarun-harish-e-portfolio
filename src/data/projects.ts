@@ -83,34 +83,35 @@ export const ragProject: ProjectData = {
 
 export const portfolioCreatorProject: ProjectData = {
   id: 'portfolio-creator',
-  name: 'Portfolio-Creator-Portfolio-Builder-with-Job-Assistance',
+  name: 'signal-hire',
   title: 'SignalHire – Portfolio & Career Platform',
   badge: 'Full-Stack Flagship Platform',
   description:
-    'Full-stack platform for creating, customizing, previewing, and sharing professional portfolios with real-time evaluation, feedback rating system, and skill-based job matching.',
+    'Full-stack platform for creating, customizing, previewing, and sharing professional portfolios with AI resume builder, real-time strength evaluation, feedback ratings, and skill-based job matching.',
   longDescription:
-    'A comprehensive career ecosystem built with React.js, Node.js, Express.js, and MongoDB. Features secure JWT authentication, rich WYSIWYG portfolio customizers, vector PDF export engine, automated review algorithms with star ratings and improvement suggestions, and an integrated job portal matching candidate skills with active opportunities.',
+    'A comprehensive career ecosystem built with React.js, Node.js, Express.js, and MongoDB. Features Google Gemini AI-powered resume builder & PDF parser, multi-theme portfolio engine, secure JWT authentication, vector PDF export, portfolio strength analyzer with star ratings, and an integrated real-time job portal.',
   language: 'JavaScript',
   stars: 1,
   forks: 0,
-  githubUrl: 'https://github.com/TarunTXE/Portfolio-Creator-Portfolio-Builder-with-Job-Assistance',
+  githubUrl: 'https://github.com/TarunTXE/signal-hire',
   demoUrl: 'https://portfolio-creator-portfolio-builder.vercel.app',
   updatedAt: '2026-09-06',
   isFeatured: true,
   category: 'Full Stack',
-  techStack: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'JWT Auth', 'RESTful APIs', 'Tailwind CSS'],
+  techStack: ['React.js', 'Node.js', 'Express.js', 'MongoDB', 'Google Gemini AI', 'JWT Auth', 'Tailwind CSS', 'RESTful APIs'],
   features: [
-    'Built a full-stack platform for creating, customizing, previewing, and sharing professional portfolios.',
-    'Implemented JWT-based authentication and secure user profile management.',
-    'Built a portfolio evaluation system with feedback, ratings, and improvement suggestions.',
-    'Integrated a job portal feature matching opportunities to user skills and interests.',
-    'Built portfolio preview, PDF export, and RESTful backend services using Node.js, Express.js, and MongoDB.',
+    'AI-powered resume builder with PDF parsing and Gemini AI data extraction.',
+    'Multi-theme dynamic portfolio engine with live WYSIWYG customization.',
+    'Portfolio strength analyzer with automated quality scoring and feedback.',
+    'Integrated job portal matching active tech opportunities to user skills.',
+    'High-fidelity client-side PDF export, JWT authentication, and RESTful API backend.',
   ],
   screenshots: [
     '/projects/portfolio-creator/main page.png',
-    '/projects/portfolio-creator/portfolio creation.png',
-    '/projects/portfolio-creator/portfolio preview.png',
+    '/projects/portfolio-creator/resume builder.png',
+    '/projects/portfolio-creator/templates.png',
     '/projects/portfolio-creator/job portal.png',
+    '/projects/portfolio-creator/register.png',
   ],
 };
 
@@ -213,6 +214,11 @@ export const repositoriesData: ProjectData[] = [
       'Showcase for published literary work, books, and clinical background',
       'Type-safe modular frontend built with TypeScript and React',
       'Responsive reading layouts and production deployment on Vercel',
+    ],
+    screenshots: [
+      '/projects/vhe-website/portal.png',
+      '/projects/vhe-website/ophthalmologist.png',
+      '/projects/vhe-website/author.png',
     ],
   },
   {
